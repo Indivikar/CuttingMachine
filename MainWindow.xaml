@@ -5,8 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SchneidMaschine"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="900" Width="1200">
     <Grid>
-        
+        <Frame x:Name="Main" Margin="0,35,0,0" FontSize="36"/>
     </Grid>
 </Window>

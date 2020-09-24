@@ -1,5 +1,4 @@
 ﻿using SchneidMaschine.model;
-using SchneidMaschine.pages;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,20 +14,29 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace SchneidMaschine
+namespace SchneidMaschine.pages
 {
     /// <summary>
-    /// Interaktionslogik für MainWindow.xaml
+    /// Interaktionslogik für Home.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class Home : Page
     {
         private DataModel dataModel;
 
-        public MainWindow()
+        public Home(DataModel dataModel)
         {
             InitializeComponent();
-            this.dataModel = new DataModel(this);
-            this.Content = dataModel.Home;
+            this.dataModel = dataModel;
+        }
+
+        private void BtnClickStreifen40(object sender, RoutedEventArgs e)
+        {
+            dataModel.MainWindow.Content = dataModel.Streifen40;
+        }
+
+        private void BtnClickStreifen70(object sender, RoutedEventArgs e)
+        {
+            dataModel.MainWindow.Content = dataModel.Streifen70;
         }
     }
 }

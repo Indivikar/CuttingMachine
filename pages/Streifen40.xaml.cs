@@ -1,5 +1,4 @@
 ﻿using SchneidMaschine.model;
-using SchneidMaschine.pages;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,20 +14,24 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace SchneidMaschine
+namespace SchneidMaschine.pages
 {
     /// <summary>
-    /// Interaktionslogik für MainWindow.xaml
+    /// Interaktionslogik für Streifen40.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class Streifen40 : Page
     {
         private DataModel dataModel;
 
-        public MainWindow()
-        {
+        public Streifen40(DataModel dataModel)
+        {     
             InitializeComponent();
-            this.dataModel = new DataModel(this);
-            this.Content = dataModel.Home;
+            this.dataModel = dataModel;
+        }
+
+        private void BtnHome(object sender, RoutedEventArgs e)
+        {
+            dataModel.MainWindow.Content = dataModel.Home;
         }
     }
 }
