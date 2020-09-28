@@ -2,6 +2,7 @@
 using SchneidMaschine.pages;
 using System;
 using System.Collections.Generic;
+using System.IO.Ports;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,12 +24,129 @@ namespace SchneidMaschine
     public partial class MainWindow : Window
     {
         private DataModel dataModel;
+        private SerialPort serialPort1;
+
+        delegate void SetTextCallback(string text);
 
         public MainWindow()
         {
             InitializeComponent();
             this.dataModel = new DataModel(this);
-            this.Content = dataModel.Home;
+            this.serialPort1 = dataModel.SerialPort1;
+
+            Main.Content = dataModel.Home;
+
+            serialPort1.DataReceived += new SerialDataReceivedEventHandler(port_DataReceived_1);
+            
+            Init();
+        }
+
+        private void Init()
+        {
+            BtnVerbinden.IsEnabled = true;
+            BtnTrennen.IsEnabled = false;
+            //Main.IsEnabled = false;
+
+            comboBoxPorts.ItemsSource = dataModel.PortList;
+        }
+
+        private void BtnClickVerbinden(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Console.WriteLine("try to Connect...");
+                SetText("try to Connect...\n");
+                serialPort1.PortName = comboBoxPorts.Text;
+                serialPort1.BaudRate = Convert.ToInt32(comboBoxBautRate.Text);
+
+                //          serialPort1 = new SerialPort("COM5",
+                //9600, Parity.None, 8, StopBits.One);
+
+                //serialPort1.DataBits = Convert.ToInt32(cBoxDataBits.Text);
+                //serialPort1.StopBits = (StopBits)Enum.Parse(typeof(StopBits), cBoxStopBits.Text);
+                //serialPort1.Parity = (Parity)Enum.Parse(typeof(Parity), cBoxParityBits.Text);
+                //serialPort1.DataReceived += new SerialDataReceivedEventHandler(dataModel.port_DataReceived_1);
+                //serialPort1.DataReceived += new SerialDataReceivedEventHandler(tmrPollForRecivedData_Tick);
+                serialPort1.Open();
+
+                isConnected();
+
+                //progressBar1.Value = 100;
+            }
+            catch (Exception error)
+            {
+                MessageBox.Show(error.Message);
+            }
+        }
+
+        private void BtnClickTrennen(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                serialPort1.Close();
+                isConnected();
+            }
+            catch (Exception error)
+            {
+                MessageBox.Show(error.Message);
+            }
+        }
+
+        private void BtnClickSenden(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                serialPort1.Write(textBoxSenden.Text + "#");
+            }
+            catch (Exception error)
+            {
+                MessageBox.Show(error.Message);
+            }
+        }
+
+        private void BtnClickTextDelete(object sender, RoutedEventArgs e)
+        {
+            textBoxAusgabe.Text = String.Empty;
+
+        }
+
+        private void port_DataReceived_1(object sender, SerialDataReceivedEventArgs e)
+        {
+            string InputData = serialPort1.ReadExisting();
+            if (InputData != String.Empty)
+            {
+                Dispatcher.BeginInvoke(new SetTextCallback(SetText), new object[] { InputData });
+            }
+        }
+
+        private void SetText(string text)
+        {
+            this.textBoxAusgabe.Text += text;
+            textBoxAusgabe.ScrollToEnd();
+        }
+
+        private void isConnected()
+        {
+            if (serialPort1.IsOpen)
+            {
+                BtnVerbinden.IsEnabled = false;
+                BtnTrennen.IsEnabled = true;
+                Main.IsEnabled = true;
+                labelConnection.Foreground = Brushes.Green;
+                labelConnection.Text = "Connected";
+                Console.WriteLine("Connected");
+                serialPort1.Write("Connected#");
+            }
+            else
+            {
+                BtnVerbinden.IsEnabled = true;
+                BtnTrennen.IsEnabled = false;
+                Main.IsEnabled = false;
+                labelConnection.Foreground = Brushes.Red;
+                labelConnection.Text = "Disconnected";
+                Console.WriteLine("Disconnected");
+                SetText("Disconnected");
+            }
         }
     }
 }

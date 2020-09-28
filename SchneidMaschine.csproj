@@ -67,29 +67,43 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="pages\Auto.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="pages\EinzelSchritt.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="pages\HalbAuto.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="pages\Home.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="pages\Streifen40.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="pages\Streifen70.xaml">
+    <Page Include="pages\SchnittModus.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="model\DataModel.cs" />
+    <Compile Include="pages\Auto.xaml.cs">
+      <DependentUpon>Auto.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="pages\EinzelSchritt.xaml.cs">
+      <DependentUpon>EinzelSchritt.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="pages\HalbAuto.xaml.cs">
+      <DependentUpon>HalbAuto.xaml</DependentUpon>
+    </Compile>
     <Compile Include="pages\Home.xaml.cs">
       <DependentUpon>Home.xaml</DependentUpon>
     </Compile>
-    <Compile Include="pages\Streifen40.xaml.cs">
-      <DependentUpon>Streifen40.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="pages\Streifen70.xaml.cs">
-      <DependentUpon>Streifen70.xaml</DependentUpon>
+    <Compile Include="pages\SchnittModus.xaml.cs">
+      <DependentUpon>SchnittModus.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>

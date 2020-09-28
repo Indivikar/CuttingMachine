@@ -4,12 +4,11 @@ String appendSerialData; //use ti save data from c variable
 
 void setup() {
   // put your setup code here, to run once:
-  Serial.begin(115200); //Open serial port, set data rate to 9600 bit per second (bps)
+  Serial.begin(9600); //Open serial port, set data rate to 9600 bit per second (bps)
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-
   while(Serial.available()>0) //get the number of bytes (characters) available that already arrived and stored in the serial receive buffer
     {
         c = Serial.read(); //read incoming serial data and store it into c variable
