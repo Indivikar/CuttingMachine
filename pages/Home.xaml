@@ -50,10 +50,10 @@
                     <RowDefinition Height="1*" />
                 </Grid.RowDefinitions>
                 <TextBlock Text="40er Streifen" HorizontalAlignment="Center" Grid.Row="0" Grid.ColumnSpan="2"  VerticalAlignment="Center" FontSize="36" />
-                <Button x:Name="BtnC4Kurz" Margin="5" FontSize="36" Grid.Row="1" Click="BtnC4Kurz_Click" >C4 320er</Button>
-                <Button x:Name="BtnC4Lang" Margin="5" FontSize="36" Grid.Row="1" Grid.Column="1" Content="C4 710er" Click="BtnC4Lang_Click"/>
-                <Button x:Name="BtnC5Kurz" Margin="5" FontSize="36" Grid.Row="2" Click="BtnC5Kurz_Click">C5 200er</Button>
-                <Button x:Name="BtnC5Lang" Margin="5" FontSize="36" Grid.Column="1" Grid.Row="2" Click="BtnC5Lang_Click">C5 250er</Button>
+                <Button x:Name="BtnC4Kurz" Click="BtnC4Kurz_Click" Margin="5" FontSize="36" Grid.Row="1" >C4/C5 320er</Button>
+                <Button x:Name="BtnC4Lang" Click="BtnC4Lang_Click" Margin="5" FontSize="36" Grid.Row="1" Grid.Column="1" >C4/C5 700er</Button>
+                <Button x:Name="BtnC5Kurz" Click="BtnC5Kurz_Click" Margin="5" FontSize="36" Grid.Row="2"  >C5 400er</Button>
+                <!--<Button x:Name="BtnC5Lang" Margin="5" FontSize="36" Grid.Column="1" Grid.Row="2" Click="BtnC5Lang_Click">C5 250er</Button>-->
             </Grid>
             <Grid MinWidth="260" MinHeight="450" Margin="0,0,30,0" >
                 <Grid.ColumnDefinitions>

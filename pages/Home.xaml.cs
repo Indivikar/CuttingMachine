@@ -24,12 +24,12 @@ namespace SchneidMaschine.pages
     /// </summary>
     /// 
 
-    enum STREIFEN_40er
+    enum STREIFEN
     {
-        C4_KURZ = 320,
-        C4_LANG = 710,
-        C5_KURZ = 200,
-        C5_LANG = 250
+        C4_40_Schachtel_KURZ = 320,
+        C4_40_Schachtel_LANG = 700,
+        C4_70_Deckel = 650,
+        C5_40_Deckel = 400,
     }
 
     public partial class Home : Page
@@ -56,10 +56,12 @@ namespace SchneidMaschine.pages
 
         private void setButtonText()
         {
-            this.BtnC4Kurz.Content = "C4 " + (int)STREIFEN_40er.C4_KURZ + "er";
-            this.BtnC4Lang.Content = "C4 " + (int)STREIFEN_40er.C4_LANG + "er";
-            this.BtnC5Kurz.Content = "C5 " + (int)STREIFEN_40er.C5_KURZ + "er";
-            this.BtnC5Lang.Content = "C5 " + (int)STREIFEN_40er.C5_LANG + "er";
+            this.BtnC4Kurz.Content = "C4/C5 - " + (int)STREIFEN.C4_40_Schachtel_KURZ + "er\n   Schachtel";
+            this.BtnC4Lang.Content = "C4/C5 - " + (int)STREIFEN.C4_40_Schachtel_LANG + "er\n   Schachtel";
+            this.BtnC5Kurz.Content = "C5 - " + (int)STREIFEN.C5_40_Deckel + "er\n   Deckel";
+            //this.BtnC5Lang.Content = "C5 " + (int)STREIFEN.C5_LANG + "er";
+
+            this.Btn_C4_70_Deckel.Content = "C4 - " + (int)STREIFEN.C4_70_Deckel + "er\n   Deckel";
         }
 
         private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
