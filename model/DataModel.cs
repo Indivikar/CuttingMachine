@@ -5,6 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO.Ports;
+using System.Management;
+using System.Threading;
+using SchneidMaschine.threads;
 
 namespace SchneidMaschine.model
 {
@@ -20,6 +23,8 @@ namespace SchneidMaschine.model
         private string[] portList;
         private SerialPort serialPort1;
 
+        private MyThreads myThreads;
+
         delegate void SetTextCallback(string text);
         string InputData = String.Empty;
 
@@ -34,18 +39,19 @@ namespace SchneidMaschine.model
             this.serialPort1 = new SerialPort();
             this.portList = SerialPort.GetPortNames();
 
-            
-
             this.home = new Home(this);
             this.schnittModus = new SchnittModus(this);
             this.einzelSchritt = new EinzelSchritt(this);
             this.halbAuto = new HalbAuto(this);
             this.auto = new Auto(this);
 
+            this.myThreads = new MyThreads(this);
+ 
+            Thread thread1 = new Thread(myThreads.checkPorts);
+            thread1.Start();
         }
 
-
-
+       
         private void SetText(string text)
         {
             //this.rtbIncoming.Text += text;
@@ -58,6 +64,8 @@ namespace SchneidMaschine.model
         public EinzelSchritt EinzelSchritt { get { return einzelSchritt; } }
         public HalbAuto HalbAuto { get { return halbAuto; } }
         public Auto Auto { get { return auto; } }
+
+        public MyThreads MyThreads { get { return myThreads; } }
 
         public string[] PortList { get { return portList; } }
 

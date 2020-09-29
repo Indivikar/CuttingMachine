@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO.Ports;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -25,6 +26,7 @@ namespace SchneidMaschine
     {
         private DataModel dataModel;
         private SerialPort serialPort1;
+        private Thread threadCheckConnection;
 
         delegate void SetTextCallback(string text);
 
@@ -37,7 +39,7 @@ namespace SchneidMaschine
             Main.Content = dataModel.Home;
 
             serialPort1.DataReceived += new SerialDataReceivedEventHandler(port_DataReceived_1);
-            
+       
             Init();
         }
 
@@ -136,6 +138,9 @@ namespace SchneidMaschine
                 labelConnection.Text = "Connected";
                 Console.WriteLine("Connected");
                 serialPort1.Write("Connected#");
+
+                this.threadCheckConnection = new Thread(dataModel.MyThreads.checkVerbindung);
+                threadCheckConnection.Start();
             }
             else
             {
@@ -145,7 +150,25 @@ namespace SchneidMaschine
                 labelConnection.Foreground = Brushes.Red;
                 labelConnection.Text = "Disconnected";
                 Console.WriteLine("Disconnected");
-                SetText("Disconnected");
+                SetText("Disconnected\n");
+
+                threadCheckConnection.Abort();
+                
+            }
+        }
+
+        public void checkConnection() {
+            if (!serialPort1.IsOpen)
+            {
+                BtnVerbinden.IsEnabled = true;
+                BtnTrennen.IsEnabled = false;
+                Main.IsEnabled = false;
+                labelConnection.Foreground = Brushes.Red;
+                labelConnection.Text = "Disconnected";
+                Console.WriteLine("Disconnected");
+                SetText("Disconnected\n");
+
+                threadCheckConnection.Abort();
             }
         }
     }
