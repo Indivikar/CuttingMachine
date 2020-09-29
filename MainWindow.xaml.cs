@@ -2,6 +2,7 @@
 using SchneidMaschine.pages;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO.Ports;
 using System.Linq;
 using System.Text;
@@ -27,6 +28,7 @@ namespace SchneidMaschine
         private DataModel dataModel;
         private SerialPort serialPort1;
         private Thread threadCheckConnection;
+        private Thread threadCheckPorts;
 
         delegate void SetTextCallback(string text);
 
@@ -39,7 +41,10 @@ namespace SchneidMaschine
             Main.Content = dataModel.Home;
 
             serialPort1.DataReceived += new SerialDataReceivedEventHandler(port_DataReceived_1);
-       
+
+            this.threadCheckPorts = new Thread(dataModel.MyThreads.checkPorts);
+            threadCheckPorts.Start();
+
             Init();
         }
 
@@ -112,6 +117,18 @@ namespace SchneidMaschine
 
         }
 
+        void DataWindow_Closing(object sender, CancelEventArgs e)
+        {
+            serialPort1.Close();
+            if (threadCheckConnection != null) {
+                threadCheckConnection.Abort();
+            }
+
+            if (threadCheckPorts != null) {
+                threadCheckPorts.Abort();
+            }
+        }
+
         private void port_DataReceived_1(object sender, SerialDataReceivedEventArgs e)
         {
             string InputData = serialPort1.ReadExisting();
@@ -130,13 +147,14 @@ namespace SchneidMaschine
         private void isConnected()
         {
             if (serialPort1.IsOpen)
-            {
+            {                
                 BtnVerbinden.IsEnabled = false;
+                Thread.Sleep(1000);
                 BtnTrennen.IsEnabled = true;
                 Main.IsEnabled = true;
                 labelConnection.Foreground = Brushes.Green;
                 labelConnection.Text = "Connected";
-                Console.WriteLine("Connected");
+                Console.WriteLine("Connected");              
                 serialPort1.Write("Connected#");
 
                 this.threadCheckConnection = new Thread(dataModel.MyThreads.checkVerbindung);
@@ -152,8 +170,7 @@ namespace SchneidMaschine
                 Console.WriteLine("Disconnected");
                 SetText("Disconnected\n");
 
-                threadCheckConnection.Abort();
-                
+                threadCheckConnection.Abort();               
             }
         }
 

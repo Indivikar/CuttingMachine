@@ -47,8 +47,7 @@ namespace SchneidMaschine.model
 
             this.myThreads = new MyThreads(this);
  
-            Thread thread1 = new Thread(myThreads.checkPorts);
-            thread1.Start();
+
         }
 
        
