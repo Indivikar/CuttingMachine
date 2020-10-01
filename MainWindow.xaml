@@ -4,9 +4,9 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SchneidMaschine"
-        Closing="DataWindow_Closing" 
+        Closing="DataWindow_Closing"
         mc:Ignorable="d"
-        Title="MainWindow" Height="900" Width="1200">
+        Title="MainWindow" Height="900" Width="1400">
     <Grid>
         <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Center">
             <GroupBox Header="Verbindung mit Arduino" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,10,50,10" Height="200" Width="400">

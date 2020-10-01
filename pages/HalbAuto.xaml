@@ -9,31 +9,41 @@
       Title="HalbAuto">
 
     <Grid>
-        <Grid Margin="10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-            <StackPanel VerticalAlignment="Top" Margin="0,0,0,0" MinHeight="50">
-                <TextBlock Text="Halb-Automatik" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="36" />
+        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <StackPanel VerticalAlignment="Top" Margin="0,50,0,0" MinHeight="50" HorizontalAlignment="Center">
+                <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Height="50" Orientation="Horizontal" Margin="0,10,0,0">
+                    <TextBlock Text="Streifen-Länge soll: " HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24" Margin="0,0,18,0" />
+                    <TextBlock Text="0000" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24" Margin="0" />
+                </StackPanel>
+                <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Height="50" Orientation="Horizontal" Margin="0,10,0,0">
+                    <TextBlock Text="Streifen-Länge ist: " HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24" Margin="0,0,30,0" />
+                    <TextBlock Text="0000" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24" Margin="0,0,0,0" />
+                </StackPanel>
             </StackPanel>
-            <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Height="50" Orientation="Horizontal">
-                <Button x:Name="BtnHome" Content="Home" FontSize="20" Width="100" Height="35" Click="BtnClickHome" Margin="0,0,5,0" />
-                <TextBlock Text=">" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="36" Margin="0,0,0,5" />
-                <Button x:Name="BtnSchnittModus" Content="Schnitt-Modus" FontSize="20" Width="150" Height="35" Click="BtnClickSchnittModus" Margin="5,0,0,0" />
+            <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Height="50" Margin="10,0,0,0" Orientation="Horizontal">
+                <Button x:Name="BtnHome" Content="Home" FontSize="20" Width="100" Height="35" Click="BtnClickHome"  />
+                <TextBlock Text=">" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="36" Margin="5,0,5,5" />
+                <Button x:Name="BtnSchnittModus" Content="Schnitt-Modus" FontSize="20" Width="150" Height="35" Click="BtnClickSchnittModus" />
+                <TextBlock Text=">" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="36" Margin="5,0,5,5" />
+                <Button x:Name="BtnEinzelSchritt" Content="Halb-Automatik" FontSize="20" Width="170" Height="35" />
             </StackPanel>
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,50,10,10">
                 <Grid  Margin="0,0,30,0" >
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="1*" />
                         <ColumnDefinition Width="1*" />
-                        <ColumnDefinition Width="1*" />
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="1*" />
+                        <RowDefinition Height="1*" />
                     </Grid.RowDefinitions>
-                    <!--<Button x:Name="BtnModusEinzelSchritt" Click="BtnClickModusEinzelSchritt" 
-                        Margin="5" FontSize="36" Width="300" Height="190" Grid.Column="0" >Einzel-Schritt</Button>
-                <Button x:Name="BtnModusHalbAuto" Click="BtnClickModusHalbAuto" 
-                        Margin="5" FontSize="36" Width="300" Height="190" Grid.Column="1" >Halb-Automatik</Button>
-                <Button x:Name="BtnModusAuto" Click="BtnClickModusAuto" 
-                        Margin="5" FontSize="36" Width="300" Height="190" Grid.Column="2" >Automatik</Button>-->
+                    <Button x:Name="BtnModusHalbAutoStart" Click="BtnClickModusHalbAutoStart" 
+                            Margin="5" FontSize="36" Width="330" Height="200" Grid.Column="0" >Start</Button>
+                    <Button x:Name="BtnModusHalbAutoStop" Click="BtnClickModusHalbAutoStop" 
+                            Margin="5" FontSize="36" Width="330" Height="200" Grid.Column="1" >Stop</Button>
+                    <TextBlock FontSize="24"  Grid.Row="1" Grid.ColumnSpan="2" HorizontalAlignment="Center" TextAlignment="Center" >
+                        Ein Durchlauf ist:<LineBreak/>die Soll-Länge anfahren und einmal abschneiden</TextBlock>
+                    
                 </Grid>
             </StackPanel>
         </Grid>

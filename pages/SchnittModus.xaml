@@ -8,12 +8,11 @@
       d:DesignHeight="800" d:DesignWidth="1200"
       Title="SchnittModus" Width="Auto" Height="Auto">
 
-    <Grid Margin="10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-        <StackPanel VerticalAlignment="Top" Margin="0,0,0,0" MinHeight="50">
-            <TextBlock Text="Schnitt-Modus" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="36" />
-        </StackPanel>
-        <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Height="50">
+    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Height="50" Margin="10,0,0,0" Orientation="Horizontal">
             <Button x:Name="BtnHome" Content="Home" FontSize="20" Width="100" Height="35" Click="BtnClickHome" />
+            <TextBlock Text=">" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="36" Margin="5,0,5,5" />
+            <Button x:Name="BtnSchnittModus" Content="Schnitt-Modus" FontSize="20" Height="35" Width="150" />
         </StackPanel>
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,50,10,10">
             <Grid  Margin="0,0,30,0" >

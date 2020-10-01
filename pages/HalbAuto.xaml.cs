@@ -38,5 +38,17 @@ namespace SchneidMaschine.pages
         {
             dataModel.MainWindow.Main.Content = dataModel.SchnittModus;
         }
+
+        private void BtnClickModusHalbAutoStart(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void BtnClickModusHalbAutoStop(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+
     }
 }
