@@ -28,12 +28,12 @@
                         <Grid.RowDefinitions>
                             <RowDefinition Height="1*" />
                         </Grid.RowDefinitions>
-                        <!--<Button x:Name="BtnModusEinzelSchritt" Click="BtnClickModusEinzelSchritt" 
-                        Margin="5" FontSize="36" Width="300" Height="190" Grid.Column="0" >Einzel-Schritt</Button>
-                <Button x:Name="BtnModusHalbAuto" Click="BtnClickModusHalbAuto" 
-                        Margin="5" FontSize="36" Width="300" Height="190" Grid.Column="1" >Halb-Automatik</Button>
-                <Button x:Name="BtnModusAuto" Click="BtnClickModusAuto" 
-                        Margin="5" FontSize="36" Width="300" Height="190" Grid.Column="2" >Automatik</Button>-->
+                        <Button x:Name="BtnModusAutoStart" Click="BtnClickModusAutoStart" 
+                            Margin="5" FontSize="36" Width="330" Height="200" Grid.Column="0" >Start</Button>
+                        <Button x:Name="BtnModusAutoStop" Click="BtnClickModusAutoStop" 
+                            Margin="5" FontSize="36" Width="330" Height="200" Grid.Column="1" >Stop</Button>
+                        <TextBlock FontSize="24"  Grid.Row="1" Grid.ColumnSpan="2" HorizontalAlignment="Center" TextAlignment="Center" >
+                        Ein Durchlauf ist:<LineBreak/>die Soll-Länge anfahren und einmal abschneiden</TextBlock>
                     </Grid>
                 </StackPanel>
             </Grid>

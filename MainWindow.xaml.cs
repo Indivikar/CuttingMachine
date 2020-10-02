@@ -57,6 +57,7 @@ namespace SchneidMaschine
             comboBoxPorts.ItemsSource = dataModel.PortList;
         }
 
+
         private void BtnClickVerbinden(object sender, RoutedEventArgs e)
         {
             try
@@ -187,6 +188,18 @@ namespace SchneidMaschine
 
                 threadCheckConnection.Abort();
             }
+        }
+
+        private void ButtonOpenMenu_Click(object sender, RoutedEventArgs e)
+        {
+            ButtonOpenMenu.Visibility = Visibility.Collapsed;
+            ButtonCloseMenu.Visibility = Visibility.Visible;
+        }
+
+        private void ButtonCloseMenu_Click(object sender, RoutedEventArgs e)
+        {
+            ButtonOpenMenu.Visibility = Visibility.Visible;
+            ButtonCloseMenu.Visibility = Visibility.Collapsed;
         }
     }
 }
