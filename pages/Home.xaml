@@ -83,14 +83,14 @@
                         <Button.Style>
                             <Style TargetType="{x:Type Button}">
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding Text.Length, ElementName=textBoxEigeneLaenge, UpdateSourceTrigger=PropertyChanged}" Value="0">
+                                    <DataTrigger Binding="{Binding Text.Length, ElementName=TextBoxEigeneLaenge, UpdateSourceTrigger=PropertyChanged}" Value="0">
                                         <Setter Property="IsEnabled" Value="False"/>
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
                         </Button.Style>
                     </Button>
-                    <TextBox x:Name="textBoxEigeneLaenge" Tag="hier Länge eingeben (in mm)" Margin="0,5,0,0" Height="30" Width="250" FontSize="18"  
+                    <TextBox x:Name="TextBoxEigeneLaenge" Tag="hier Länge eingeben (in mm)" Margin="0,5,0,0" Height="30" Width="250" FontSize="18"  
                              Style="{StaticResource MyWaterMarkStyle}" PreviewTextInput="NumberValidationTextBox" />
                 </StackPanel>
             </Grid>

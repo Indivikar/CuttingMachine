@@ -24,7 +24,7 @@ namespace SchneidMaschine.pages
     /// </summary>
     /// 
 
-    enum STREIFEN
+    public enum STREIFEN
     {
         C4_40_Schachtel_KURZ = 320,
         C4_40_Schachtel_LANG = 700,
@@ -73,31 +73,37 @@ namespace SchneidMaschine.pages
         private void BtnC4Kurz_Click(object sender, RoutedEventArgs e)
         {
             dataModel.MainWindow.Main.Content = dataModel.SchnittModus;
+            dataModel.setSelectedLength(STREIFEN.C4_40_Schachtel_KURZ);
         }
 
-        private void BtnC4Lang_Click(object sender, RoutedEventArgs e)
+        private void BtnC4Lang_Click(object sender, RoutedEventArgs e) // für C4 und C5, haben die gleiche Länge
         {
             dataModel.MainWindow.Main.Content = dataModel.SchnittModus;
+            dataModel.setSelectedLength(STREIFEN.C4_40_Schachtel_LANG);
         }
 
         private void BtnC5Kurz_Click(object sender, RoutedEventArgs e)
         {
             dataModel.MainWindow.Main.Content = dataModel.SchnittModus;
+            dataModel.setSelectedLength(STREIFEN.C5_40_Deckel);
         }
 
         private void BtnC5Lang_Click(object sender, RoutedEventArgs e)
         {
-            dataModel.MainWindow.Main.Content = dataModel.SchnittModus;
+            //dataModel.MainWindow.Main.Content = dataModel.SchnittModus;
+            //dataModel.setSelectedLength(STREIFEN.C4_40_Schachtel_LANG);
         }
 
         private void BtnEigeneLaenge_Click(object sender, RoutedEventArgs e)
         {
             dataModel.MainWindow.Main.Content = dataModel.SchnittModus;
+            dataModel.setSelectedLength(this.TextBoxEigeneLaenge.Text);
         }
 
         private void BtnC4_70_Deckel_Click(object sender, RoutedEventArgs e)
         {
             dataModel.MainWindow.Main.Content = dataModel.SchnittModus;
+            dataModel.setSelectedLength(STREIFEN.C4_70_Deckel);
         }
     }
 }

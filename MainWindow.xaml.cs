@@ -118,7 +118,7 @@ namespace SchneidMaschine
 
         }
 
-        void DataWindow_Closing(object sender, CancelEventArgs e)
+        private void DataWindow_Closing(object sender, CancelEventArgs e)
         {
             serialPort1.Close();
             if (threadCheckConnection != null) {

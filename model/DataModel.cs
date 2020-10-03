@@ -11,7 +11,7 @@ using SchneidMaschine.threads;
 
 namespace SchneidMaschine.model
 {
-    public class DataModel
+    public partial class DataModel
     {
        
         private MainWindow mainWindow;
@@ -25,8 +25,10 @@ namespace SchneidMaschine.model
 
         private MyThreads myThreads;
 
-        delegate void SetTextCallback(string text);
-        string InputData = String.Empty;
+        private int selectedLength;
+
+        private delegate void SetTextCallback(string text);
+        private string InputData = String.Empty;
 
         public DataModel(MainWindow mainWindow)
         {
@@ -69,5 +71,27 @@ namespace SchneidMaschine.model
         public string[] PortList { get { return portList; } }
 
         public SerialPort SerialPort1 { get => serialPort1; set => serialPort1 = value; }
+
+        public void setSelectedLength(STREIFEN wert)
+        {
+            SelectedLength = (int) wert;           
+        }
+
+        public void setSelectedLength(string wert)
+        {
+            SelectedLength = Int32.Parse(wert);
+        }
+
+        public int SelectedLength { get => selectedLength; 
+            set  
+            { 
+                selectedLength = value;
+                schnittModus.StreifenSollWert.Text = value.ToString();
+                einzelSchritt.StreifenSollWert.Text = value.ToString();
+                halbAuto.StreifenSollWert.Text = value.ToString();
+                auto.StreifenSollWert.Text = value.ToString();
+            }
+        }
     }
+
 }
