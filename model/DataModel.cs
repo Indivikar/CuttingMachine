@@ -11,17 +11,46 @@ using SchneidMaschine.threads;
 
 namespace SchneidMaschine.model
 {
+
+    public enum STREIFEN
+    {
+        C4_40_Schachtel_KURZ = 320,
+        C4_40_Schachtel_LANG = 700,
+        C4_70_Deckel = 650,
+        C5_40_Deckel = 400,
+    }
+
+    public enum COMMAND
+    {
+        stepperStart,
+        stepperStop,
+        schneiden,
+        autoStart,
+        autoStop
+    }
+
+    public enum DIRECTION
+    {
+        forward,
+        backward
+    }
+
     public partial class DataModel
     {
-       
+        // Config
+        private double stepToMillimeter = 1.5;
+
+
         private MainWindow mainWindow;
         private Home home;
         private SchnittModus schnittModus;
         private EinzelSchritt einzelSchritt;
         private HalbAuto halbAuto;
-        private Auto auto;
+        private Auto auto;      
         private string[] portList;
         private SerialPort serialPort1;
+
+        private CommandLine commandLine;
 
         private MyThreads myThreads;
 
@@ -40,6 +69,7 @@ namespace SchneidMaschine.model
         {
             this.serialPort1 = new SerialPort();
             this.portList = SerialPort.GetPortNames();
+            this.commandLine = new CommandLine(this);
 
             this.home = new Home(this);
             this.schnittModus = new SchnittModus(this);
@@ -47,15 +77,24 @@ namespace SchneidMaschine.model
             this.halbAuto = new HalbAuto(this);
             this.auto = new Auto(this);
 
+            
+
             this.myThreads = new MyThreads(this);
  
 
         }
 
        
-        private void SetText(string text)
+        public void sendText(string text)
         {
-            //this.rtbIncoming.Text += text;
+            serialPort1.Write(text + "#");
+        }
+
+        
+        public int mmToSteps(double mm)
+        {
+            double result = mm * stepToMillimeter;
+            return Convert.ToInt32(Math.Round(result));
         }
 
         // Getter
@@ -65,6 +104,8 @@ namespace SchneidMaschine.model
         public EinzelSchritt EinzelSchritt { get { return einzelSchritt; } }
         public HalbAuto HalbAuto { get { return halbAuto; } }
         public Auto Auto { get { return auto; } }
+
+        public CommandLine CommandLine { get { return commandLine; } }
 
         public MyThreads MyThreads { get { return myThreads; } }
 

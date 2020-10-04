@@ -22,11 +22,14 @@ namespace SchneidMaschine.pages
     public partial class EinzelSchritt : Page
     {
         private DataModel dataModel;
+        private CommandLine commandLine;
 
         public EinzelSchritt(DataModel dataModel)
         {
             InitializeComponent();
             this.dataModel = dataModel;
+            this.commandLine = dataModel.CommandLine;
+
         }
 
         private void BtnClickHome(object sender, RoutedEventArgs e)
@@ -37,6 +40,45 @@ namespace SchneidMaschine.pages
         private void BtnClickSchnittModus(object sender, RoutedEventArgs e)
         {
             dataModel.MainWindow.Main.Content = dataModel.SchnittModus;
+        }
+
+        private void Btn_1mm_Click(object sender, RoutedEventArgs e)
+        {
+            commandLine.setCommandLine(COMMAND.stepperStart, 1, ToggleButton_Direction.IsChecked == true);
+            dataModel.sendText(commandLine.getCommandLine());
+        }
+
+        private void Btn_10mm_Click(object sender, RoutedEventArgs e)
+        {
+            commandLine.setCommandLine(COMMAND.stepperStart, 10, ToggleButton_Direction.IsChecked == true);
+            dataModel.sendText(commandLine.getCommandLine());
+        }
+
+        private void Btn_100mm_Click(object sender, RoutedEventArgs e)
+        {
+            commandLine.setCommandLine(COMMAND.stepperStart, 100, ToggleButton_Direction.IsChecked == true);
+            dataModel.sendText(commandLine.getCommandLine());
+        }
+
+        private void Btn_soll_Click(object sender, RoutedEventArgs e)
+        {
+
+            bool b = this.ToggleButton_Direction.IsChecked == true;
+
+            Console.WriteLine("Direction: " + b);
+
+            commandLine.setCommandLine(COMMAND.stepperStart, 320, ToggleButton_Direction.IsChecked == true);
+            dataModel.sendText(commandLine.getCommandLine());
+        }
+
+        private void Btn_Cut(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void ToggleBtn_Click_Handwheel(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

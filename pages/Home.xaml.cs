@@ -24,13 +24,7 @@ namespace SchneidMaschine.pages
     /// </summary>
     /// 
 
-    public enum STREIFEN
-    {
-        C4_40_Schachtel_KURZ = 320,
-        C4_40_Schachtel_LANG = 700,
-        C4_70_Deckel = 650,
-        C5_40_Deckel = 400,
-    }
+
 
     public partial class Home : Page
     {
