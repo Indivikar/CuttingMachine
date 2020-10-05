@@ -65,10 +65,17 @@ namespace SchneidMaschine.pages
 
             bool b = this.ToggleButton_Direction.IsChecked == true;
 
-            Console.WriteLine("Direction: " + b);
+            //Console.WriteLine("Direction: " + b);
+
+            StackPanelControls.IsEnabled = false;
 
             commandLine.setCommandLine(COMMAND.stepperStart, 320, ToggleButton_Direction.IsChecked == true);
             dataModel.sendText(commandLine.getCommandLine());
+        }
+
+        public void StackPanelControlsEnable()
+        {
+            StackPanelControls.IsEnabled = true;
         }
 
         private void Btn_Cut(object sender, RoutedEventArgs e)

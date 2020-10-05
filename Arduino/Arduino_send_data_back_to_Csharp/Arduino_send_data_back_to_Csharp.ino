@@ -13,7 +13,6 @@ void setup() {
   digitalWrite(6,LOW);
 }
 
-  
 //  String split(String s, char parser, int index) {
 //      String rs="";
 //      int parserIndex = index;
@@ -65,13 +64,16 @@ void setup() {
   }
 
   void sendText(String text) {
-        Serial.print("Arduino Say>> "); //send "Arduino Say>> " to C#
-        Serial.println(text); //send the data back to C#
+        //Serial.print("Arduino antwortet>> "); //send "Arduino Say>> " to C#
+        //Serial.println(text); //send the data back to C#
+        Serial.println("#" + text + "@");
   }
 
   void sendCommand(String text) {
-        Serial.print("Command>> "); //send "Arduino Say>> " to C#
-        Serial.println(text + "@"); //send the data back to C#
+        Serial.println("#" + text + "@");
+//        Serial.print("@");
+//        Serial.print(text);
+//        Serial.println("@");
   }
 
 void loop() {
@@ -86,6 +88,10 @@ void loop() {
         // Leerzeichen, Zeilenumbrüche und letzte Zeichen entfernen (#)
         appendSerialData.trim();
         appendSerialData = appendSerialData.substring(0, appendSerialData.length() - 1); 
+
+        if(appendSerialData.equals("Connected")){
+            sendText("Connected");
+        }
      
         // stepper_300_forward (befehl_steps_richtung)
         String befehl = split(appendSerialData, '_', 0);
@@ -95,7 +101,7 @@ void loop() {
             String drehRichtung = split(appendSerialData, '_', 2);
             stepper(steps, drehRichtung);
 
-            sendCommand("stepperFertig");
+            sendCommand("stepperFinished");
         }
 
         appendSerialData=""; //empty data inside appendSerialData variable

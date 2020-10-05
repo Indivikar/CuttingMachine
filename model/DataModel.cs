@@ -22,8 +22,10 @@ namespace SchneidMaschine.model
 
     public enum COMMAND
     {
+        Connected,
         stepperStart,
         stepperStop,
+        stepperFinished,
         schneiden,
         autoStart,
         autoStop

@@ -79,15 +79,15 @@
     <Grid Height="832">
         <Grid>
             <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Center">
-                <GroupBox Header="Verbindung mit Arduino" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,10,50,10" Height="200" Width="400">
+                <GroupBox Header="Verbindung mit Arduino" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,0,50,10" Height="300" Width="400">
                     <StackPanel Margin="0,20,0,0">
-                        <StackPanel Orientation="Horizontal" Height="25" Margin="0,0,0,10" HorizontalAlignment="Left">
-                            <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0" Width="100">COM Port:</TextBlock>
-                            <ComboBox x:Name="comboBoxPorts" Width="100"></ComboBox>
+                        <StackPanel Orientation="Horizontal" Margin="10,10,0,10" HorizontalAlignment="Left">
+                            <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0" Width="150" FontSize="20">COM Port:</TextBlock>
+                            <ComboBox x:Name="comboBoxPorts" Width="200" FontSize="32" Height="50"></ComboBox>
                         </StackPanel>
-                        <StackPanel Orientation="Horizontal" Height="25" Margin="0,0,0,10">
-                            <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0" Width="100">BAUT Rate:</TextBlock>
-                            <ComboBox x:Name="comboBoxBautRate" Width="100">
+                        <StackPanel Orientation="Horizontal" Margin="10,0,0,10">
+                            <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0" Width="150" FontSize="20">BAUT Rate:</TextBlock>
+                            <ComboBox x:Name="comboBoxBautRate" Width="200" Height="50" FontSize="32">
                                 <ComboBoxItem>300</ComboBoxItem>
                                 <ComboBoxItem>1200</ComboBoxItem>
                                 <ComboBoxItem>2400</ComboBoxItem>
@@ -106,25 +106,24 @@
                             </ComboBox>
 
                         </StackPanel>
-                        <StackPanel Orientation="Horizontal" Height="25" Margin="0,0,0,10">
-                            <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0" Width="100">Status:</TextBlock>
-                            <ProgressBar Minimum="0" Maximum="100" Value="75" Width="100" />
+                        <StackPanel Orientation="Horizontal" Height="50" Margin="10,0,0,10">
+                            <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0" Width="150" FontSize="20">Status:</TextBlock>
+                            <TextBlock x:Name="labelConnection" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,0,0" Foreground="Red" FontSize="20">DISCONNECTED</TextBlock>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" Margin="10,10,0,10" Height="40">
-                            <Button x:Name="BtnVerbinden" Click="BtnClickVerbinden" Margin="0,0,10,0" Width="120" Height="40">Verbinden</Button>
-                            <Button x:Name="BtnTrennen" Click="BtnClickTrennen" Width="120" Height="40">Trennen</Button>
-                            <TextBlock x:Name="labelConnection" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="20,0,0,0" Foreground="Red">DISCONNECTED</TextBlock>
+                            <Button x:Name="BtnVerbinden" Click="BtnClickVerbinden" Margin="0,0,10,0" Width="179" Height="40" FontSize="24">Verbinden</Button>
+                            <Button x:Name="BtnTrennen" Click="BtnClickTrennen" Width="179" Height="40" FontSize="24">Trennen</Button>
                         </StackPanel>
                     </StackPanel>
                 </GroupBox>
                 <GroupBox Header="Serial Monitor Arduino" Width="650" Height="300" VerticalAlignment="Top" HorizontalAlignment="Center" >
                     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Top" Width="620" Height="250" Margin="0,20">
-                        <StackPanel Orientation="Horizontal">
+                        <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
                             <TextBox Name="textBoxSenden" Margin="0,0,5,5" Width="370" />
                             <Button x:Name="buttonSenden" Click="BtnClickSenden" Width="120" HorizontalAlignment="Right" Margin="0,0,5,5" Content="Senden" />
                             <Button x:Name="buutonTextDelete" Click="BtnClickTextDelete" Width="120" HorizontalAlignment="Right" Margin="0,0,0,5" >Text löschen</Button>
                         </StackPanel>
-                        <TextBox x:Name="textBoxAusgabe" AcceptsReturn="True" TextWrapping="Wrap" Width="620" Height="212"
+                        <TextBox x:Name="textBoxAusgabe" AcceptsReturn="True" TextWrapping="Wrap" Width="620" Height="202" 
                                  ScrollViewer.HorizontalScrollBarVisibility="Visible" ScrollViewer.VerticalScrollBarVisibility="Visible"/>
                     </StackPanel>
                 </GroupBox>
