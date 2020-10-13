@@ -6,11 +6,14 @@ void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600); //Open serial port, set data rate to 9600 bit per second (bps)
 
-  pinMode(6, OUTPUT); //Enable
-  pinMode(5, OUTPUT); //Puls
-  pinMode(4, OUTPUT); //Direction
+  pinMode(7, OUTPUT); // Schneiden
+  pinMode(6, OUTPUT); // Enable
+  pinMode(5, OUTPUT); // Puls
+  pinMode(4, OUTPUT); // Direction
 
-  digitalWrite(6,LOW);
+  digitalWrite(7, HIGH);
+  digitalWrite(6, LOW);
+  
 }
 
 //  String split(String s, char parser, int index) {
@@ -95,6 +98,7 @@ void loop() {
      
         // stepper_300_forward (befehl_steps_richtung)
         String befehl = split(appendSerialData, '_', 0);
+        
         if(befehl.equals("stepperStart")){
             sendText("Schrittmotor starten...");
             int steps = split(appendSerialData, '_', 1).toInt();
@@ -104,11 +108,14 @@ void loop() {
             sendCommand("stepperFinished");
         }
 
+        if(befehl.equals("schneidenStart")){
+            sendText("Schneiden starten...");
+            digitalWrite(7, LOW);    
+            delay(500);
+            digitalWrite(7, HIGH);  
+        }
+
         appendSerialData=""; //empty data inside appendSerialData variable
         c=0; //empty data inside c variable
     }
-
-
-
-
 }

@@ -26,7 +26,9 @@ namespace SchneidMaschine.model
         stepperStart,
         stepperStop,
         stepperFinished,
-        schneiden,
+        handradOn,
+        handradOff,
+        schneidenStart,
         autoStart,
         autoStop
     }
@@ -40,7 +42,7 @@ namespace SchneidMaschine.model
     public partial class DataModel
     {
         // Config
-        private double stepToMillimeter = 1.5;
+        private double stepToMillimeter = 1.0;
 
 
         private MainWindow mainWindow;

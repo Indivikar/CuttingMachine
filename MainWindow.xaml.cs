@@ -36,6 +36,7 @@ namespace SchneidMaschine
         delegate void SetTextCallback(string text);
 
         private string commandLine;
+        StringBuilder sb = new StringBuilder();
 
         public MainWindow()
         {
@@ -171,7 +172,28 @@ namespace SchneidMaschine
             }
 
             text = Regex.Replace(text, @"#|@", "");
-            this.textBoxAusgabe.Text += text;
+
+            sb.Append(text);
+            string allLines = sb.ToString();
+
+            string[] lines = allLines.Split('\n');
+
+            
+
+            if (lines.Length > 100)
+            {
+                var _values = lines.Skip(Math.Max(0, lines.Count() - 100));
+                
+                var last_lines = string.Join("", _values.ToArray()); 
+
+                this.textBoxAusgabe.Text = last_lines;
+            } 
+            else 
+            {
+                this.textBoxAusgabe.Text += text;
+            }
+
+           
             textBoxAusgabe.ScrollToEnd();
 
             

@@ -42,11 +42,11 @@ namespace SchneidMaschine.model
         {
             if (wert)
             {
-                setCommandLine(command, dataModel.mmToSteps(stepsAsMM), DIRECTION.forward);
+                setCommandLine(command, dataModel.mmToSteps(stepsAsMM), DIRECTION.backward);              
             }
             else
             {
-                setCommandLine(command, dataModel.mmToSteps(stepsAsMM), DIRECTION.backward);
+                setCommandLine(command, dataModel.mmToSteps(stepsAsMM), DIRECTION.forward);
             }
         }
 
