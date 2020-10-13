@@ -63,6 +63,13 @@ void loop() {
         if(befehl.equals("handradOn")) {
             isHandradOn = true;
             sendText("Handrad An");
+            
+// nur zum simulieren vom hand
+//            for(int i = 0; i < 100; i++) {
+//                stepper(1, "forward");
+//                //delay(100);
+//                sendCommand("steps_" + String(stepCounter), false);
+//            }   
         } 
         
         if(befehl.equals("handradOff")) {
@@ -76,10 +83,8 @@ void loop() {
             String drehRichtung = split(appendSerialData, '_', 2);
             stepper(steps, drehRichtung);
 
-            delay(100);
-            sendText(String(stepCounter));
             delay(100);                     
-            sendCommand("stepperFinished");           
+            sendCommand("stepperFinished_" + String(stepCounter), true);           
         }
 
         if(befehl.equals("schneidenStart")) {
@@ -88,7 +93,7 @@ void loop() {
             delay(500);
             digitalWrite(7, HIGH);  
             stepCounter = 0;    
-            sendCommand("steps_" + String(stepCounter));
+            sendCommand("steps_" + String(stepCounter), true);
         }
 
         appendSerialData = ""; //empty data inside appendSerialData variable
@@ -100,8 +105,12 @@ void loop() {
         Serial.println("#" + text + "@"); // send the data back to C#
   }
 
-  void sendCommand(String text) {
+  void sendCommand(String text, boolean showText) {
+      if(showText) {
         Serial.println("#" + text + "@");
+      } else {
+        Serial.println("%" + text + "@");
+      }
   }
 
   void forward(){
@@ -150,7 +159,7 @@ void loop() {
                   // --stepCounter; 
                   
                   stepper(1, "backward");     
-                  sendCommand("steps_" + String(stepCounter));      
+                  sendCommand("steps_" + String(stepCounter), true);      
              }  
          }
          oneStep = 1;

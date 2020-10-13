@@ -23,6 +23,7 @@ namespace SchneidMaschine.model
     public enum COMMAND
     {
         Connected,
+        steps,
         stepperStart,
         stepperStop,
         stepperFinished,

@@ -111,10 +111,12 @@
             <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Height="50" Orientation="Horizontal" Margin="0,10,0,0">
                 <TextBlock Text="Streifen-Länge soll: " HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24" Margin="0,0,18,0" />
                 <TextBlock x:Name="StreifenSollWert" Text="0000" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24" Margin="0" />
+                <TextBlock Text="mm" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24" Margin="5,0,0,0" />
             </StackPanel>
             <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Height="50" Orientation="Horizontal" Margin="0,10,0,0">
                 <TextBlock Text="Streifen-Länge ist: " HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24" Margin="0,0,30,0" />
-                <TextBlock Text="0000" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24" Margin="0,0,0,0" />
+                <TextBlock x:Name="streifenIstWert" Text="0000" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24" Margin="0,0,0,0" />
+                <TextBlock Text="mm" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24" Margin="5,0,0,0" />
             </StackPanel>
         </StackPanel>
         <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Height="50" Margin="10,0,0,0" Orientation="Horizontal">

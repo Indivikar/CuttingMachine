@@ -101,6 +101,17 @@ namespace SchneidMaschine.pages
                 // Console.WriteLine("Aus");
             }
         }
+
+        public void setIstWert(int istWert) 
+        {
+            setIstWert(Convert.ToString(istWert));
+        }
+
+        public void setIstWert(string istWert)
+        {
+            this.streifenIstWert.Text = "";
+            this.streifenIstWert.Text = istWert;
+        }
     }
 }
 

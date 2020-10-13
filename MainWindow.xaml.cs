@@ -38,6 +38,8 @@ namespace SchneidMaschine
         private string commandLine;
         StringBuilder sb = new StringBuilder();
 
+        StringBuilder befehlBuilder = new StringBuilder();
+
         public MainWindow()
         {
             InitializeComponent();
@@ -58,7 +60,7 @@ namespace SchneidMaschine
         {
             BtnVerbinden.IsEnabled = true;
             BtnTrennen.IsEnabled = false;
-            Main.IsEnabled = false;
+            //Main.IsEnabled = false;
 
             comboBoxPorts.ItemsSource = dataModel.PortList;
 
@@ -126,6 +128,7 @@ namespace SchneidMaschine
 
         private void BtnClickTextDelete(object sender, RoutedEventArgs e)
         {
+            sb.Clear();
             textBoxAusgabe.Text = String.Empty;
         }
 
@@ -151,52 +154,127 @@ namespace SchneidMaschine
             }
         }
 
+        private string stringToChar(string text) {
+
+            string newText = null;
+
+            text = text.Trim();
+            text = Regex.Replace(text, @"\t+|\n+|\r+|(\r\n)+", "");
+
+            char[] charArr = text.ToCharArray();
+            foreach (char ch in charArr)
+            {
+                if (ch.Equals('%') || ch.Equals('#'))
+                //if (text.Contains("%")) 
+                {
+                    newText = null;
+                    befehlBuilder.Clear();
+                }
+
+                befehlBuilder.Append(ch);
+
+                if (ch.Equals('@'))
+                //if (text.Contains("%")) 
+                {
+                    befehlBuilder.Append("\n");
+                    newText = befehlBuilder.ToString();
+                }
+            }
+
+            return newText;
+        }
+
+
         private void SetText(string text)
         {
-
-            //Console.WriteLine(text);
-
-            handleCommandLine(text);
-
-            if (text.Length < 1)
+            if (stringToChar(text) == null)
             {
-                Console.WriteLine("kleiner als 1");
                 return;
             }
 
+
+            text = befehlBuilder.ToString();
+
+            handleCommandLine(text);
+
+            Console.WriteLine("text -> " + text);
+
+            //if (text.Length < 1)
+            //{
+            //    Console.WriteLine("kleiner als 1");
+            //    return;
+            //}
+
             string firstChar = text.Substring(0, 1);
+            //text = Regex.Replace(text, @"#|@|%", "");
+            ////text = Regex.Replace(text, @"\n+|(\r\n)+", "\n");
+            //text = Regex.Replace(text, @"\t+|\n+|\r+|(\r\n)+", ",");
+
+
+            if (firstChar.Equals("%"))
+            {
+                return;
+            }
 
             if (firstChar.Equals("#"))
             {
+                text = Regex.Replace(text, @"#|@|%", "");
                 text = "Arduino antwortet>> " + text;
             }
+       
 
-            text = Regex.Replace(text, @"#|@", "");
 
             sb.Append(text);
             string allLines = sb.ToString();
 
             string[] lines = allLines.Split('\n');
 
-            
+            //if (firstChar.Equals("%"))
+            //{
+
+            //    //var _values = lines.Skip(Math.Max(0, lines.Count() - 1));
+            //    //var last_line = string.Join("", _values.ToArray());
+
+            //    lines = lines.Where(x => !string.IsNullOrEmpty(x))
+            //                    .Where(x => !string.IsNullOrWhiteSpace(x)).ToArray();
+
+            //    var last_line = "";
+
+            //    last_line = text.Trim();
+            //    last_line = Regex.Replace(text, @"\t|\n|\r|(\r\n)", "");
+
+            //    if (last_line.Contains("\r")) 
+            //    {
+            //        Console.WriteLine("Fehler -> " + last_line);
+            //    }
+
+            //    if (!string.IsNullOrWhiteSpace(last_line) && !string.IsNullOrEmpty(last_line))
+            //    {
+            //        dataModel.EinzelSchritt.setIstWert(last_line);
+            //        Console.WriteLine("print -> " + last_line);
+            //    }
+                
+
+            //    return;
+            //}
+
 
             if (lines.Length > 100)
             {
                 var _values = lines.Skip(Math.Max(0, lines.Count() - 100));
-                
-                var last_lines = string.Join("", _values.ToArray()); 
+
+                var last_lines = string.Join("", _values.ToArray());
 
                 this.textBoxAusgabe.Text = last_lines;
-            } 
-            else 
+            }
+            else
             {
                 this.textBoxAusgabe.Text += text;
             }
 
-           
             textBoxAusgabe.ScrollToEnd();
 
-            
+
 
             //string replacement = Regex.Replace(text, @"\t|\n|\r", "");
             //Console.WriteLine(line);
@@ -215,25 +293,20 @@ namespace SchneidMaschine
             text = text.Trim();
             text = Regex.Replace(text, @"\t|\n|\r", "");
 
-            if (text.Length < 1) {
-                Console.WriteLine("kleiner als 1");
-                return;
-            }
+            //if (text.Length < 1) {
+            //    Console.WriteLine("kleiner als 1");
+            //    return;
+            //}
 
-            string firstChar = text.Substring(0, 1);
+            //string firstChar = text.Substring(0, 1);
             string lastChar = text.Substring(text.Length - 1);
 
-            if (firstChar.Equals("#")) {
-                commandLine = "";
-            }
-
-            commandLine += text;
 
             if (lastChar.Equals("@"))
             {
-                Console.WriteLine(commandLine);
-                commandLine = Regex.Replace(commandLine, @"#|@", "");
-                commandReceived(commandLine);
+                text = Regex.Replace(text, @"#|@|%", "");
+                Console.WriteLine(text);
+                commandReceived(text);
             }
 
         }
@@ -242,24 +315,37 @@ namespace SchneidMaschine
 
             Console.WriteLine("commandReceived: " + text);
 
+            string[] befehl = text.Split('_');
+
             foreach (COMMAND item in (COMMAND[])Enum.GetValues(typeof(COMMAND)))
             {
-                if (text.Equals(item.ToString())) {
-                    commandRun(item);
+                if (befehl[0].Equals(item.ToString())) {
+                    commandRun(item, befehl);
                 }
             }
         }
 
-        private void commandRun(COMMAND cmd)
+        private void commandRun(COMMAND cmd, string[] befehl)
         {
             switch (cmd)
             {
+
+                case COMMAND.steps:
+                    {
+                        Console.WriteLine("COMMAND.steps");
+                        dataModel.EinzelSchritt.setIstWert(befehl[1]);
+                        break;
+                    }
+
                 case COMMAND.stepperFinished:
                     {
                         Console.WriteLine("COMMAND.stepperFinished");
                         dataModel.EinzelSchritt.StackPanelControlsEnable();
+                        dataModel.EinzelSchritt.setIstWert(befehl[1]);
+                        //this.textBoxAusgabe.Text += Regex.Replace(befehl[0], @"_", "");
                         break;
                     }
+
                 case COMMAND.Connected:
                     {
                         Console.WriteLine("COMMAND.Connected");
