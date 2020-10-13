@@ -60,14 +60,14 @@ namespace SchneidMaschine
         {
             BtnVerbinden.IsEnabled = true;
             BtnTrennen.IsEnabled = false;
-            //Main.IsEnabled = false;
+            Main.IsEnabled = false;
 
             comboBoxPorts.ItemsSource = dataModel.PortList;
 
-            SetText("-----------------------------------------------------------------------------------------------\n" +
+            SetText("&-----------------------------------------------------------------------------------------------\n" +
                 "Der Arduino muss mit \"Connected\" antworten, wenn der Arduino nicht antwortet,\n" +
                 "könnte es der falsche Port sein oder es ist das falsche Programm auf dem Arduino.\n" +
-                "-----------------------------------------------------------------------------------------------\n\n");
+                "-----------------------------------------------------------------------------------------------\n\n&");
         }
 
 
@@ -76,7 +76,7 @@ namespace SchneidMaschine
             try
             {
                 Console.WriteLine("try to Connect with Arduino...");                
-                SetText("try to Connect with Arduino....\n");
+                SetText("&try to Connect with Arduino....&\n");
                 
                 serialPort1.PortName = comboBoxPorts.Text;
                 serialPort1.BaudRate = Convert.ToInt32(comboBoxBautRate.Text);
@@ -149,7 +149,6 @@ namespace SchneidMaschine
             string InputData = serialPort1.ReadExisting();
             if (InputData != String.Empty)
             {
-                //Console.WriteLine("empfangen");
                 Dispatcher.BeginInvoke(new SetTextCallback(SetText), new object[] { InputData });
             }
         }
@@ -165,7 +164,6 @@ namespace SchneidMaschine
             foreach (char ch in charArr)
             {
                 if (ch.Equals('%') || ch.Equals('#'))
-                //if (text.Contains("%")) 
                 {
                     newText = null;
                     befehlBuilder.Clear();
@@ -174,7 +172,6 @@ namespace SchneidMaschine
                 befehlBuilder.Append(ch);
 
                 if (ch.Equals('@'))
-                //if (text.Contains("%")) 
                 {
                     befehlBuilder.Append("\n");
                     newText = befehlBuilder.ToString();
@@ -187,83 +184,49 @@ namespace SchneidMaschine
 
         private void SetText(string text)
         {
+            
+            // normaler Text aus C# Programm
+            if (text.StartsWith("&"))
+            {
+                text = Regex.Replace(text, @"&", "");
+                this.textBoxAusgabe.Text += text;
+                return;
+            }
+
             if (stringToChar(text) == null)
             {
                 return;
             }
 
-
             text = befehlBuilder.ToString();
 
             handleCommandLine(text);
 
-            Console.WriteLine("text -> " + text);
+            //Console.WriteLine("text -> " + text);
 
-            //if (text.Length < 1)
-            //{
-            //    Console.WriteLine("kleiner als 1");
-            //    return;
-            //}
+            //string firstChar = text.Substring(0, 1);
 
-            string firstChar = text.Substring(0, 1);
-            //text = Regex.Replace(text, @"#|@|%", "");
-            ////text = Regex.Replace(text, @"\n+|(\r\n)+", "\n");
-            //text = Regex.Replace(text, @"\t+|\n+|\r+|(\r\n)+", ",");
-
-
-            if (firstChar.Equals("%"))
+            // Befehl von Arduino an C# ohne Text-Ausgabe
+            if (text.StartsWith("%"))
             {
                 return;
             }
 
-            if (firstChar.Equals("#"))
+            if (text.StartsWith("#"))
             {
                 text = Regex.Replace(text, @"#|@|%", "");
                 text = "Arduino antwortet>> " + text;
             }
-       
-
 
             sb.Append(text);
             string allLines = sb.ToString();
-
             string[] lines = allLines.Split('\n');
-
-            //if (firstChar.Equals("%"))
-            //{
-
-            //    //var _values = lines.Skip(Math.Max(0, lines.Count() - 1));
-            //    //var last_line = string.Join("", _values.ToArray());
-
-            //    lines = lines.Where(x => !string.IsNullOrEmpty(x))
-            //                    .Where(x => !string.IsNullOrWhiteSpace(x)).ToArray();
-
-            //    var last_line = "";
-
-            //    last_line = text.Trim();
-            //    last_line = Regex.Replace(text, @"\t|\n|\r|(\r\n)", "");
-
-            //    if (last_line.Contains("\r")) 
-            //    {
-            //        Console.WriteLine("Fehler -> " + last_line);
-            //    }
-
-            //    if (!string.IsNullOrWhiteSpace(last_line) && !string.IsNullOrEmpty(last_line))
-            //    {
-            //        dataModel.EinzelSchritt.setIstWert(last_line);
-            //        Console.WriteLine("print -> " + last_line);
-            //    }
-                
-
-            //    return;
-            //}
-
 
             if (lines.Length > 100)
             {
                 var _values = lines.Skip(Math.Max(0, lines.Count() - 100));
 
-                var last_lines = string.Join("", _values.ToArray());
+                var last_lines = string.Join("\n", _values.ToArray());
 
                 this.textBoxAusgabe.Text = last_lines;
             }
@@ -273,30 +236,12 @@ namespace SchneidMaschine
             }
 
             textBoxAusgabe.ScrollToEnd();
-
-
-
-            //string replacement = Regex.Replace(text, @"\t|\n|\r", "");
-            //Console.WriteLine(line);
-            //Console.WriteLine("replacement: " + replacement);
-
-            //char c = text.Last();
-            //if (c.Equals('@')) {
-            //    //Console.WriteLine("empfangen");
-            //    text = text.Remove(text.Length - 1);
-            //    commandReceived(text);
-            //}
         }
 
         private void handleCommandLine(string text) {
 
             text = text.Trim();
             text = Regex.Replace(text, @"\t|\n|\r", "");
-
-            //if (text.Length < 1) {
-            //    Console.WriteLine("kleiner als 1");
-            //    return;
-            //}
 
             //string firstChar = text.Substring(0, 1);
             string lastChar = text.Substring(text.Length - 1);
@@ -330,6 +275,20 @@ namespace SchneidMaschine
             switch (cmd)
             {
 
+                case COMMAND.handradOn:
+                    {
+                        Console.WriteLine("COMMAND.handradOn");
+                        dataModel.EinzelSchritt.ToggleBtn_Handwheel.IsChecked = true;
+                        break;
+                    }
+
+                case COMMAND.handradOff:
+                    {
+                        Console.WriteLine("COMMAND.handradOff");
+                        dataModel.EinzelSchritt.ToggleBtn_Handwheel.IsChecked = false;
+                        break;
+                    }
+
                 case COMMAND.steps:
                     {
                         Console.WriteLine("COMMAND.steps");
@@ -350,6 +309,10 @@ namespace SchneidMaschine
                     {
                         Console.WriteLine("COMMAND.Connected");
                         Main.IsEnabled = true;
+                        labelConnection.Foreground = Brushes.Green;
+                        labelConnection.Text = "CONNECTED";
+                        Console.WriteLine("Connected");
+
                         break;
                     }
                 default: break;
@@ -363,9 +326,9 @@ namespace SchneidMaschine
                 BtnVerbinden.IsEnabled = false;
                 BtnTrennen.IsEnabled = true;
                 //Main.IsEnabled = true;
-                labelConnection.Foreground = Brushes.Green;
-                labelConnection.Text = "CONNECTED";
-                Console.WriteLine("Connected");              
+                //labelConnection.Foreground = Brushes.Green;
+                //labelConnection.Text = "CONNECTED";
+                //Console.WriteLine("Connected");              
                 serialPort1.Write("Connected#");
 
                 this.threadCheckConnection = new Thread(dataModel.MyThreads.checkVerbindung);

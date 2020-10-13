@@ -82,11 +82,7 @@ namespace SchneidMaschine.model
             this.halbAuto = new HalbAuto(this);
             this.auto = new Auto(this);
 
-            
-
             this.myThreads = new MyThreads(this);
- 
-
         }
 
        

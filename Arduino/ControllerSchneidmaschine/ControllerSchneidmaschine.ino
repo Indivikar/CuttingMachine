@@ -30,8 +30,7 @@ void setup() {
   pinMode(7, OUTPUT); // Schneiden
 
   digitalWrite(7, HIGH);
-  digitalWrite(6, LOW);
-  
+  digitalWrite(6, LOW); 
 }
 
 void loop() {
@@ -54,7 +53,8 @@ void loop() {
         appendSerialData = appendSerialData.substring(0, appendSerialData.length() - 1); 
 
         if(appendSerialData.equals("Connected")) {
-            sendText("Connected");                   
+            sendText("Connected");  
+            set();
         } 
 
         // stepper_300_forward (befehl_steps_richtung)
@@ -100,6 +100,18 @@ void loop() {
         c = 0; //empty data inside c variable
     }
 }
+
+  void set() {
+        delay(100);
+        if(isHandradOn) {
+          sendCommand("handradOn_", true); 
+        } else {
+          sendCommand("handradOff_", true); 
+        }       
+
+        delay(100);
+        sendCommand("steps_" + String(stepCounter), true);
+  }
 
   void sendText(String text) {
         Serial.println("#" + text + "@"); // send the data back to C#
