@@ -22,6 +22,8 @@ namespace SchneidMaschine.model
 
     public enum COMMAND
     {
+        allesStop,
+        allesGestoppt,
         Connected,
         steps,
         stepperStart,
@@ -58,10 +60,12 @@ namespace SchneidMaschine.model
 
         private MyThreads myThreads;
 
-        private int selectedLength;
+        private int selectedLength; // Streifen-Länge Sollwert in mm
+        private int istWertInMM;    // Streifen-Länge Istwert in mm
 
         private delegate void SetTextCallback(string text);
         private string InputData = String.Empty;
+        
 
         public DataModel(MainWindow mainWindow)
         {
@@ -133,11 +137,35 @@ namespace SchneidMaschine.model
             set  
             { 
                 selectedLength = value;
+
                 schnittModus.StreifenSollWert.Text = value.ToString();
+
                 einzelSchritt.StreifenSollWert.Text = value.ToString();
                 einzelSchritt.BtnSollwert.Content = value.ToString() + " mm";
+
                 halbAuto.StreifenSollWert.Text = value.ToString();
+
                 auto.StreifenSollWert.Text = value.ToString();
+            }
+        }
+
+        public void setIstWert(string wert)
+        {
+            IstWertInMM = Int32.Parse(wert);
+        }
+
+        public int IstWertInMM
+        {
+            get => istWertInMM;
+            set
+            {
+                istWertInMM = stepsToMM(value);
+
+                einzelSchritt.streifenIstWert.Text = istWertInMM.ToString();               
+
+                halbAuto.streifenIstWert.Text = istWertInMM.ToString();
+
+                auto.streifenIstWert.Text = istWertInMM.ToString();
             }
         }
     }

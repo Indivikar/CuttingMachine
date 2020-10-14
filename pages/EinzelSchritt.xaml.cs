@@ -106,13 +106,16 @@ namespace SchneidMaschine.pages
         {
             istWertInSteps = dataModel.stepsToMM(istWertInSteps);
 
-            this.streifenIstWert.Text = "";
-            this.streifenIstWert.Text = Convert.ToString(istWertInSteps);
+            //this.streifenIstWert.Text = "";
+            //this.streifenIstWert.Text = Convert.ToString(istWertInSteps);
+
+            dataModel.IstWertInMM = istWertInSteps;
         }
 
         public void setIstWertInMM(string istWertInSteps)
         {
             setIstWertInMM(Int32.Parse(istWertInSteps));
+
         }
     }
 }

@@ -13,6 +13,8 @@ int valA = 0; // Wert vom Pin
 boolean lockA = false; 
 boolean lockB = false;
 
+boolean allesStoppen= false;
+
 boolean isHandradOn = false;
 
 int stepCounter = 0;
@@ -40,71 +42,8 @@ void setup() {
 }
 
 void loop() {
+  dataReceived();
   
-  while(Serial.available()>0) { //get the number of bytes (characters) available that already arrived and stored in the serial receive buffer
-      c = Serial.read(); //read incoming serial data and store it into c variable
-      appendSerialData += c; //append data in c and store it in this variable
-  }
-
-  if(isHandradOn) {
-      forward();
-      backward();
-              
-      setStep();
-  }
-    
-  if(c == '#') { //if data inside c equals to end character (#) then execute this  
-        // Leerzeichen, Zeilenumbrüche und letzte Zeichen entfernen (#)
-        appendSerialData.trim();
-        appendSerialData = appendSerialData.substring(0, appendSerialData.length() - 1); 
-
-        if(appendSerialData.equals("Connected")) {
-            sendText("Connected");  
-            set();
-        } 
-
-        // stepper_300_forward (befehl_steps_richtung)
-        String befehl = split(appendSerialData, '_', 0);
-        
-        if(befehl.equals("handradOn")) {
-            isHandradOn = true;
-            sendText("Handrad An");
-            
-// nur zum simulieren vom hand
-            for(int i = 0; i < 100; i++) {
-                stepper(1, "forward");
-                //delay(100);
-                sendCommand("steps_" + String(stepCounter), false);
-            }   
-        } 
-        
-        if(befehl.equals("handradOff")) {
-            isHandradOn = false;
-            sendText("Handrad Aus");
-        }
-        
-        if(befehl.equals("stepperStart")) {
-            sendText("Schrittmotor starten...");
-            int steps = split(appendSerialData, '_', 1).toInt();
-            String drehRichtung = split(appendSerialData, '_', 2);
-            stepper(steps, drehRichtung);
-
-            delay(100);                     
-            sendCommand("stepperFinished_" + String(stepCounter), true);           
-        }
-
-        if(befehl.equals("schneidenStart")) {
-            sendText("Schneiden starten...");
-            digitalWrite(7, LOW);    
-            delay(500);
-            digitalWrite(7, HIGH);  
-            stepCounter = 0;    
-            sendCommand("steps_" + String(stepCounter), true);
-        }
-
-        appendSerialData = ""; //empty data inside appendSerialData variable
-        c = 0; //empty data inside c variable
-    }
 }
 
   void set() {
@@ -117,6 +56,80 @@ void loop() {
 
         delay(100);
         sendCommand("steps_" + String(stepCounter), true);
+  }
+
+  void dataReceived() {
+      while(Serial.available() > 0) { //get the number of bytes (characters) available that already arrived and stored in the serial receive buffer
+          c = Serial.read(); //read incoming serial data and store it into c variable
+          appendSerialData += c; //append data in c and store it in this variable
+      }
+
+      if(isHandradOn) {
+          forward();
+          backward();
+                  
+          setStep();
+      }
+    
+    if(c == '#') { //if data inside c equals to end character (#) then execute this  
+          // Leerzeichen, Zeilenumbrüche und letzte Zeichen entfernen (#)
+          appendSerialData.trim();
+          appendSerialData = appendSerialData.substring(0, appendSerialData.length() - 1); 
+  
+          if(appendSerialData.equals("Connected")) {
+              sendText("Connected");  
+              set();
+          } 
+
+          allesStoppen = false;
+  
+          // stepper_300_forward (befehl_steps_richtung)
+          String befehl = split(appendSerialData, '_', 0);
+
+          if(befehl.equals("allesStop")) {
+              allesStoppen = true;
+              sendCommand("allesGestoppt", false);           
+          } 
+          
+          if(befehl.equals("handradOn")) {
+              isHandradOn = true;
+              sendText("Handrad An");
+              
+              // nur zum simulieren vom handrad
+              for(int i = 0; i < 100; i++) {
+                  stepper(1, "forward");
+                  //delay(100);
+                  sendCommand("steps_" + String(stepCounter), false);
+              }   
+          } 
+          
+          if(befehl.equals("handradOff")) {
+              isHandradOn = false;
+              sendText("Handrad Aus");
+          }
+          
+          if(befehl.equals("stepperStart")) {
+              sendText("Schrittmotor starten...");
+              int steps = split(appendSerialData, '_', 1).toInt();
+              String drehRichtung = split(appendSerialData, '_', 2);
+              stepper(steps, drehRichtung);
+  
+              delay(100);                     
+              sendCommand("stepperFinished_" + String(stepCounter), true);           
+          }
+  
+          if(befehl.equals("schneidenStart")) {
+              sendText("Schneiden starten...");
+              digitalWrite(7, LOW);    
+              delay(500);
+              digitalWrite(7, HIGH);  
+              stepCounter = 0;    
+              sendCommand("steps_" + String(stepCounter), true);
+          }
+  
+          appendSerialData = ""; //empty data inside appendSerialData variable
+          c = 0; //empty data inside c variable
+      }
   }
 
   void sendText(String text) {
@@ -189,6 +202,32 @@ void loop() {
      }
   }
 
+  void isAllesStop() {
+      while(Serial.available() > 0) { //get the number of bytes (characters) available that already arrived and stored in the serial receive buffer
+          c = Serial.read(); //read incoming serial data and store it into c variable
+          appendSerialData += c; //append data in c and store it in this variable
+      }
+  
+      if(c == '#') { //if data inside c equals to end character (#) then execute this  
+          // Leerzeichen, Zeilenumbrüche und letzte Zeichen entfernen (#)
+          appendSerialData.trim();
+          appendSerialData = appendSerialData.substring(0, appendSerialData.length() - 1); 
+  
+          allesStoppen = false;
+  
+          // stepper_300_forward (befehl_steps_richtung)
+          String befehl = split(appendSerialData, '_', 0);
+
+          if(befehl.equals("allesStop")) {
+              allesStoppen = true;
+              sendCommand("allesGestoppt", false);           
+          } 
+          
+          appendSerialData = ""; //empty data inside appendSerialData variable
+          c = 0; //empty data inside c variable
+      }
+  }
+
   void stepper(int steps, String drehRichtung) {
       int stopRange = steps * 0.90;
     
@@ -201,6 +240,13 @@ void loop() {
       }
           
       for(int i = 0; i < steps; i++) {
+
+          // Die Schleife kann in C# unterbrochen werden
+          isAllesStop();         
+          if(allesStoppen) {
+              break;
+          }
+          
           if(drehRichtung.equals("forward")) {
               ++stepCounter;
           }

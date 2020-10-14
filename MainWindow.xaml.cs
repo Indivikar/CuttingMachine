@@ -275,6 +275,15 @@ namespace SchneidMaschine
             switch (cmd)
             {
 
+                case COMMAND.allesGestoppt:
+                    {
+                        Console.WriteLine("COMMAND.allesGestoppt");
+                        dataModel.HalbAuto.BtnModusHalbAutoStart.IsEnabled = true;
+                        dataModel.HalbAuto.BtnModusHalbAutoStop.IsEnabled = false;
+                        SetText("#alles gestoppt@");
+                        break;
+                    }
+
                 case COMMAND.handradOn:
                     {
                         Console.WriteLine("COMMAND.handradOn");
@@ -292,15 +301,27 @@ namespace SchneidMaschine
                 case COMMAND.steps:
                     {
                         Console.WriteLine("COMMAND.steps");
-                        dataModel.EinzelSchritt.setIstWertInMM(befehl[1]);
+                        dataModel.setIstWert(befehl[1]);
+                        //dataModel.EinzelSchritt.setIstWertInMM(befehl[1]);
                         break;
                     }
 
                 case COMMAND.stepperFinished:
                     {
                         Console.WriteLine("COMMAND.stepperFinished");
-                        dataModel.EinzelSchritt.StackPanelControlsEnable();
-                        dataModel.EinzelSchritt.setIstWertInMM(befehl[1]);
+                        dataModel.setIstWert(befehl[1]);
+
+                        if (dataModel.EinzelSchritt.IsVisible)
+                        {
+                            dataModel.EinzelSchritt.StackPanelControlsEnable();
+                        }
+                        
+                        if (dataModel.HalbAuto.IsVisible) 
+                        {
+                            dataModel.HalbAuto.cut();
+                        }
+
+                        //dataModel.EinzelSchritt.setIstWertInMM(befehl[1]);
                         //this.textBoxAusgabe.Text += Regex.Replace(befehl[0], @"_", "");
                         break;
                     }
