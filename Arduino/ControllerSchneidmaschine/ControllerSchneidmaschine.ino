@@ -1,3 +1,9 @@
+// Config
+int startDelay = 5000;  // Start-Pause zwischen den Steps für langsamen Anlauf vom SchrittMotor
+int minDelay = 500;     // min-Pause zwischen den Steps, beeinflusst die Drehzahl, darf nicht < 200 sein
+
+int delayHandler;
+
 int A = 13;  // Pin
 int B = 8; // Pin
 
@@ -65,11 +71,11 @@ void loop() {
             sendText("Handrad An");
             
 // nur zum simulieren vom hand
-//            for(int i = 0; i < 100; i++) {
-//                stepper(1, "forward");
-//                //delay(100);
-//                sendCommand("steps_" + String(stepCounter), false);
-//            }   
+            for(int i = 0; i < 100; i++) {
+                stepper(1, "forward");
+                //delay(100);
+                sendCommand("steps_" + String(stepCounter), false);
+            }   
         } 
         
         if(befehl.equals("handradOff")) {
@@ -184,6 +190,8 @@ void loop() {
   }
 
   void stepper(int steps, String drehRichtung) {
+      int stopRange = steps * 0.90;
+    
       if(drehRichtung.equals("forward")) {
         digitalWrite(5, HIGH);
       }
@@ -191,7 +199,7 @@ void loop() {
       if(drehRichtung.equals("backward")) {
         digitalWrite(5, LOW);
       }
-      
+          
       for(int i = 0; i < steps; i++) {
           if(drehRichtung.equals("forward")) {
               ++stepCounter;
@@ -200,12 +208,34 @@ void loop() {
           if(drehRichtung.equals("backward")) {
               --stepCounter;
           }
-          
+
+          if(i == 1){
+              delayHandler = startDelay;
+          }
+
+          slowStartStop(i, stopRange);
+      
           digitalWrite(4, HIGH);
-          delayMicroseconds(500);
+          //delayMicroseconds(5000);
+          delayMicroseconds(delayHandler);
           digitalWrite(4, LOW);
-          delayMicroseconds(500);
+          //delayMicroseconds(5000);
+          delayMicroseconds(delayHandler);
       }     
+  }
+
+  void slowStartStop(int i, int stopRange) {
+      if(i > stopRange) {
+          if(i % 5 == 1  && delayHandler < startDelay){
+              delayHandler = delayHandler + 100;
+              //sendText(String(delayHandler) + " -> " + i);
+          }
+      } else {
+          if(i % 5 == 1  && delayHandler > minDelay){
+              delayHandler = delayHandler - 100;
+              //sendText(String(delayHandler) + " -> " + i);
+          }
+      }
   }
 
     String split(String data, char separator, int index) {
