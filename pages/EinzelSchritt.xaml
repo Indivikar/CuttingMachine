@@ -143,9 +143,9 @@
                 <Button x:Name="BtnM10mm" 
                         Margin="5" FontSize="36" Width="150" Height="100" Grid.Row="0" Grid.Column="1" Click="Btn_10mm_Click" >10 mm</Button>
                 <Button x:Name="Btn100mm" 
-                        Margin="5" FontSize="36" Width="150" Height="100" Grid.Row="0" Grid.Column="2" Click="Btn_100mm_Click" >100mm</Button>
+                        Margin="5" FontSize="36" Width="150" Height="100" Grid.Row="0" Grid.Column="2" Click="Btn_100mm_Click" >100 mm</Button>
                 <Button x:Name="BtnSollwert" 
-                        Margin="5" FontSize="36" Width="150" Height="100" Grid.Row="1" Grid.Column="0" Click="Btn_soll_Click" >320mm</Button>
+                        Margin="5" FontSize="36" Width="150" Height="100" Grid.Row="1" Grid.Column="0" Click="Btn_soll_Click" >320 mm</Button>
                 <ToggleButton x:Name="ToggleButton_Direction"  Style="{StaticResource ToggleButtonStyle1}"
                     Margin="5" FontSize="36" Width="310" Height="100" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3"  ></ToggleButton>
             </Grid>

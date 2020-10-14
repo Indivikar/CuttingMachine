@@ -292,7 +292,7 @@ namespace SchneidMaschine
                 case COMMAND.steps:
                     {
                         Console.WriteLine("COMMAND.steps");
-                        dataModel.EinzelSchritt.setIstWert(befehl[1]);
+                        dataModel.EinzelSchritt.setIstWertInMM(befehl[1]);
                         break;
                     }
 
@@ -300,7 +300,7 @@ namespace SchneidMaschine
                     {
                         Console.WriteLine("COMMAND.stepperFinished");
                         dataModel.EinzelSchritt.StackPanelControlsEnable();
-                        dataModel.EinzelSchritt.setIstWert(befehl[1]);
+                        dataModel.EinzelSchritt.setIstWertInMM(befehl[1]);
                         //this.textBoxAusgabe.Text += Regex.Replace(befehl[0], @"_", "");
                         break;
                     }

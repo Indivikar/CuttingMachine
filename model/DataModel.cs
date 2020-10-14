@@ -43,8 +43,7 @@ namespace SchneidMaschine.model
     public partial class DataModel
     {
         // Config
-        private double stepToMillimeter = 1.0;
-
+        private double stepToMillimeter = 2.0; // wieviel Steps sind 1mm
 
         private MainWindow mainWindow;
         private Home home;
@@ -98,6 +97,12 @@ namespace SchneidMaschine.model
             return Convert.ToInt32(Math.Round(result));
         }
 
+        public int stepsToMM(double steps)
+        {
+            double result = steps / stepToMillimeter;
+            return Convert.ToInt32(Math.Round(result));
+        }
+
         // Getter
         public MainWindow MainWindow { get { return mainWindow; } }
         public Home Home { get { return home; } }
@@ -130,6 +135,7 @@ namespace SchneidMaschine.model
                 selectedLength = value;
                 schnittModus.StreifenSollWert.Text = value.ToString();
                 einzelSchritt.StreifenSollWert.Text = value.ToString();
+                einzelSchritt.BtnSollwert.Content = value.ToString() + " mm";
                 halbAuto.StreifenSollWert.Text = value.ToString();
                 auto.StreifenSollWert.Text = value.ToString();
             }

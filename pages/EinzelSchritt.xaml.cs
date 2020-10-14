@@ -29,7 +29,7 @@ namespace SchneidMaschine.pages
             InitializeComponent();
             this.dataModel = dataModel;
             this.commandLine = dataModel.CommandLine;
-
+            
         }
 
         private void BtnClickHome(object sender, RoutedEventArgs e)
@@ -67,7 +67,7 @@ namespace SchneidMaschine.pages
         {
             StackPanelControls.IsEnabled = false;
 
-            commandLine.setCommandLine(COMMAND.stepperStart, 320, ToggleButton_Direction.IsChecked == true);
+            commandLine.setCommandLine(COMMAND.stepperStart, dataModel.SelectedLength, ToggleButton_Direction.IsChecked == true);
             dataModel.sendText(commandLine.getCommandLine());
         }
 
@@ -102,15 +102,17 @@ namespace SchneidMaschine.pages
             }
         }
 
-        public void setIstWert(int istWert) 
+        public void setIstWertInMM(int istWertInSteps) 
         {
-            setIstWert(Convert.ToString(istWert));
+            istWertInSteps = dataModel.stepsToMM(istWertInSteps);
+
+            this.streifenIstWert.Text = "";
+            this.streifenIstWert.Text = Convert.ToString(istWertInSteps);
         }
 
-        public void setIstWert(string istWert)
+        public void setIstWertInMM(string istWertInSteps)
         {
-            this.streifenIstWert.Text = "";
-            this.streifenIstWert.Text = istWert;
+            setIstWertInMM(Int32.Parse(istWertInSteps));
         }
     }
 }
