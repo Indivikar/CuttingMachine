@@ -6,8 +6,8 @@
         xmlns:local="clr-namespace:SchneidMaschine"
         Closing="DataWindow_Closing"
         mc:Ignorable="d"
-        WindowStartupLocation="CenterScreen"
-        Title="MainWindow" Height="900" Width="1400">
+        WindowStartupLocation="CenterScreen" 
+        Title="MainWindow" Height="900" Width="1300">
 
     <Window.Resources>
         <Style TargetType="{x:Type Button}" x:Key="ButtonWindowClose">

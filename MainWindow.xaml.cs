@@ -60,7 +60,7 @@ namespace SchneidMaschine
         {
             BtnVerbinden.IsEnabled = true;
             BtnTrennen.IsEnabled = false;
-            Main.IsEnabled = false;
+            //Main.IsEnabled = false;
 
             comboBoxPorts.ItemsSource = dataModel.PortList;
 
@@ -280,6 +280,12 @@ namespace SchneidMaschine
                         Console.WriteLine("COMMAND.allesGestoppt");
                         dataModel.HalbAuto.BtnModusHalbAutoStart.IsEnabled = true;
                         dataModel.HalbAuto.BtnModusHalbAutoStop.IsEnabled = false;
+
+                        dataModel.Auto.TextBoxRuns.IsEnabled = true;
+                        dataModel.Auto.BtnModusAutoStart.IsEnabled = true;
+                        dataModel.Auto.BtnModusAutoPause.IsEnabled = false;
+                        dataModel.Auto.BtnModusAutoStop.IsEnabled = false;
+
                         SetText("#alles gestoppt@");
                         break;
                     }
@@ -336,6 +342,16 @@ namespace SchneidMaschine
 
                         break;
                     }
+
+                case COMMAND.resetIstWert:
+                    {
+                        Console.WriteLine("COMMAND.resetIstWert");
+                        dataModel.EinzelSchritt.streifenIstWert.Text = "0";
+                        dataModel.HalbAuto.streifenIstWert.Text = "0";
+                        dataModel.Auto.streifenIstWert.Text = "0";
+                        break;
+                    }
+
                 default: break;
             }
         }

@@ -33,7 +33,8 @@ namespace SchneidMaschine.model
         handradOff,
         schneidenStart,
         autoStart,
-        autoStop
+        autoStop,
+        resetIstWert
     }
 
     public enum DIRECTION

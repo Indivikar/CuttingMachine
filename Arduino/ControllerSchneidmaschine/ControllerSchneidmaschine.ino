@@ -126,6 +126,12 @@ void loop() {
               stepCounter = 0;    
               sendCommand("steps_" + String(stepCounter), true);
           }
+
+          if(befehl.equals("resetIstWert")) {
+              sendText("istwert");
+              stepCounter = 0;    
+              sendCommand("resetIstWert_" + String(stepCounter), true);
+          }
   
           appendSerialData = ""; //empty data inside appendSerialData variable
           c = 0; //empty data inside c variable

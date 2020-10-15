@@ -46,6 +46,12 @@ namespace SchneidMaschine.pages
             dataModel.MainWindow.Main.Content = dataModel.SchnittModus;
         }
 
+        private void Btn_Click_Reset_IstWert(object sender, RoutedEventArgs e)
+        {
+            commandLine.setCommandLine(COMMAND.resetIstWert, 0, true);
+            dataModel.sendText(commandLine.getCommandLine());
+        }
+
         private void BtnClickModusHalbAutoStart(object sender, RoutedEventArgs e)
         {
             allesStoppen = false;
