@@ -30,12 +30,13 @@ namespace SchneidMaschine
     {
         private DataModel dataModel;
         private SerialPort serialPort1;
+        private CommandLine commandLine;
         private Thread threadCheckConnection;
         private Thread threadCheckPorts;
 
         delegate void SetTextCallback(string text);
 
-        private string commandLine;
+        
         StringBuilder sb = new StringBuilder();
 
         StringBuilder befehlBuilder = new StringBuilder();
@@ -45,6 +46,7 @@ namespace SchneidMaschine
             InitializeComponent();
             this.dataModel = new DataModel(this);
             this.serialPort1 = dataModel.SerialPort1;
+            this.commandLine = dataModel.CommandLine;
 
             Main.Content = dataModel.Home;
 
@@ -366,7 +368,10 @@ namespace SchneidMaschine
                 //labelConnection.Foreground = Brushes.Green;
                 //labelConnection.Text = "CONNECTED";
                 //Console.WriteLine("Connected");              
-                serialPort1.Write("Connected#");
+                //serialPort1.Write("Connected#");
+
+                commandLine.setCommandLine(COMMAND.Connected, 0, false);
+                dataModel.sendText(commandLine.getCommandLine());
 
                 this.threadCheckConnection = new Thread(dataModel.MyThreads.checkVerbindung);
                 threadCheckConnection.Start();
