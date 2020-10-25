@@ -306,6 +306,22 @@ namespace SchneidMaschine
                         break;
                     }
 
+                case COMMAND.schneidenStartet:
+                    {
+                        Console.WriteLine("COMMAND.schneidenStartet");
+                        Main.IsEnabled = false;
+                        break;
+                    }
+                    
+
+                case COMMAND.schneidenBeendet:
+                    {
+                        Console.WriteLine("COMMAND.schneidenBeendet");
+                        dataModel.IsCutFinished = true;
+                        Main.IsEnabled = true;
+                        break;
+                    }
+
                 case COMMAND.steps:
                     {
                         Console.WriteLine("COMMAND.steps");
@@ -317,6 +333,7 @@ namespace SchneidMaschine
                 case COMMAND.stepperFinished:
                     {
                         Console.WriteLine("COMMAND.stepperFinished");
+                        dataModel.IsStepperFinished = true;
                         dataModel.setIstWert(befehl[1]);
 
                         if (dataModel.EinzelSchritt.IsVisible)
@@ -324,10 +341,12 @@ namespace SchneidMaschine
                             dataModel.EinzelSchritt.StackPanelControlsEnable();
                         }
                         
-                        if (dataModel.HalbAuto.IsVisible) 
-                        {
-                            dataModel.HalbAuto.cut();
-                        }
+                        //if (dataModel.HalbAuto.IsVisible) 
+                        //{
+                        //    dataModel.HalbAuto.cut();
+                        //}
+
+
 
                         //dataModel.EinzelSchritt.setIstWertInMM(befehl[1]);
                         //this.textBoxAusgabe.Text += Regex.Replace(befehl[0], @"_", "");

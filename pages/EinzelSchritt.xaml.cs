@@ -85,7 +85,7 @@ namespace SchneidMaschine.pages
         private void Btn_Cut(object sender, RoutedEventArgs e)
         {
             commandLine.setCommandLine(COMMAND.schneidenStart, 0, ToggleButton_Direction.IsChecked == true);
-            dataModel.sendText(commandLine.getCommandLine());
+            dataModel.sendText(commandLine.getCommandLine());           
         }
 
         private void ToggleBtn_Click_Handwheel(object sender, RoutedEventArgs e)

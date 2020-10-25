@@ -32,6 +32,8 @@ namespace SchneidMaschine.model
         handradOn,
         handradOff,
         schneidenStart,
+        schneidenStartet,
+        schneidenBeendet,
         autoStart,
         autoStop,
         resetIstWert
@@ -63,6 +65,9 @@ namespace SchneidMaschine.model
 
         private int selectedLength; // Streifen-Länge Sollwert in mm
         private int istWertInMM;    // Streifen-Länge Istwert in mm
+
+        private bool isCutFinished = true; // wenn der Motor zum Abschneiden steht, dann -> true
+        private bool isStepperFinished = true;
 
         private delegate void SetTextCallback(string text);
         private string InputData = String.Empty;
@@ -123,6 +128,9 @@ namespace SchneidMaschine.model
         public string[] PortList { get { return portList; } }
 
         public SerialPort SerialPort1 { get => serialPort1; set => serialPort1 = value; }
+
+        public bool IsCutFinished { get => isCutFinished; set => isCutFinished = value; }
+        public bool IsStepperFinished { get => isStepperFinished; set => isStepperFinished = value; }
 
         public void setSelectedLength(STREIFEN wert)
         {

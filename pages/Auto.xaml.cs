@@ -41,7 +41,7 @@ namespace SchneidMaschine.pages
             this.BtnModusAutoStop.IsEnabled = false;   
         }
 
-        async Task<bool> GetLeisureHoursAsync(int runs)
+        async Task<bool> TaskAutoModus(int runs)
         {
             await Task.Run(() => aufgabe(runs));
             return false;
@@ -59,9 +59,20 @@ namespace SchneidMaschine.pages
                     this.TextBoxRunsIst.Text = Convert.ToString(i + 1);
                 });
 
+                while (!dataModel.IsCutFinished) Thread.Sleep(1000);
 
+                commandLine. setCommandLine(COMMAND.stepperStart, dataModel.SelectedLength, true);
+                dataModel.sendText(commandLine.getCommandLine());
+
+                while (!dataModel.IsStepperFinished) Thread.Sleep(1000);
+
+                commandLine.setCommandLine(COMMAND.schneidenStart, 0, true);
+                dataModel.sendText(commandLine.getCommandLine());
+
+                // for-Schleife pausieren, wenn Pause gedrückt wurde
                 while (isPause) Thread.Sleep(200);
 
+                // for-Schleife beenden, wenn Stop gedrückt wurde
                 if (isStop) 
                 {
                     break;
@@ -100,7 +111,7 @@ namespace SchneidMaschine.pages
 
             int runs = Int32.Parse(this.TextBoxRuns.Text);
 
-            this.taskAutoRun = GetLeisureHoursAsync(runs);
+            this.taskAutoRun = TaskAutoModus(runs);
 
             this.TextBoxRunsIst.Text = "0";
 

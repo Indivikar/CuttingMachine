@@ -3,28 +3,33 @@ int startDelay = 5000;          // Start-Pause zwischen den Steps für langsamen
 int minDelay = 500;             // min-Pause zwischen den Steps, beeinflusst die Drehzahl, darf nicht < 200 sein
 
 int A = 13;                     // Pin Handrad - A
-int B = 8;                      // Pin Handrad - B
+int B = 12;                     // Pin Handrad - B
+
+int motorRunning = 7;              // Puls -> wenn Motor abschneiden Stoppt
 
 int puls = 4;                   // Pin Schrittmotor-Treiber - Puls
 int dir = 5;                    // Pin Schrittmotor-Treiber - Direction
 int enable = 6;                 // Pin Schrittmotor-Treiber - Enable
 
-int cut = 7;                    // Pin Relay - Schneiden
+int cut = 10;                    // Pin Relay - Schneiden
 
 // Variablen
 int delayHandler;               // zum langsamen Anfahren und Abbremsen vom Schrittmotor
 
 int valB = 0;                   // Input vom Pin Handrad - A
 int valA = 0;                   // Input vom Pin Handrad - B
+int valMotorRunning =  0;          // 
 
 boolean lockA = false;          // 
 boolean lockB = false;          //
+
+boolean isMotorRunning = false; // ist der Motor zum abschneiden fertig (damit der Befehl nur einmal gesendet wird)
 
 boolean allesStoppen = false;   // true = for-Schleife für Steps vom Schrittmotor wird unterbrochen
 boolean isHandradOn = false;    //
 
 int stepCounter = 0;            // zählt die Schritte vom Schrittmotor
-int setDir = 0;                    // Drehrichtung    
+int setDir = 0;                 // Drehrichtung    
 unsigned long oneStep = 0;      // ein Schritt
 
 
@@ -39,6 +44,8 @@ String appendSerialData = "";   // einzelne Zeichen in eine Zeichenkette umwande
     // PinMode Einstellungen
     pinMode(A, INPUT_PULLUP);   // Input vom Pin Handrad - A
     pinMode(B, INPUT_PULLUP);   // Input vom Pin Handrad - B
+
+    pinMode(motorRunning, INPUT_PULLUP);   // Input von der LOGO Q3
        
     pinMode(puls, OUTPUT);      // Puls      
     pinMode(dir, OUTPUT);       // Direction
@@ -49,11 +56,34 @@ String appendSerialData = "";   // einzelne Zeichen in eine Zeichenkette umwande
     // Ausgangs-Stellung 
     digitalWrite(cut, HIGH);    // Relay Schneiden
     digitalWrite(enable, LOW);  // Schrittmotor-Treiber - Enable
+
   }
 
   void loop() {
-    dataReceived();   
+      dataReceived();   
+      motorFinished();
+      
+//      if(digitalRead(motorRunning) == LOW){
+//          Serial.println(digitalRead(motorRunning));
+//      } 
+//
+//      if(digitalRead(motorRunning) == HIGH){
+//          Serial.println(digitalRead(motorRunning));
+//      } 
+
+        
+        
   }
+
+  void motorFinished() {
+
+      valMotorRunning = digitalRead(motorRunning);
+      if(valMotorRunning == HIGH && isMotorRunning){
+          sendCommand("schneidenBeendet_", true);
+          isMotorRunning = false;
+      }
+  }
+  
 
   // eingehende Daten Auslesen, Speichern und Befehle Ausführen
   void dataReceived() {
@@ -121,7 +151,8 @@ String appendSerialData = "";   // einzelne Zeichen in eine Zeichenkette umwande
           }
   
           if(befehl.equals("schneidenStart")) {                       // Starte den Schneiden
-              sendText("Schneiden starten...");                       // Sende Bestätigung, das Schneiden gestartet wird     
+              sendCommand("schneidenStartet_", true);                 // Sende Bestätigung, das Schneiden gestartet wird   
+              isMotorRunning = true;                                 // Motor abschneiden zurücksetzen
               digitalWrite(cut, LOW);                                 // Schalte Relay -> Schneiden Start
               delay(500);                                             // Pause zwischen an und aus, sonst schaltet Relay nicht
               digitalWrite(cut, HIGH);                                // Schalte Relay -> Schneiden Stop
@@ -265,11 +296,11 @@ String appendSerialData = "";   // einzelne Zeichen in eine Zeichenkette umwande
           slowStartStop(i, slowRange);              // Schritt motor langsam anfahren und stoppen
       
           digitalWrite(puls, HIGH);                 // puls an
-          //delayMicroseconds(5000);
-          delayMicroseconds(delayHandler);          // Pause zwischen dem Puls, darf nicht < 200 sein
+          delayMicroseconds(500);
+          //delayMicroseconds(delayHandler);          // Pause zwischen dem Puls, darf nicht < 200 sein
           digitalWrite(puls, LOW);                  // puls aus
-          //delayMicroseconds(5000);
-          delayMicroseconds(delayHandler);          // Pause zwischen dem Puls, darf nicht < 200 sein
+          delayMicroseconds(500);
+          //delayMicroseconds(delayHandler);          // Pause zwischen dem Puls, darf nicht < 200 sein
       }     
   }
 

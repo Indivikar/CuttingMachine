@@ -55,6 +55,17 @@ namespace SchneidMaschine.model
             this.command = command;
             this.steps = steps;
             this.direction = direction;
+
+            if (COMMAND.schneidenStart.Equals(command)) {
+                Console.WriteLine("set dataModel.IsCutFinished = false");
+                dataModel.IsCutFinished = false;
+            }
+
+            if (COMMAND.stepperStart.Equals(command))
+            {
+                Console.WriteLine("set dataModel.IsStepperFinished = false");
+                dataModel.IsStepperFinished = false;
+            }
         }
 
         public COMMAND Command { get => command; set => command = value; }

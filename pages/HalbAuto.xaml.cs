@@ -25,6 +25,8 @@ namespace SchneidMaschine.pages
         private DataModel dataModel;
         private CommandLine commandLine;
 
+        private Task taskHalbAutoRun;
+
         private bool allesStoppen = false;
 
         public HalbAuto(DataModel dataModel)
@@ -34,6 +36,46 @@ namespace SchneidMaschine.pages
             this.commandLine = dataModel.CommandLine;
 
             this.BtnModusHalbAutoStop.IsEnabled = false;
+        }
+
+        async Task<bool> TaskHalbAutoModus()
+        {
+            await Task.Run(() => aufgabe());
+            return false;
+        }
+
+        private void aufgabe()
+        {
+                Thread.Sleep(1000);
+
+            //dataModel.Auto.Dispatcher.Invoke(() => {
+            //    this.TextBoxRunsIst.Text = Convert.ToString(i + 1);
+            //});
+
+            while (!dataModel.IsStepperFinished) Thread.Sleep(1000);
+
+            if (!allesStoppen)
+            {
+                commandLine.setCommandLine(COMMAND.schneidenStart, 0, true);
+                dataModel.sendText(commandLine.getCommandLine());
+            }
+
+            while (!dataModel.IsCutFinished) Thread.Sleep(1000);
+
+            if (!allesStoppen)
+            {
+                commandLine.setCommandLine(COMMAND.stepperStart, dataModel.SelectedLength, true);
+                dataModel.sendText(commandLine.getCommandLine());
+            }
+
+            // for-Schleife pausieren, wenn Pause gedrückt wurde
+            //while (isPause) Thread.Sleep(200);
+
+            dataModel.Auto.Dispatcher.Invoke(() =>
+            {
+                this.BtnModusHalbAutoStart.IsEnabled = true;
+                this.BtnModusHalbAutoStop.IsEnabled = false;
+            });
         }
 
         private void BtnClickHome(object sender, RoutedEventArgs e)
@@ -58,8 +100,10 @@ namespace SchneidMaschine.pages
             this.BtnModusHalbAutoStart.IsEnabled = false;
             this.BtnModusHalbAutoStop.IsEnabled = true;
 
-            commandLine.setCommandLine(COMMAND.stepperStart, dataModel.SelectedLength, false);
-            dataModel.sendText(commandLine.getCommandLine());
+            this.taskHalbAutoRun = TaskHalbAutoModus();
+
+            //commandLine.setCommandLine(COMMAND.stepperStart, dataModel.SelectedLength, false);
+            //dataModel.sendText(commandLine.getCommandLine());
         }
 
         private void BtnClickModusHalbAutoStop(object sender, RoutedEventArgs e)
@@ -77,8 +121,7 @@ namespace SchneidMaschine.pages
                 dataModel.sendText(commandLine.getCommandLine());
             }
 
-            this.BtnModusHalbAutoStart.IsEnabled = true;
-            this.BtnModusHalbAutoStop.IsEnabled = false;
+
         }
 
     }
