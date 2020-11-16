@@ -108,7 +108,7 @@ namespace SchneidMaschine.pages
             }
         }
 
-        public void setIstWertInMM(int istWertInSteps) 
+        public void setIstWertInMM(long istWertInSteps) 
         {
             istWertInSteps = dataModel.stepsToMM(istWertInSteps);
 
@@ -120,7 +120,7 @@ namespace SchneidMaschine.pages
 
         public void setIstWertInMM(string istWertInSteps)
         {
-            setIstWertInMM(Int32.Parse(istWertInSteps));
+            setIstWertInMM(Int64.Parse(istWertInSteps));
 
         }
 

@@ -56,6 +56,8 @@ namespace SchneidMaschine.model
             this.steps = steps;
             this.direction = direction;
 
+            Console.WriteLine("setCommandLine -> " + command + "_" + steps + "-" + direction);
+
             if (COMMAND.schneidenStart.Equals(command)) {
                 Console.WriteLine("set dataModel.IsCutFinished = false");
                 dataModel.IsCutFinished = false;

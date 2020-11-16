@@ -332,7 +332,7 @@ namespace SchneidMaschine
 
                 case COMMAND.stepperFinished:
                     {
-                        Console.WriteLine("COMMAND.stepperFinished");
+                        Console.WriteLine("COMMAND.stepperFinished -> " + befehl[1]);
                         dataModel.IsStepperFinished = true;
                         dataModel.setIstWert(befehl[1]);
 

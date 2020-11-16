@@ -29,7 +29,7 @@ boolean isMotorRunning = false; // ist der Motor zum abschneiden fertig (damit d
 boolean allesStoppen = false;   // true = for-Schleife für Steps vom Schrittmotor wird unterbrochen
 boolean isHandradOn = false;    //
 
-int stepCounter = 0;            // zählt die Schritte vom Schrittmotor
+long stepCounter = 0;            // zählt die Schritte vom Schrittmotor
 int setDir = 0;                 // Drehrichtung    
 unsigned long oneStep = 0;      // ein Schritt
 
@@ -150,7 +150,10 @@ String appendSerialData = "";   // einzelne Zeichen in eine Zeichenkette umwande
           
           if(befehl.equals("stepperStart")) {                         // Starte den Schrittmotor
               sendText("Schrittmotor starten...");                    // Sende Bestätigung, das Schrittmotor gestartet wird 
-              int steps = split(appendSerialData, '_', 1).toInt();    // Steps auslesen
+              //int steps = split(appendSerialData, '_', 1).toInt();    // Steps auslesen
+
+              unsigned long steps = split(appendSerialData, '_', 1).toInt();
+              
               String drehRichtung = split(appendSerialData, '_', 2);  // Drehrichtung auslesen
               stepper(steps, drehRichtung);                           // Starte den Schrittmotor
   
@@ -284,8 +287,8 @@ String appendSerialData = "";   // einzelne Zeichen in eine Zeichenkette umwande
       }
   }
 
-  void stepper(int steps, String drehRichtung) {    // Schrittmotor bewegen
-      int slowRange = steps * 0.90;                 // bei wieveil % der Steps soll der Schrittmotor langsam anlaufen oder abbremsen
+  void stepper(unsigned long steps, String drehRichtung) {    // Schrittmotor bewegen
+      //int slowRange = steps * 0.90;                 // bei wieveil % der Steps soll der Schrittmotor langsam anlaufen oder abbremsen
     
       if(drehRichtung.equals("forward")) {          // Drehrichtung vor
         digitalWrite(dir, HIGH);
@@ -315,7 +318,7 @@ String appendSerialData = "";   // einzelne Zeichen in eine Zeichenkette umwande
               delayHandler = startDelay;            // setze Start-Wert der Pause, zwischen den Steps
           }
 
-          slowStartStop(i, slowRange);              // Schritt motor langsam anfahren und stoppen
+          //slowStartStop(i, slowRange);              // Schritt motor langsam anfahren und stoppen
       
           digitalWrite(puls, HIGH);                 // puls an
           delayMicroseconds(500);

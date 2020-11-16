@@ -48,7 +48,7 @@ namespace SchneidMaschine.model
     public partial class DataModel
     {
         // Config
-        private double stepToMillimeter = 2.0; // wieviel Steps sind 1mm
+        private double stepToMillimeter = 300.0; // wieviel Steps sind 1mm
 
         private MainWindow mainWindow;
         private Home home;
@@ -64,7 +64,7 @@ namespace SchneidMaschine.model
         private MyThreads myThreads;
 
         private int selectedLength; // Streifen-Länge Sollwert in mm
-        private int istWertInMM;    // Streifen-Länge Istwert in mm
+        private long istWertInMM;    // Streifen-Länge Istwert in mm
 
         private bool isCutFinished = true; // wenn der Motor zum Abschneiden steht, dann -> true
         private bool isStepperFinished = true;
@@ -107,10 +107,10 @@ namespace SchneidMaschine.model
             return Convert.ToInt32(Math.Round(result));
         }
 
-        public int stepsToMM(double steps)
+        public long stepsToMM(double steps)
         {
             double result = steps / stepToMillimeter;
-            return Convert.ToInt32(Math.Round(result));
+            return Convert.ToInt64(Math.Round(result));
         }
 
         // Getter
@@ -160,10 +160,10 @@ namespace SchneidMaschine.model
 
         public void setIstWert(string wert)
         {
-            IstWertInMM = Int32.Parse(wert);
+            IstWertInMM = Int64.Parse(wert);
         }
 
-        public int IstWertInMM
+        public long IstWertInMM
         {
             get => istWertInMM;
             set
