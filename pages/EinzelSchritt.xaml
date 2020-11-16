@@ -131,7 +131,11 @@
             <Button x:Name="BtnEinzelSchritt" Content="Einzel-Schritt" FontSize="20" Width="150" Height="35" />
         </StackPanel>
 
-        <StackPanel x:Name="StackPanelControls" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="10,50" Orientation="Horizontal">
+        <Grid Margin="0,0,881,243" VerticalAlignment="Bottom" HorizontalAlignment="Center" >
+            <Button x:Name="BtnStop" Margin="5" FontSize="36" Width="310" Height="100" Click="Btn_Stop" IsEnabled="False" >Stop</Button>
+        </Grid>
+
+        <StackPanel x:Name="StackPanelControls" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="10,20" Orientation="Horizontal" IsEnabledChanged="EnabledChanged">
             <Grid Margin="0,0,30,0" >
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1*" />
@@ -153,11 +157,14 @@
                 <ToggleButton x:Name="ToggleButton_Direction"  Style="{StaticResource ToggleButtonStyle1}"
                     Margin="5" FontSize="36" Width="310" Height="100" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3"  ></ToggleButton>
             </Grid>
-            <Grid Margin="0,0,30,0" >
-                <Button x:Name="BtnSchneiden" 
-                        Margin="5" FontSize="36" Width="300" Height="210" Click="Btn_Cut" >Schneiden</Button>
-            </Grid>
-            <Grid Margin="0,0,30,0" >
+
+                
+                    <Grid Margin="0,0,30,0" >
+                    <Button x:Name="BtnSchneiden" 
+                            Margin="5" FontSize="36" Width="300" Height="210" Click="Btn_Cut" >Schneiden</Button>
+                    </Grid>
+
+                <Grid Margin="0,0,30,0" >
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1*" />
                 </Grid.ColumnDefinitions>

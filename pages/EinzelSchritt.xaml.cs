@@ -124,7 +124,16 @@ namespace SchneidMaschine.pages
 
         }
 
+        private void Btn_Stop(object sender, RoutedEventArgs e)
+        {          
+            commandLine.setCommandLine(COMMAND.allesStop, 0, false);
+            dataModel.sendText(commandLine.getCommandLine());
+        }
 
+        private void EnabledChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            this.BtnStop.IsEnabled = !this.StackPanelControls.IsEnabled;
+        }
     }
 }
 
