@@ -11,7 +11,8 @@ int puls = 4;                   // Pin Schrittmotor-Treiber - Puls
 int dir = 5;                    // Pin Schrittmotor-Treiber - Direction
 int enable = 6;                 // Pin Schrittmotor-Treiber - Enable
 
-int cut = 10;                    // Pin Relay - Schneiden
+int cutTaster = 8;              // Pin Taster - schneiden
+int cut = 10;                   // Pin Relay - schneiden
 
 // Variablen
 int delayHandler;               // zum langsamen Anfahren und Abbremsen vom Schrittmotor
@@ -50,7 +51,8 @@ String appendSerialData = "";   // einzelne Zeichen in eine Zeichenkette umwande
     pinMode(puls, OUTPUT);      // Puls      
     pinMode(dir, OUTPUT);       // Direction
     pinMode(enable, OUTPUT);    // Enable
-    
+
+    pinMode(cutTaster, INPUT_PULLUP);  // Schneiden Taster
     pinMode(cut, OUTPUT);       // Schneiden
 
     // Ausgangs-Stellung 
@@ -60,9 +62,11 @@ String appendSerialData = "";   // einzelne Zeichen in eine Zeichenkette umwande
   }
 
   void loop() {
+
+      taster();
       dataReceived();   
       motorFinished();
-      
+
 //      if(digitalRead(motorRunning) == LOW){
 //          Serial.println(digitalRead(motorRunning));
 //      } 
@@ -75,10 +79,15 @@ String appendSerialData = "";   // einzelne Zeichen in eine Zeichenkette umwande
         
   }
 
-  void motorFinished() {
+  void taster() {
+      if(digitalRead(cutTaster) == 0  && !isMotorRunning){
+          schneiden();
+      }
+  }
 
+  void motorFinished() {
       valMotorRunning = digitalRead(motorRunning);
-      if(valMotorRunning == HIGH && isMotorRunning){
+      if(valMotorRunning == HIGH && isMotorRunning){       
           sendCommand("schneidenBeendet_", true);
           isMotorRunning = false;
       }
@@ -151,13 +160,15 @@ String appendSerialData = "";   // einzelne Zeichen in eine Zeichenkette umwande
           }
   
           if(befehl.equals("schneidenStart")) {                       // Starte den Schneiden
-              sendCommand("schneidenStartet_", true);                 // Sende Bestätigung, das Schneiden gestartet wird   
-              isMotorRunning = true;                                 // Motor abschneiden zurücksetzen
-              digitalWrite(cut, LOW);                                 // Schalte Relay -> Schneiden Start
-              delay(500);                                             // Pause zwischen an und aus, sonst schaltet Relay nicht
-              digitalWrite(cut, HIGH);                                // Schalte Relay -> Schneiden Stop
-              stepCounter = 0;                                        // nach dem Schnitt, den Counter wieder auf 0 setzen
-              sendCommand("steps_" + String(stepCounter), true);      // Sende Bestätigung das Schneiden fertig ist
+
+                schneiden();
+//              sendCommand("schneidenStartet_", true);                 // Sende Bestätigung, das Schneiden gestartet wird   
+//              isMotorRunning = true;                                 // Motor abschneiden zurücksetzen
+//              digitalWrite(cut, LOW);                                 // Schalte Relay -> Schneiden Start
+//              delay(500);                                             // Pause zwischen an und aus, sonst schaltet Relay nicht
+//              digitalWrite(cut, HIGH);                                // Schalte Relay -> Schneiden Stop
+//              stepCounter = 0;                                        // nach dem Schnitt, den Counter wieder auf 0 setzen
+//              sendCommand("steps_" + String(stepCounter), true);      // Sende Bestätigung das Schneiden fertig ist
           }
 
           if(befehl.equals("resetIstWert")) {                         // reset den Counter 
@@ -183,6 +194,17 @@ String appendSerialData = "";   // einzelne Zeichen in eine Zeichenkette umwande
 
         delay(100);                                                   // Pause, sonst gibt es Fehler beim Daten senden
         sendCommand("steps_" + String(stepCounter), true);            // sende, wieviel steps noch gespeichert sind
+  }
+
+
+  void schneiden() {
+      sendCommand("schneidenStartet_", true);                 // Sende Bestätigung, das Schneiden gestartet wird   
+      isMotorRunning = true;                                 // Motor abschneiden zurücksetzen
+      digitalWrite(cut, LOW);                                 // Schalte Relay -> Schneiden Start
+      delay(500);                                             // Pause zwischen an und aus, sonst schaltet Relay nicht
+      digitalWrite(cut, HIGH);                                // Schalte Relay -> Schneiden Stop
+      stepCounter = 0;                                        // nach dem Schnitt, den Counter wieder auf 0 setzen
+      sendCommand("steps_" + String(stepCounter), true);      // Sende Bestätigung das Schneiden fertig ist
   }
 
   void forward(){                             // Handrad -> in welche Richtung wird gedreht hier 
