@@ -435,5 +435,17 @@ namespace SchneidMaschine
             ButtonOpenMenu.Visibility = Visibility.Visible;
             ButtonCloseMenu.Visibility = Visibility.Collapsed;
         }
+
+        private void ButtonStatsOpen_Click(object sender, RoutedEventArgs e)
+        {
+            ButtonStatsOpen.Visibility = Visibility.Collapsed;
+            ButtonStatsClose.Visibility = Visibility.Visible;
+        }
+
+        private void ButtonStatsClose_Click(object sender, RoutedEventArgs e)
+        {
+            ButtonStatsOpen.Visibility = Visibility.Visible;
+            ButtonStatsClose.Visibility = Visibility.Collapsed;
+        }
     }
 }

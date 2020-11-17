@@ -10,6 +10,7 @@
         Title="MainWindow" Height="900" Width="1300">
 
     <Window.Resources>
+        <!--Drawer links-->
         <Style TargetType="{x:Type Button}" x:Key="ButtonWindowClose">
             <Setter Property="Background" Value="#FF5C99D6" />
             <Setter Property="TextBlock.TextAlignment" Value="Center" />
@@ -66,13 +67,80 @@
                 <EasingDoubleKeyFrame KeyTime="0:0:0.2" Value="40"/>
             </DoubleAnimationUsingKeyFrames>
         </Storyboard>
+
+        <!--Drawer rechts-->
+        <Style TargetType="{x:Type Button}" x:Key="ButtonStatsClose">
+            <Setter Property="Background" Value="#FF5C99D6" />
+            <Setter Property="TextBlock.TextAlignment" Value="Center" />
+            <Setter Property="TextBlock.Foreground" Value="White" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border CornerRadius="0,0,0,0" Background="{TemplateBinding Background}" BorderBrush="#ccc" BorderThickness="0,0,0,0" >
+                            <ContentPresenter x:Name="contentPresenter" ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="OrangeRed"/>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="Red"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style TargetType="{x:Type Button}" x:Key="ButtonStatsWindowSize">
+            <Setter Property="Background" Value="#FF5C99D6" />
+            <Setter Property="TextBlock.TextAlignment" Value="Center" />
+            <Setter Property="TextBlock.Foreground" Value="White" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border CornerRadius="0,0,0,0" Background="{TemplateBinding Background}" BorderBrush="#ccc" BorderThickness="0,0,0,0" >
+                            <ContentPresenter x:Name="contentPresenter" ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="DarkBlue"/>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="Blue"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Storyboard x:Key="OpenStats">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(FrameworkElement.Width)" Storyboard.TargetName="GridStats">
+                <EasingDoubleKeyFrame KeyTime="0" Value="40"/>
+                <EasingDoubleKeyFrame KeyTime="0:0:0.2" Value="800"/>
+            </DoubleAnimationUsingKeyFrames>
+        </Storyboard>
+        <Storyboard x:Key="CloseStats">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(FrameworkElement.Width)" Storyboard.TargetName="GridStats">
+                <EasingDoubleKeyFrame KeyTime="0" Value="800"/>
+                <EasingDoubleKeyFrame KeyTime="0:0:0.2" Value="40"/>
+            </DoubleAnimationUsingKeyFrames>
+        </Storyboard>
     </Window.Resources>
     <Window.Triggers>
+        <!--Drawer links-->
         <EventTrigger RoutedEvent="ButtonBase.Click" SourceName="ButtonOpenMenu">
             <BeginStoryboard Storyboard="{StaticResource OpenMenu}"/>
         </EventTrigger>
         <EventTrigger RoutedEvent="ButtonBase.Click" SourceName="ButtonCloseMenu">
             <BeginStoryboard Storyboard="{StaticResource CloseMenu}"/>
+        </EventTrigger>
+
+        <!--Drawer rechts-->
+        <EventTrigger RoutedEvent="ButtonBase.Click" SourceName="ButtonStatsOpen">
+            <BeginStoryboard Storyboard="{StaticResource OpenStats}"/>
+        </EventTrigger>
+        <EventTrigger RoutedEvent="ButtonBase.Click" SourceName="ButtonStatsClose">
+            <BeginStoryboard Storyboard="{StaticResource CloseStats}"/>
         </EventTrigger>
     </Window.Triggers>
 
@@ -131,13 +199,18 @@
             </StackPanel>
             <Separator Margin="0,310,0,0" VerticalAlignment="Top"/>
             <StackPanel Orientation="Horizontal" >
-                
+
             </StackPanel>
         </Grid>
+        <!--Drawer links-->
         <Grid x:Name="GridMenu" Width="40" Height="300" HorizontalAlignment="Left"  VerticalAlignment="Top" Background="{DynamicResource {x:Static SystemColors.MenuBarBrushKey}}">
             <Grid.Effect>
                 <DropShadowEffect BlurRadius="2" ShadowDepth="1" Color="#FFAEAEAE"/>
             </Grid.Effect>
+            <Grid x:Name="GridContent" HorizontalAlignment="Center" VerticalAlignment="center" Margin="0,0,40,0">
+                <TextBlock Text="Content" FontSize="20" />
+            </Grid>
+
             <Grid Width="40" Height="300" HorizontalAlignment="Right"  VerticalAlignment="Top" Background="{DynamicResource {x:Static SystemColors.MenuHighlightBrushKey}}">
                 <Button x:Name="ButtonOpenMenu" Height="300" Width="40" HorizontalAlignment="Center" VerticalAlignment="center" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="#FF31577E" Click="ButtonOpenMenu_Click">
                     <Grid>
@@ -159,6 +232,42 @@
                             </TextBlock.LayoutTransform>
                         </TextBlock>
                         <TextBlock Text="&lt;&lt;" FontSize="20" Margin="0,250,0,0" />
+                    </Grid>
+                </Button>
+            </Grid>
+        </Grid>
+
+        <!--Drawer rechts-->
+        <Grid x:Name="GridStats" Width="40" Height="300" HorizontalAlignment="Right"  VerticalAlignment="Top" Background="{DynamicResource {x:Static SystemColors.MenuBarBrushKey}}">
+            <Grid.Effect>
+                <DropShadowEffect BlurRadius="2" ShadowDepth="1" Color="#FFAEAEAE"/>
+            </Grid.Effect>
+
+            <Grid x:Name="GridStatsContent" HorizontalAlignment="Center" VerticalAlignment="center" Margin="40,0,0,0">
+                <TextBlock Text="test" FontSize="20" Margin="20,0,0,0" />
+            </Grid>
+            
+            <Grid Width="40" Height="300" HorizontalAlignment="Left"  VerticalAlignment="Top" Background="{DynamicResource {x:Static SystemColors.MenuHighlightBrushKey}}">
+                <Button x:Name="ButtonStatsOpen" Height="300" Width="40" HorizontalAlignment="Center" VerticalAlignment="center" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="#FF31577E" Click="ButtonStatsOpen_Click">
+                    <Grid>
+                        <TextBlock Text="&lt;&lt;" FontSize="20" Margin="0,-10,0,0" />
+                        <TextBlock Text="Open Stats" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="center" >
+                            <TextBlock.LayoutTransform>
+                                <RotateTransform Angle="90" />
+                            </TextBlock.LayoutTransform>
+                        </TextBlock>
+                        <TextBlock Text="&lt;&lt;" FontSize="20" Margin="0,250,0,0" />
+                    </Grid>
+                </Button>
+                <Button x:Name="ButtonStatsClose" Visibility="Collapsed" Height="300" Width="40" HorizontalAlignment="Left" VerticalAlignment="Top" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="#FF31577E" Click="ButtonStatsClose_Click">
+                    <Grid>
+                        <TextBlock Text="&gt;&gt;" FontSize="20" Margin="0,-10,0,0" />
+                        <TextBlock Text="Close Stats" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="center">
+                            <TextBlock.LayoutTransform>
+                                <RotateTransform Angle="90" />
+                            </TextBlock.LayoutTransform>
+                        </TextBlock>
+                        <TextBlock Text="&gt;&gt;" FontSize="20" Margin="0,250,0,0" />
                     </Grid>
                 </Button>
             </Grid>
