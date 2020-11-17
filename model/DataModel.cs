@@ -8,6 +8,9 @@ using System.IO.Ports;
 using System.Management;
 using System.Threading;
 using SchneidMaschine.threads;
+using System.Data.SqlClient;
+using System.Data;
+using SchneidMaschine.db;
 
 namespace SchneidMaschine.model
 {
@@ -50,13 +53,15 @@ namespace SchneidMaschine.model
         // Config
         private double stepToMillimeter = 300.0; // wieviel Steps sind 1mm
 
-        private MainWindow mainWindow;
+        private DBHandler dbHandler;
+
+        private MainWindow mainWindow;       
         private Home home;
         private SchnittModus schnittModus;
         private EinzelSchritt einzelSchritt;
         private HalbAuto halbAuto;
         private Auto auto;      
-        private string[] portList;
+        private string[] portList;    
         private SerialPort serialPort1;
 
         private CommandLine commandLine;
@@ -81,6 +86,8 @@ namespace SchneidMaschine.model
 
         private void init()
         {
+
+            this.dbHandler = new DBHandler();
             this.serialPort1 = new SerialPort();
             this.portList = SerialPort.GetPortNames();
             this.commandLine = new CommandLine(this);
@@ -92,9 +99,40 @@ namespace SchneidMaschine.model
             this.auto = new Auto(this);
 
             this.myThreads = new MyThreads(this);
+
+            dbHandler.InsertTest();
+            dbHandler.SelectTest();
         }
 
-       
+        public void SelectTest()
+        {
+
+            string sql = "SELECT * FROM [Table]";
+
+            string cn_string = Properties.Settings.Default.DatabaseConnectionString;
+            SqlConnection cn = new SqlConnection(cn_string);
+            cn.Open();
+
+            SqlCommand command = new SqlCommand(sql, cn);
+
+            //SqlDataAdapter sql_Adapter = new SqlDataAdapter(sql, cn);
+
+            //DataTable tblData = new DataTable();
+            //sql_Adapter.Fill(tblData);
+            using (SqlDataReader reader = command.ExecuteReader())
+            {
+                if (reader.Read())
+                {
+                    Console.WriteLine("DB -> " + String.Format("{0}", reader["Email"]));
+                }
+            }
+
+            cn.Close();
+
+        }
+
+
+
         public void sendText(string text)
         {
             serialPort1.Write(text + "#");
