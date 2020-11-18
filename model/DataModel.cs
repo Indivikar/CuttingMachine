@@ -68,8 +68,13 @@ namespace SchneidMaschine.model
 
         private MyThreads myThreads;
 
-        private int selectedLength; // Streifen-Länge Sollwert in mm
-        private long istWertInMM;    // Streifen-Länge Istwert in mm
+        private STREIFEN selectedStreifen;
+        private int streifenProSchachtel;
+        private int selectedLength;         // Streifen-Länge Sollwert in mm      
+        private long istWertInMM;           // Streifen-Länge Istwert in mm
+
+        private string rollenLaenge;
+        private string rollenLaengeAktuell;
 
         private bool isCutFinished = true; // wenn der Motor zum Abschneiden steht, dann -> true
         private bool isStepperFinished = true;
@@ -80,14 +85,13 @@ namespace SchneidMaschine.model
 
         public DataModel(MainWindow mainWindow)
         {
+            initDB();
             this.mainWindow = mainWindow;
             init();
         }
 
         private void init()
         {
-
-            this.dbHandler = new DBHandler();
             this.serialPort1 = new SerialPort();
             this.portList = SerialPort.GetPortNames();
             this.commandLine = new CommandLine(this);
@@ -99,9 +103,23 @@ namespace SchneidMaschine.model
             this.auto = new Auto(this);
 
             this.myThreads = new MyThreads(this);
+        }
 
-            dbHandler.InsertTest();
-            dbHandler.SelectTest();
+        private void initDB()
+        {
+            this.dbHandler = new DBHandler();
+            this.rollenLaenge = dbHandler.GetRollenLaenge();
+            this.rollenLaengeAktuell = dbHandler.GetRollenLaengeAktuell();
+
+            //dbHandler.CreateTable();
+
+            //dbHandler.InsertTest();
+            //Console.WriteLine("SelectTest");
+            //dbHandler.SelectTest();
+            //Console.WriteLine("UpdateTest");
+            //dbHandler.UpdateTest(70);
+            //Console.WriteLine("SelectTest");
+            //dbHandler.SelectTest();
         }
 
         public void SelectTest()
@@ -165,19 +183,41 @@ namespace SchneidMaschine.model
 
         public string[] PortList { get { return portList; } }
 
+        public int StreifenProSchachtel { get { return streifenProSchachtel; } }
+
         public SerialPort SerialPort1 { get => serialPort1; set => serialPort1 = value; }
+
+        public string RollenLaenge { get => rollenLaenge; set => rollenLaenge = value; }
+        public string RollenLaengeAktuell { get => rollenLaengeAktuell; set => rollenLaengeAktuell = value; }
+
+        
 
         public bool IsCutFinished { get => isCutFinished; set => isCutFinished = value; }
         public bool IsStepperFinished { get => isStepperFinished; set => isStepperFinished = value; }
 
+        public STREIFEN SelectedStreifen { get => selectedStreifen; 
+            set 
+            { 
+                selectedStreifen = value;
+
+                if (selectedStreifen.Equals(STREIFEN.C4_40_Schachtel_KURZ)) streifenProSchachtel = 6;
+                if (selectedStreifen.Equals(STREIFEN.C4_40_Schachtel_LANG)) streifenProSchachtel = 2;
+                if (selectedStreifen.Equals(STREIFEN.C4_70_Deckel)) streifenProSchachtel = 1;
+                if (selectedStreifen.Equals(STREIFEN.C5_40_Deckel)) streifenProSchachtel = 2;
+            } 
+        }
+
         public void setSelectedLength(STREIFEN wert)
         {
-            SelectedLength = (int) wert;           
+            this.SelectedStreifen = wert;
+            SelectedLength = (int) wert;
+            auto.SetMaxDurchlauf();
         }
 
         public void setSelectedLength(string wert)
         {
             SelectedLength = Int32.Parse(wert);
+            auto.SetMaxDurchlauf();
         }
 
         public int SelectedLength { get => selectedLength; 

@@ -29,7 +29,13 @@ namespace SchneidMaschine.pages
             InitializeComponent();
             this.dataModel = dataModel;
             this.commandLine = dataModel.CommandLine;
-            
+
+            init();
+
+        }
+
+        private void init() {
+            this.RestLaengeRolle.Text = dataModel.RollenLaengeAktuell;
         }
 
         private void BtnClickHome(object sender, RoutedEventArgs e)
@@ -88,6 +94,12 @@ namespace SchneidMaschine.pages
             dataModel.sendText(commandLine.getCommandLine());           
         }
 
+        private void BtnClickKopfschnitt(object sender, RoutedEventArgs e)
+        {
+            commandLine.setCommandLine(COMMAND.schneidenStart, 0, ToggleButton_Direction.IsChecked == true);
+            dataModel.sendText(commandLine.getCommandLine());
+        }
+
         private void ToggleBtn_Click_Handwheel(object sender, RoutedEventArgs e)
         {
             bool b = this.ToggleBtn_Handwheel.IsChecked == true;
@@ -134,6 +146,7 @@ namespace SchneidMaschine.pages
         {
             this.BtnStop.IsEnabled = !this.StackPanelControls.IsEnabled;
         }
+
     }
 }
 

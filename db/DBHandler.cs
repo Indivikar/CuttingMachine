@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -17,9 +18,93 @@ namespace SchneidMaschine.db
             this.connection = new SqlConnection(connect_string);
         }
 
+
+
+        public string GetRollenLaenge()
+        {
+            string wert = "";
+
+            string sql = "SELECT * FROM [RollenLaenge] WHERE id=1";
+
+            SqlCommand command = new SqlCommand(sql, connection);
+
+            connection.Open();
+
+            using (SqlDataReader reader = command.ExecuteReader())
+            {
+                if (reader.Read())
+                {
+                    wert = String.Format("{0}", reader["RollenLaengeGesamt"]);
+                    Console.WriteLine("RollenLaengeGesamt -> " + wert);
+                }
+            }
+
+            connection.Close();
+
+            return wert;
+        }
+
+        public string GetRollenLaengeAktuell()
+        {
+            string wert = "";
+
+            string sql = "SELECT * FROM [RollenTotal] WHERE id=1";
+
+            SqlCommand command = new SqlCommand(sql, connection);
+
+            connection.Open();
+
+            using (SqlDataReader reader = command.ExecuteReader())
+            {
+                if (reader.Read())
+                {
+                    wert = String.Format("{0}", reader["RollenLaengeAktuell"]);
+                    Console.WriteLine("RollenLaengeAktuell -> " + wert);
+                }
+            }
+
+            connection.Close();
+
+            return wert;
+        }
+
+        public void CreateTable() 
+        {
+            try
+            {
+                String query = "CREATE TABLE LaufzeitTotal(ID int IDENTITY(1, 1) PRIMARY KEY, geschnitten_40er bigint, geschnitten_70er bigint, Rollen bigint)";
+                SqlCommand command = new SqlCommand(query, connection);
+                connection.Open();
+
+                command.ExecuteNonQuery();
+
+                Console.WriteLine("Table Created Successfully...");
+                connection.Close();
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("exception occured while creating table:" + e.Message + "\t" + e.GetType());
+                connection.Close();
+            }
+        }
+
+        public void UpdateTest(long wert)
+        {
+            string sql = "UPDATE LaufzeitTotal SET geschnitten_40er = " + wert + " WHERE id = 1";
+
+            connection.Open();
+
+            SqlCommand command = new SqlCommand(sql, connection);
+            command.ExecuteNonQuery();
+
+            connection.Close();
+
+        }
+
         public void SelectTest() 
         {
-            string sql = "SELECT * FROM [Table]";
+            string sql = "SELECT * FROM [LaufzeitTotal]";
 
             connection.Open();
 
@@ -29,7 +114,7 @@ namespace SchneidMaschine.db
             {
                 if (reader.Read())
                 {
-                    Console.WriteLine("DB -> " + String.Format("{0}", reader["FullName"]));
+                    Console.WriteLine("DB -> " + String.Format("{0}", reader["geschnitten_40er"]));
                 }
             }
 
@@ -37,7 +122,7 @@ namespace SchneidMaschine.db
             {
                 while (reader.Read())
                 {
-                    Console.WriteLine("DB -> " + String.Format("{0}", reader["Email"]));
+                    Console.WriteLine("DB -> " + String.Format("{0}", reader["geschnitten_70er"]));
                 }
             }
 

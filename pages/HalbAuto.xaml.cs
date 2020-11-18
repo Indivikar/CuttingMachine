@@ -35,7 +35,13 @@ namespace SchneidMaschine.pages
             this.dataModel = dataModel;
             this.commandLine = dataModel.CommandLine;
 
+            init();
+        }
+
+        private void init()
+        {
             this.BtnModusHalbAutoStop.IsEnabled = false;
+            this.RestLaengeRolle.Text = dataModel.RollenLaengeAktuell;
         }
 
         async Task<bool> TaskHalbAutoModus()

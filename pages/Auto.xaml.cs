@@ -37,8 +37,42 @@ namespace SchneidMaschine.pages
             this.dataModel = dataModel;
             this.commandLine = dataModel.CommandLine;
 
+            init();
+        }
+
+        private void init()
+        {
             this.BtnModusAutoPause.IsEnabled = false;
-            this.BtnModusAutoStop.IsEnabled = false;   
+            this.BtnModusAutoStop.IsEnabled = false;
+            this.RestLaengeRolle.Text = dataModel.RollenLaengeAktuell;
+        }
+
+        public void SetMaxDurchlauf() 
+        {
+            int selectedLength = dataModel.SelectedLength;
+            int rollenLaengeAktuell = int.Parse(dataModel.RollenLaengeAktuell);
+
+            int erg = rollenLaengeAktuell / selectedLength;
+
+            TextBlockMaxRuns.Text = erg + "";
+
+            SetMaxStreifen(erg);
+        }
+
+        public void SetMaxStreifen(int wert)
+        {
+            int erg = wert * 24;
+
+            TextBlockMaxStreifen.Text = erg + "";
+
+            SetMaxSchachteln(erg);
+        }
+
+        public void SetMaxSchachteln(int wert)
+        {
+            int erg = wert / dataModel.StreifenProSchachtel;
+
+            TextBlockMaxSchachteln.Text = erg + "";
         }
 
         async Task<bool> TaskAutoModus(int runs)
@@ -146,8 +180,30 @@ namespace SchneidMaschine.pages
 
         private void TextBoxRuns_TextChanged(object sender, TextChangedEventArgs e)
         {
+            string textRuns = this.TextBoxRuns.Text;
+
             this.TextBoxRunsIst.Text = "0";
-            this.TextBoxRunsSoll.Text = this.TextBoxRuns.Text;
+
+            if (textRuns == null || textRuns.Equals(""))
+            {
+                this.TextBoxRunsSoll.Text = "0";
+                this.TextBlockStreifen.Text = "0";
+                this.TextBlockSchachteln.Text = "0";
+                this.TextBlockSchachteln.Text = "0";
+            }
+            else 
+            {
+                this.TextBoxRunsSoll.Text = textRuns;
+
+                int runs = Int32.Parse(textRuns);
+                TextBlockStreifen.Text = runs * 24 + "";
+
+
+                int erg = runs * 24 / dataModel.StreifenProSchachtel;
+                this.TextBlockSchachteln.Text = erg + "";
+            }
+
+
         }
 
         private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)

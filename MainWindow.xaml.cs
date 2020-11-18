@@ -64,6 +64,9 @@ namespace SchneidMaschine
             BtnTrennen.IsEnabled = false;
             //Main.IsEnabled = false;
 
+            TextBlockAufRolle.Text = dataModel.RollenLaengeAktuell;
+            TextBlockRolleTotal.Text = dataModel.RollenLaenge;
+
             comboBoxPorts.ItemsSource = dataModel.PortList;
 
             SetText("&-----------------------------------------------------------------------------------------------\n" +
@@ -446,6 +449,11 @@ namespace SchneidMaschine
         {
             ButtonStatsOpen.Visibility = Visibility.Visible;
             ButtonStatsClose.Visibility = Visibility.Collapsed;
+        }
+
+        private void ButtonNeueRolle_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }
