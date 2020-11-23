@@ -44,35 +44,60 @@ namespace SchneidMaschine.pages
         {
             this.BtnModusAutoPause.IsEnabled = false;
             this.BtnModusAutoStop.IsEnabled = false;
-            this.RestLaengeRolle.Text = dataModel.RollenLaengeAktuell;
+
         }
 
         public void SetMaxDurchlauf() 
         {
             int selectedLength = dataModel.SelectedLength;
-            int rollenLaengeAktuell = int.Parse(dataModel.RollenLaengeAktuell);
+            long rollenLaengeAktuell = dataModel.Statistik.RolleIstLaenge;
 
-            int erg = rollenLaengeAktuell / selectedLength;
+            long erg = rollenLaengeAktuell / Convert.ToInt64(selectedLength);
 
             TextBlockMaxRuns.Text = erg + "";
 
             SetMaxStreifen(erg);
         }
 
-        public void SetMaxStreifen(int wert)
+        public void SetMaxStreifen(long wert)
         {
-            int erg = wert * 24;
+            long erg = wert * dataModel.StreifenProSchnitt40er;
 
             TextBlockMaxStreifen.Text = erg + "";
 
             SetMaxSchachteln(erg);
         }
 
-        public void SetMaxSchachteln(int wert)
+        public void SetMaxSchachteln(long wert)
         {
-            int erg = wert / dataModel.StreifenProSchachtel;
+            long erg = wert / dataModel.StreifenProSchachtel;
 
             TextBlockMaxSchachteln.Text = erg + "";
+        }
+
+        public void output() 
+        {
+            string textRuns = this.TextBoxRuns.Text;
+
+            this.TextBoxRunsIst.Text = "0";
+
+            if (textRuns == null || textRuns.Equals(""))
+            {
+                this.TextBoxRunsSoll.Text = "0";
+                this.TextBlockStreifen.Text = "0";
+                this.TextBlockSchachteln.Text = "0";
+                this.TextBlockSchachteln.Text = "0";
+            }
+            else
+            {
+                this.TextBoxRunsSoll.Text = textRuns;
+
+                long runs = Int64.Parse(textRuns);
+                TextBlockStreifen.Text = runs * 24 + "";
+
+                long erg = runs * dataModel.StreifenProSchnitt40er / dataModel.StreifenProSchachtel;
+                this.TextBlockSchachteln.Text = erg + "";
+            }
         }
 
         async Task<bool> TaskAutoModus(int runs)
@@ -95,12 +120,12 @@ namespace SchneidMaschine.pages
 
                 while (!dataModel.IsCutFinished) Thread.Sleep(1000);
 
-                commandLine. setCommandLine(COMMAND.stepperStart, dataModel.SelectedLength, true);
+                commandLine. setCommandLine(COMMAND.stepperStart, dataModel.SelectedLength, false);
                 dataModel.sendText(commandLine.getCommandLine());
 
                 while (!dataModel.IsStepperFinished) Thread.Sleep(1000);
 
-                commandLine.setCommandLine(COMMAND.schneidenStart, 0, true);
+                commandLine.setCommandLine(COMMAND.schneidenStart, 0, false);
                 dataModel.sendText(commandLine.getCommandLine());
 
                 // for-Schleife pausieren, wenn Pause gedrückt wurde
@@ -180,30 +205,7 @@ namespace SchneidMaschine.pages
 
         private void TextBoxRuns_TextChanged(object sender, TextChangedEventArgs e)
         {
-            string textRuns = this.TextBoxRuns.Text;
-
-            this.TextBoxRunsIst.Text = "0";
-
-            if (textRuns == null || textRuns.Equals(""))
-            {
-                this.TextBoxRunsSoll.Text = "0";
-                this.TextBlockStreifen.Text = "0";
-                this.TextBlockSchachteln.Text = "0";
-                this.TextBlockSchachteln.Text = "0";
-            }
-            else 
-            {
-                this.TextBoxRunsSoll.Text = textRuns;
-
-                int runs = Int32.Parse(textRuns);
-                TextBlockStreifen.Text = runs * 24 + "";
-
-
-                int erg = runs * 24 / dataModel.StreifenProSchachtel;
-                this.TextBlockSchachteln.Text = erg + "";
-            }
-
-
+            output();
         }
 
         private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)

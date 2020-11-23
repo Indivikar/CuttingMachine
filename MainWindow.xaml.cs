@@ -1,4 +1,5 @@
-﻿using SchneidMaschine.model;
+﻿using SchneidMaschine.db;
+using SchneidMaschine.model;
 using SchneidMaschine.pages;
 using System;
 using System.Collections.Generic;
@@ -44,7 +45,7 @@ namespace SchneidMaschine
         public MainWindow()
         {
             InitializeComponent();
-            this.dataModel = new DataModel(this);
+            this.dataModel = new DataModel(this);            
             this.serialPort1 = dataModel.SerialPort1;
             this.commandLine = dataModel.CommandLine;
 
@@ -63,9 +64,6 @@ namespace SchneidMaschine
             BtnVerbinden.IsEnabled = true;
             BtnTrennen.IsEnabled = false;
             //Main.IsEnabled = false;
-
-            TextBlockAufRolle.Text = dataModel.RollenLaengeAktuell;
-            TextBlockRolleTotal.Text = dataModel.RollenLaenge;
 
             comboBoxPorts.ItemsSource = dataModel.PortList;
 
@@ -322,12 +320,22 @@ namespace SchneidMaschine
                         Console.WriteLine("COMMAND.schneidenBeendet");
                         dataModel.IsCutFinished = true;
                         Main.IsEnabled = true;
+                        refreshStats();
+                        dataModel.DBHandler.updateCut();
+                        break;
+                    }
+
+                case COMMAND.kopfSchnittBeendet:
+                    {
+                        Console.WriteLine("COMMAND.kopfSchnittBeendet");
+                        dataModel.IsCutFinished = true;
+                        Main.IsEnabled = true;
                         break;
                     }
 
                 case COMMAND.steps:
                     {
-                        Console.WriteLine("COMMAND.steps");
+                        Console.WriteLine("COMMAND.steps_" + befehl[1]);
                         dataModel.setIstWert(befehl[1]);
                         //dataModel.EinzelSchritt.setIstWertInMM(befehl[1]);
                         break;
@@ -370,15 +378,55 @@ namespace SchneidMaschine
                 case COMMAND.resetIstWert:
                     {
                         Console.WriteLine("COMMAND.resetIstWert");
-                        dataModel.EinzelSchritt.streifenIstWert.Text = "0";
-                        dataModel.HalbAuto.streifenIstWert.Text = "0";
-                        dataModel.Auto.streifenIstWert.Text = "0";
+
+                        //Statistik stats = dataModel.Statistik;
+
+                        //long streifenLaengeIst = stats.StreifenLaengeIst;
+
+                        //stats.RolleIstLaenge -= streifenLaengeIst;
+                        //stats.HeuteRolleAbgewickelt += streifenLaengeIst;
+                        //stats.StreifenLaengeIst = 0;
+
+                        //dataModel.EinzelSchritt.streifenIstWert.Text = "0";
+                        //dataModel.HalbAuto.streifenIstWert.Text = "0";
+                        //dataModel.Auto.streifenIstWert.Text = "0";
                         break;
                     }
 
                 default: break;
             }
         }
+
+        private void refreshStats() 
+        {
+            Statistik stats = dataModel.Statistik;
+
+            long streifenLaengeIst = stats.StreifenLaengeIst;
+
+            bool a = dataModel.SelectedStreifen.Equals(STREIFEN.C4_40_Schachtel_KURZ);
+            bool b = dataModel.SelectedStreifen.Equals(STREIFEN.C4_40_Schachtel_LANG);
+            bool c = dataModel.SelectedStreifen.Equals(STREIFEN.C4_70_Deckel);
+
+            if(a) stats.HeuteStreifen40erKurz += dataModel.StreifenProSchnitt40er;
+            if(b) stats.HeuteStreifen40erLang += dataModel.StreifenProSchnitt40er;
+            if(c) stats.HeuteStreifen70erDeckel += dataModel.StreifenProSchnitt70er;
+            stats.HeuteRolleAbgewickelt += streifenLaengeIst;
+
+            if(a) stats.RolleStreifen40erKurz += dataModel.StreifenProSchnitt40er;
+            if(b) stats.RolleStreifen40erLang += dataModel.StreifenProSchnitt40er;
+            if(c) stats.RolleStreifen70erDeckel += dataModel.StreifenProSchnitt70er;
+            stats.RolleIstLaenge -= streifenLaengeIst;
+
+            if(a) stats.LangzeitStreifen40erKurz += dataModel.StreifenProSchnitt40er;
+            if(b) stats.LangzeitStreifen40erLang += dataModel.StreifenProSchnitt40er;
+            if(c) stats.LangzeitStreifen70erDeckel += dataModel.StreifenProSchnitt70er;
+
+
+            stats.StreifenLaengeIst = 0;
+
+            dataModel.Auto.SetMaxDurchlauf();
+        }
+
 
         private void isConnected()
         {
@@ -451,8 +499,25 @@ namespace SchneidMaschine
             ButtonStatsClose.Visibility = Visibility.Collapsed;
         }
 
+        private void ButtonHeuteReset_Click(object sender, RoutedEventArgs e)
+        {
+            dataModel.DBHandler.resetHeute();
+
+        }
+
         private void ButtonNeueRolle_Click(object sender, RoutedEventArgs e)
         {
+            dataModel.DBHandler.resetRolle();
+
+            dataModel.Statistik.LangzeitVerbrauchteRollen += 1;
+            dataModel.DBHandler.updateVerbrauchteRolle();
+
+            //dataModel.DBHandler.UpdateTest(999);
+        }
+
+        private void ButtonLangzeitReset_Click(object sender, RoutedEventArgs e)
+        {
+            dataModel.DBHandler.resetLangzeit();
 
         }
     }

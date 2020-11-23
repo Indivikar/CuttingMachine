@@ -1,4 +1,6 @@
 // Config
+double mmInSteps = 14.2;         // wieviel Steps sind ein mm
+
 int startDelay = 5000;          // Start-Pause zwischen den Steps für langsamen Anlauf vom SchrittMotor
 int minDelay = 500;             // min-Pause zwischen den Steps, beeinflusst die Drehzahl, darf nicht < 200 sein
 
@@ -25,6 +27,8 @@ boolean lockA = false;          //
 boolean lockB = false;          //
 
 boolean isMotorRunning = false; // ist der Motor zum abschneiden fertig (damit der Befehl nur einmal gesendet wird)
+
+boolean isKopfSchnitt = false;  // der Kopfschnitt soll nicht mit in die Statistik aufgenommen werden
 
 boolean allesStoppen = false;   // true = for-Schleife für Steps vom Schrittmotor wird unterbrochen
 boolean isHandradOn = false;    //
@@ -63,7 +67,7 @@ String appendSerialData = "";   // einzelne Zeichen in eine Zeichenkette umwande
 
   void loop() {
 
-      taster();
+      tasterSchneiden();
       dataReceived();   
       motorFinished();
 
@@ -79,7 +83,7 @@ String appendSerialData = "";   // einzelne Zeichen in eine Zeichenkette umwande
         
   }
 
-  void taster() {
+  void tasterSchneiden() {
       if(digitalRead(cutTaster) == 0  && !isMotorRunning){
           schneiden();
       }
@@ -87,8 +91,18 @@ String appendSerialData = "";   // einzelne Zeichen in eine Zeichenkette umwande
 
   void motorFinished() {
       valMotorRunning = digitalRead(motorRunning);
-      if(valMotorRunning == HIGH && isMotorRunning){       
-          sendCommand("schneidenBeendet_", true);
+      if(valMotorRunning == HIGH && isMotorRunning){
+           
+          if(isKopfSchnitt){
+            sendCommand("kopfSchnittBeendet_", true);
+            isKopfSchnitt = false;
+          } else {
+            sendCommand("schneidenBeendet_", true);
+          }
+
+
+          stepCounter = 0; 
+          //sendCommand("steps_" + String(stepCounter), true);        
           isMotorRunning = false;
       }
   }
@@ -136,11 +150,11 @@ String appendSerialData = "";   // einzelne Zeichen in eine Zeichenkette umwande
               sendText("Handrad An");                       // Sende Bestätigung, das Handrad an ist
               
               // nur zum simulieren vom handrad
-              for(int i = 0; i < 100; i++) {
-                  stepper(1, "forward");
-                  //delay(100);
-                  sendCommand("steps_" + String(stepCounter), false);
-              }   
+//              for(int i = 0; i < 100; i++) {
+//                  stepper(1, "forward");
+//                  //delay(100);
+//                  sendCommand("steps_" + String(stepCounter), false);
+//              }   
           } 
           
           if(befehl.equals("handradOff")) {
@@ -174,6 +188,11 @@ String appendSerialData = "";   // einzelne Zeichen in eine Zeichenkette umwande
 //              sendCommand("steps_" + String(stepCounter), true);      // Sende Bestätigung das Schneiden fertig ist
           }
 
+          if(befehl.equals("kopfSchnittStart")) {   
+                isKopfSchnitt = true;
+                schneiden();
+          }
+
           if(befehl.equals("resetIstWert")) {                         // reset den Counter 
               //sendText("istwert");                                    
               stepCounter = 0;                                        // den Counter wieder auf 0 setzen
@@ -202,12 +221,12 @@ String appendSerialData = "";   // einzelne Zeichen in eine Zeichenkette umwande
 
   void schneiden() {
       sendCommand("schneidenStartet_", true);                 // Sende Bestätigung, das Schneiden gestartet wird   
-      isMotorRunning = true;                                 // Motor abschneiden zurücksetzen
+      isMotorRunning = true;                                  // Motor abschneiden zurücksetzen
       digitalWrite(cut, LOW);                                 // Schalte Relay -> Schneiden Start
       delay(500);                                             // Pause zwischen an und aus, sonst schaltet Relay nicht
       digitalWrite(cut, HIGH);                                // Schalte Relay -> Schneiden Stop
-      stepCounter = 0;                                        // nach dem Schnitt, den Counter wieder auf 0 setzen
-      sendCommand("steps_" + String(stepCounter), true);      // Sende Bestätigung das Schneiden fertig ist
+      //stepCounter = 0;                                        // nach dem Schnitt, den Counter wieder auf 0 setzen
+      //sendCommand("steps_" + String(stepCounter), true);      // Sende Bestätigung das Schneiden fertig ist
   }
 
   void forward(){                             // Handrad -> in welche Richtung wird gedreht hier 
@@ -236,28 +255,30 @@ String appendSerialData = "";   // einzelne Zeichen in eine Zeichenkette umwande
      }
   }
 
-  void setStep(){                             // Hier wird ein Step gemacht, wenn das Handrad um eins gedreht wurde
-      if(lockA && lockB) {                    // wenn Signal "A" und "B" erkannt wurden
-         if (oneStep == 0) {                  // ist zur Kontrolle, das wirklich nur ein Step gemacht wird, pro Durchlauf
+  void setStep(){                               // Hier wird ein Step gemacht, wenn das Handrad um eins gedreht wurde
+      if(lockA && lockB) {                      // wenn Signal "A" und "B" erkannt wurden
+         if (oneStep == 0) {                    // ist zur Kontrolle, das wirklich nur ein Step gemacht wird, pro Durchlauf
+
+             int stepsProMM = (int) mmInSteps;  // Steps in mm
              
-             if(setDir == 1) {                // Wenn Drehrichtung 1 
-                stepper(1, "forward");        // mach ein Schritt nach vorne
-                sendCommand("steps_"          // sende Step an die C#-App
+             if(setDir == 1) {                  // Wenn Drehrichtung 1 
+                stepper(stepsProMM, "forward");        // mach ein Schritt nach vorne
+                sendCommand("steps_"            // sende Step an die C#-App
                     + String(stepCounter), false);   
              }  
       
-             if(setDir == 2) {                // Wenn Drehrichtung 2
-                  stepper(1, "backward");     // mach ein Schritt zurück
-                  sendCommand("steps_"        // sende Step an die C#-App
+             if(setDir == 2) {                  // Wenn Drehrichtung 2
+                  stepper(stepsProMM, "backward");     // mach ein Schritt zurück
+                  sendCommand("steps_"          // sende Step an die C#-App
                       + String(stepCounter), false); 
              }  
          }
-         oneStep = 1;                         // es wurde ein step gemacht
+         oneStep = 1;                           // es wurde ein step gemacht
      } 
   
-     if (!lockA && !lockB) {                  // wenn kein Signal mehr ansteht
-        oneStep = 0;                          // Reset -> es wurde ein Step gemacht
-        setDir = 0;                           // Reset -> Drehrichtung
+     if (!lockA && !lockB) {                    // wenn kein Signal mehr ansteht
+        oneStep = 0;                            // Reset -> es wurde ein Step gemacht
+        setDir = 0;                             // Reset -> Drehrichtung
      }
   }
 

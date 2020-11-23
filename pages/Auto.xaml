@@ -23,11 +23,11 @@
                             <TextBlock x:Name="streifenIstWert" Text="0000" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24" Margin="0,0,0,0" />
                             <TextBlock Text="mm" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24" Margin="5,0,0,0" />
                         </StackPanel>
-                        <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Height="40" Orientation="Horizontal" Margin="0,0,0,0">
+                        <!--<StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Height="40" Orientation="Horizontal" Margin="0,0,0,0">
                             <TextBlock Text="Rest-Länge Rolle: " HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24" Margin="0,0,38,0" />
                             <TextBlock x:Name="RestLaengeRolle" Text="0000000" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24" Margin="0,0,0,0" />
                             <TextBlock Text="mm" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24" Margin="5,0,0,0" />
-                        </StackPanel>
+                        </StackPanel>-->
                         <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Height="40" Orientation="Horizontal" Margin="0,0,0,0" Width="320">
                             <TextBlock Text="Durchläufe: " HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24" Margin="0,0,98,0" />
                             <TextBlock x:Name="TextBoxRunsIst" Text="0" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24" Margin="0,0,0,0"  />
@@ -86,7 +86,11 @@
                                 
                                 <TextBlock Text="max. Durchläufe: " FontSize="18" Grid.Column="0" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center"  Margin="5,0,20,0" />
                                 <TextBlock x:Name="TextBlockMaxRuns" FontSize="18" Text="0" Grid.Column="1" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center"  Margin="0,0,0,0" />
+
+                                <TextBlock Text="Rest-Länge Rolle (in mm): " Grid.Column="2" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="18" Margin="40,0,20,0" />
+                                <TextBlock x:Name="RestLaengeRolle" Grid.Column="3" Grid.Row="2" Text="0000000" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18" Margin="0,0,0,0" />
                                 
+
                             </Grid>
                         </StackPanel>
                         <Button x:Name="BtnModusAutoStart" Click="BtnClickModusAutoStart" 

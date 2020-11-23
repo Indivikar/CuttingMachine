@@ -267,27 +267,28 @@
                         <RowDefinition  />
                         <RowDefinition  />
                     </Grid.RowDefinitions>
-                    <TextBlock Text="Heute-Total" Grid.ColumnSpan="2" FontSize="20"  HorizontalAlignment="center" VerticalAlignment="Top" Margin="0,0,0,0"/>
+                    <TextBlock Text="Heute-Total" Grid.Column="0" Grid.Row="0" FontSize="20"  HorizontalAlignment="center" VerticalAlignment="Top" Margin="0,0,0,0"/>
+                    <Button x:Name="ButtonHeuteReset" Content="Reset" FontSize="18" Grid.Column="1" Grid.Row="0" Click="ButtonHeuteReset_Click" Height="30" Width="110" HorizontalAlignment="Left" VerticalAlignment="Top" />
                     
                     <Separator Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0" Margin="0,0,0,5" Height="1" VerticalAlignment="Bottom" />
 
                     <TextBlock Text="40er Streifen (kurz):" FontSize="16" Grid.Column="0" Grid.Row="1" Margin="0,0,0,0"/>
-                    <TextBlock Text="0" FontSize="16" Grid.Column="1" Grid.Row="1" />
+                    <TextBlock x:Name="HeuteStreifen40erKurz" Text="0" FontSize="16" Grid.Column="1" Grid.Row="1" />
                     <TextBlock Text="40er Streifen (lang):" FontSize="16" Grid.Column="0" Grid.Row="2" Margin="0,0,0,0"/>
-                    <TextBlock Text="0" FontSize="16" Grid.Column="1" Grid.Row="2" />
+                    <TextBlock x:Name="HeuteStreifen40erLang" Text="0" FontSize="16" Grid.Column="1" Grid.Row="2" />
                     <TextBlock Text="70er Streifen (Deckel):" FontSize="16" Grid.Column="0" Grid.Row="3" Margin="0,0,0,10"/>
-                    <TextBlock Text="0" FontSize="16" Grid.Column="1" Grid.Row="3" />
+                    <TextBlock x:Name="HeuteStreifen70erDeckel" Text="0" FontSize="16" Grid.Column="1" Grid.Row="3" />
                     
                     <TextBlock Text="40er Schachtel (kurz):" FontSize="16" Grid.Column="0" Grid.Row="4" Margin="0,0,0,0"/>
-                    <TextBlock Text="0" FontSize="16" Grid.Column="1" Grid.Row="4" />
+                    <TextBlock x:Name="HeuteSchachtel40erKurz" Text="0" FontSize="16" Grid.Column="1" Grid.Row="4" />
                     <TextBlock Text="40er Schachtel (lang):" FontSize="16" Grid.Column="0" Grid.Row="5" Margin="0,0,0,0"/>
-                    <TextBlock Text="0" FontSize="16" Grid.Column="1" Grid.Row="5" />
+                    <TextBlock x:Name="HeuteSchachtel40erLang" Text="0" FontSize="16" Grid.Column="1" Grid.Row="5" />
                     <TextBlock Text="70er Schachtel (Deckel):" FontSize="16" Grid.Column="0" Grid.Row="6" Margin="0,0,0,10"/>
-                    <TextBlock Text="0" FontSize="16" Grid.Column="1" Grid.Row="6" />
+                    <TextBlock x:Name="HeuteSchachtel70erDeckel" Text="0" FontSize="16" Grid.Column="1" Grid.Row="6" />
                     
                     <TextBlock Text="Rolle abgewickelt (in mm):" FontSize="16" Grid.Column="0" Grid.Row="7" Margin="0,0,0,0"/>
                     <StackPanel Grid.Column="1" Grid.Row="7" Orientation="Horizontal">
-                        <TextBlock x:Name="TextBlock1" Text="0" FontSize="16"  />
+                        <TextBlock x:Name="HeuteRolleAbgewickelt" Text="0" FontSize="16"  />
                         <!--<TextBlock Text="/" FontSize="16"  />
                         <TextBlock x:Name="TextBlock2"  Text="0" FontSize="16" Margin="0,0,2,0" />
                         <TextBlock Text="mm" FontSize="16"  />-->
@@ -305,24 +306,24 @@
                     <Separator Grid.Column="3" Grid.ColumnSpan="2" Grid.Row="0" Margin="0,0,0,5" Height="1" VerticalAlignment="Bottom" />
                     
                     <TextBlock Text="40er Streifen (kurz):" FontSize="16" Grid.Column="3" Grid.Row="1" Margin="0,0,0,0"/>
-                    <TextBlock Text="0" FontSize="16" Grid.Column="4" Grid.Row="1" />
+                    <TextBlock x:Name="RolleStreifen40erKurz" Text="0" FontSize="16" Grid.Column="4" Grid.Row="1" />
                     <TextBlock Text="40er Streifen (lang):" FontSize="16" Grid.Column="3" Grid.Row="2" Margin="0,0,0,0"/>
-                    <TextBlock Text="0" FontSize="16" Grid.Column="4" Grid.Row="2" />
+                    <TextBlock x:Name="RolleStreifen40erLang" Text="0" FontSize="16" Grid.Column="4" Grid.Row="2" />
                     <TextBlock Text="70er Streifen (Deckel):" FontSize="16" Grid.Column="3" Grid.Row="3" Margin="0,0,0,0"/>
-                    <TextBlock Text="0" FontSize="16" Grid.Column="4" Grid.Row="3" />
+                    <TextBlock x:Name="RolleStreifen70erDeckel" Text="0" FontSize="16" Grid.Column="4" Grid.Row="3" />
 
                     <TextBlock Text="40er Schachtel (kurz):" FontSize="16" Grid.Column="3" Grid.Row="4" Margin="0,0,0,0"/>
-                    <TextBlock Text="0" FontSize="16" Grid.Column="4" Grid.Row="4" />
+                    <TextBlock x:Name="RolleSchachtel40erKurz" Text="0" FontSize="16" Grid.Column="4" Grid.Row="4" />
                     <TextBlock Text="40er Schachtel (lang):" FontSize="16" Grid.Column="3" Grid.Row="5" Margin="0,0,0,0"/>
-                    <TextBlock Text="0" FontSize="16" Grid.Column="4" Grid.Row="5" />
+                    <TextBlock x:Name="RolleSchachtel40erLang" Text="0" FontSize="16" Grid.Column="4" Grid.Row="5" />
                     <TextBlock Text="70er Schachtel (Deckel):" FontSize="16" Grid.Column="3" Grid.Row="6" Margin="0,0,0,0"/>
-                    <TextBlock Text="0" FontSize="16" Grid.Column="4" Grid.Row="6" />
+                    <TextBlock x:Name="RolleSchachtel70erDeckel" Text="0" FontSize="16" Grid.Column="4" Grid.Row="6" />
 
                     <TextBlock Text="auf der Rolle (in mm):" FontSize="16" Grid.Column="3" Grid.Row="7" Margin="0,0,0,0"/>
                     <StackPanel Grid.Column="4" Grid.Row="7" Orientation="Horizontal">
-                        <TextBlock x:Name="TextBlockAufRolle" Text="0" FontSize="16"  />
+                        <TextBlock x:Name="RolleIstLaenge" Text="0" FontSize="16"  />
                         <TextBlock Text="/" FontSize="16"  />
-                        <TextBlock x:Name="TextBlockRolleTotal"  Text="0" FontSize="16" Margin="0,0,2,0" />
+                        <TextBlock x:Name="RolleTotal"  Text="0" FontSize="16" Margin="0,0,2,0" />
                         <!--<TextBlock Text="mm" FontSize="16"  />-->
                     </StackPanel>
 
@@ -332,27 +333,28 @@
                         </Separator.LayoutTransform>
                     </Separator>
 
-                    <TextBlock Text="Laufzeit-Total" FontSize="20" Grid.ColumnSpan="2" Grid.Column="6" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,0,0,0"/>
+                    <TextBlock Text="Laufzeit-Total" FontSize="20"  Grid.Column="6" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,0,0,0"/>
+                    <Button x:Name="ButtonLangzeitReset" Content="Reset" FontSize="18" Grid.Column="7" Grid.Row="0" Click="ButtonLangzeitReset_Click" Height="30" Width="110" HorizontalAlignment="Left" VerticalAlignment="Top" />
 
                     <Separator Grid.Column="6" Grid.ColumnSpan="2" Grid.Row="0" Margin="0,0,0,5" Height="1" VerticalAlignment="Bottom" />
 
                     <TextBlock Text="40er Streifen (kurz):" FontSize="16" Grid.Column="6" Grid.Row="1" Margin="0,0,0,0" />
-                    <TextBlock Text="0" FontSize="16" Grid.Column="7"  Grid.Row="1" Margin="0,0,0,0" />
+                    <TextBlock x:Name="LangzeitStreifen40erKurz" Text="0" FontSize="16" Grid.Column="7"  Grid.Row="1" Margin="0,0,0,0" />
                     <TextBlock Text="40er Streifen (lang):" FontSize="16" Grid.Column="6" Grid.Row="2" Margin="0,0,0,0" />
-                    <TextBlock Text="0" FontSize="16" Grid.Column="7"  Grid.Row="2" Margin="0,0,0,0" />
-                    <TextBlock Text="70er Streifen geschnitten:" FontSize="16" Grid.Column="6" Grid.Row="3" Margin="0,0,0,0"/>
-                    <TextBlock Text="0" FontSize="16" Grid.Column="7" Grid.Row="3" />
+                    <TextBlock x:Name="LangzeitStreifen40erLang" Text="0" FontSize="16" Grid.Column="7"  Grid.Row="2" Margin="0,0,0,0" />
+                    <TextBlock Text="70er Streifen (Deckel):" FontSize="16" Grid.Column="6" Grid.Row="3" Margin="0,0,0,0"/>
+                    <TextBlock x:Name="LangzeitStreifen70erDeckel" Text="0" FontSize="16" Grid.Column="7" Grid.Row="3" />
 
-                    <TextBlock Text="40er Streifen (kurz):" FontSize="16" Grid.Column="6" Grid.Row="4" Margin="0,0,0,0" />
-                    <TextBlock Text="0" FontSize="16" Grid.Column="7"  Grid.Row="4" Margin="0,0,0,0" />
-                    <TextBlock Text="40er Streifen (lang):" FontSize="16" Grid.Column="6" Grid.Row="5" Margin="0,0,0,0" />
-                    <TextBlock Text="0" FontSize="16" Grid.Column="7"  Grid.Row="5" Margin="0,0,0,0" />
-                    <TextBlock Text="70er Streifen geschnitten:" FontSize="16" Grid.Column="6" Grid.Row="6" Margin="0,0,0,0"/>
-                    <TextBlock Text="0" FontSize="16" Grid.Column="7" Grid.Row="6" />
+                    <TextBlock Text="40er Schachtel (kurz):" FontSize="16" Grid.Column="6" Grid.Row="4" Margin="0,0,0,0" />
+                    <TextBlock x:Name="LangzeitSchachtel40erKurz" Text="0" FontSize="16" Grid.Column="7"  Grid.Row="4" Margin="0,0,0,0" />
+                    <TextBlock Text="40er Schachtel (lang):" FontSize="16" Grid.Column="6" Grid.Row="5" Margin="0,0,0,0" />
+                    <TextBlock x:Name="LangzeitSchachtel40erLang" Text="0" FontSize="16" Grid.Column="7"  Grid.Row="5" Margin="0,0,0,0" />
+                    <TextBlock Text="70er Schachtel (Deckel):" FontSize="16" Grid.Column="6" Grid.Row="6" Margin="0,0,0,0"/>
+                    <TextBlock x:Name="LangzeitSchachtel70erDeckel" Text="0" FontSize="16" Grid.Column="7" Grid.Row="6" />
 
-                    <TextBlock Text="Rollen:" FontSize="16" Grid.Column="6" Grid.Row="7" Margin="0,0,0,0"/>
+                    <TextBlock Text="verbrauchte Rollen:" FontSize="16" Grid.Column="6" Grid.Row="7" Margin="0,0,0,0"/>
                     <StackPanel Grid.ColumnSpan="2" Grid.Column="7" Grid.Row="7" Orientation="Horizontal">
-                        <TextBlock Text="0" FontSize="16"  />
+                        <TextBlock x:Name="LangzeitVerbrauchteRollen" Text="0" FontSize="16"  />
                     </StackPanel>
                 </Grid>
             </Grid>

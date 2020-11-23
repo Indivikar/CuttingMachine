@@ -35,7 +35,7 @@ namespace SchneidMaschine.pages
         }
 
         private void init() {
-            this.RestLaengeRolle.Text = dataModel.RollenLaengeAktuell;
+            
         }
 
         private void BtnClickHome(object sender, RoutedEventArgs e)
@@ -127,7 +127,7 @@ namespace SchneidMaschine.pages
             //this.streifenIstWert.Text = "";
             //this.streifenIstWert.Text = Convert.ToString(istWertInSteps);
 
-            dataModel.IstWertInMM = istWertInSteps;
+            //dataModel.IstWertInMM = istWertInSteps;
         }
 
         public void setIstWertInMM(string istWertInSteps)

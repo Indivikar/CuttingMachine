@@ -41,7 +41,6 @@ namespace SchneidMaschine.pages
         private void init()
         {
             this.BtnModusHalbAutoStop.IsEnabled = false;
-            this.RestLaengeRolle.Text = dataModel.RollenLaengeAktuell;
         }
 
         async Task<bool> TaskHalbAutoModus()
@@ -62,7 +61,7 @@ namespace SchneidMaschine.pages
 
             if (!allesStoppen)
             {
-                commandLine.setCommandLine(COMMAND.schneidenStart, 0, true);
+                commandLine.setCommandLine(COMMAND.schneidenStart, 0, false);
                 dataModel.sendText(commandLine.getCommandLine());
             }
 
@@ -70,7 +69,7 @@ namespace SchneidMaschine.pages
 
             if (!allesStoppen)
             {
-                commandLine.setCommandLine(COMMAND.stepperStart, dataModel.SelectedLength, true);
+                commandLine.setCommandLine(COMMAND.stepperStart, dataModel.SelectedLength, false);
                 dataModel.sendText(commandLine.getCommandLine());
             }
 
