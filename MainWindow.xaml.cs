@@ -505,14 +505,17 @@ namespace SchneidMaschine
 
         }
 
+        private void ButtonResetRolle_Click(object sender, RoutedEventArgs e)
+        {
+            dataModel.DBHandler.resetRolle();
+        }
+
         private void ButtonNeueRolle_Click(object sender, RoutedEventArgs e)
         {
             dataModel.DBHandler.resetRolle();
 
             dataModel.Statistik.LangzeitVerbrauchteRollen += 1;
             dataModel.DBHandler.updateVerbrauchteRolle();
-
-            //dataModel.DBHandler.UpdateTest(999);
         }
 
         private void ButtonLangzeitReset_Click(object sender, RoutedEventArgs e)

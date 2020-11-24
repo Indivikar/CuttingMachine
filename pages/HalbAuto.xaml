@@ -52,9 +52,14 @@
                             Margin="5" FontSize="36" Width="330" Height="200" Grid.Column="0" >Start</Button>
                     <Button x:Name="BtnModusHalbAutoStop" Click="BtnClickModusHalbAutoStop" 
                             Margin="5" FontSize="36" Width="330" Height="200" Grid.Column="1" >Stop</Button>
-                    <TextBlock FontSize="24"  Grid.Row="1" Grid.ColumnSpan="2" HorizontalAlignment="Center" TextAlignment="Center" >
-                        Ein Durchlauf ist:<LineBreak/>die Soll-Länge anfahren und einmal abschneiden</TextBlock>
-                    
+                    <StackPanel Margin="0" Grid.Row="1" Grid.ColumnSpan="2">
+                        <Viewbox Height="26" HorizontalAlignment="Left" >
+                            <RadioButton Name="RadioButtonLaenge" GroupName="reinfolge" IsChecked="True">erst Soll-Länge anfahren und danach einmal abschneiden</RadioButton>
+                        </Viewbox>
+                        <Viewbox Height="26" HorizontalAlignment="Left" >
+                            <RadioButton x:Name="RadioButtonSchneiden" GroupName="reinfolge">erst einmal abschneiden und danach Soll-Länge anfahren</RadioButton>
+                        </Viewbox>
+                    </StackPanel>
                 </Grid>
             </StackPanel>
         </Grid>

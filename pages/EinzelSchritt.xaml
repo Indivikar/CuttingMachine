@@ -137,10 +137,10 @@
         </StackPanel>
 
         <Grid Margin="0,0,881,213" VerticalAlignment="Bottom" HorizontalAlignment="Center" >
-            <Button x:Name="BtnStop" Margin="5" FontSize="36" Width="310" Height="100" Click="Btn_Stop" IsEnabled="False" >Stop</Button>
+            <Button x:Name="BtnStop" Margin="10" FontSize="36" Width="310" Height="100" Click="Btn_Stop" IsEnabled="False" >Stop</Button>
         </Grid>
 
-        <StackPanel x:Name="StackPanelControls" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="10,0,10,-10" Orientation="Horizontal" IsEnabledChanged="EnabledChanged">
+        <StackPanel x:Name="StackPanelControls" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="10,0,10,0" Orientation="Horizontal" IsEnabledChanged="EnabledChanged">
             <Grid Margin="0,0,30,0" >
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1*" />

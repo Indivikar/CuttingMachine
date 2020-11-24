@@ -43,28 +43,41 @@ namespace SchneidMaschine.pages
             this.BtnModusHalbAutoStop.IsEnabled = false;
         }
 
-        async Task<bool> TaskHalbAutoModus()
-        {
-            await Task.Run(() => aufgabe());
+        async Task<bool> TaskHalbAutoModus(bool isRadioButtonChecked)
+        {           
+            await Task.Run(() => aufgabe(isRadioButtonChecked));
             return false;
         }
 
-        private void aufgabe()
+        private void aufgabe(bool isRadioButtonChecked)
         {
-                Thread.Sleep(1000);
+            Thread.Sleep(1000);
 
             //dataModel.Auto.Dispatcher.Invoke(() => {
             //    this.TextBoxRunsIst.Text = Convert.ToString(i + 1);
             //});
 
-            while (!dataModel.IsStepperFinished) Thread.Sleep(1000);
-
-            if (!allesStoppen)
+            // Reinfolge -> soll zuerst geschnitten oder auf Länge gefahren werden
+            if (isRadioButtonChecked)
             {
-                commandLine.setCommandLine(COMMAND.schneidenStart, 0, false);
-                dataModel.sendText(commandLine.getCommandLine());
+                laengeAnfahren();
+                abschneiden();
+            }
+            else
+            {
+                abschneiden();
+                laengeAnfahren();
             }
 
+            dataModel.Auto.Dispatcher.Invoke(() =>
+            {
+                this.BtnModusHalbAutoStart.IsEnabled = true;
+                this.BtnModusHalbAutoStop.IsEnabled = false;
+            });
+        }
+
+        private void laengeAnfahren() 
+        {
             while (!dataModel.IsCutFinished) Thread.Sleep(1000);
 
             if (!allesStoppen)
@@ -72,15 +85,17 @@ namespace SchneidMaschine.pages
                 commandLine.setCommandLine(COMMAND.stepperStart, dataModel.SelectedLength, false);
                 dataModel.sendText(commandLine.getCommandLine());
             }
+        }
 
-            // for-Schleife pausieren, wenn Pause gedrückt wurde
-            //while (isPause) Thread.Sleep(200);
+        private void abschneiden()
+        {
+            while (!dataModel.IsStepperFinished) Thread.Sleep(1000);
 
-            dataModel.Auto.Dispatcher.Invoke(() =>
+            if (!allesStoppen)
             {
-                this.BtnModusHalbAutoStart.IsEnabled = true;
-                this.BtnModusHalbAutoStop.IsEnabled = false;
-            });
+                commandLine.setCommandLine(COMMAND.schneidenStart, 0, false);
+                dataModel.sendText(commandLine.getCommandLine());
+            }
         }
 
         private void BtnClickHome(object sender, RoutedEventArgs e)
@@ -105,7 +120,7 @@ namespace SchneidMaschine.pages
             this.BtnModusHalbAutoStart.IsEnabled = false;
             this.BtnModusHalbAutoStop.IsEnabled = true;
 
-            this.taskHalbAutoRun = TaskHalbAutoModus();
+            this.taskHalbAutoRun = TaskHalbAutoModus(RadioButtonLaenge.IsChecked == true);
 
             //commandLine.setCommandLine(COMMAND.stepperStart, dataModel.SelectedLength, false);
             //dataModel.sendText(commandLine.getCommandLine());
