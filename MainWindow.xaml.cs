@@ -63,7 +63,7 @@ namespace SchneidMaschine
         {
             BtnVerbinden.IsEnabled = true;
             BtnTrennen.IsEnabled = false;
-            //Main.IsEnabled = false;
+            Main.IsEnabled = false;
 
             comboBoxPorts.ItemsSource = dataModel.PortList;
 
@@ -320,7 +320,7 @@ namespace SchneidMaschine
                         Console.WriteLine("COMMAND.schneidenBeendet");
                         dataModel.IsCutFinished = true;
                         Main.IsEnabled = true;
-                        refreshStats();
+                        refreshStats(false);
                         dataModel.DBHandler.updateCut();
                         break;
                     }
@@ -330,6 +330,8 @@ namespace SchneidMaschine
                         Console.WriteLine("COMMAND.kopfSchnittBeendet");
                         dataModel.IsCutFinished = true;
                         Main.IsEnabled = true;
+                        refreshStats(true);
+                        dataModel.DBHandler.updateCut();
                         break;
                     }
 
@@ -379,17 +381,9 @@ namespace SchneidMaschine
                     {
                         Console.WriteLine("COMMAND.resetIstWert");
 
-                        //Statistik stats = dataModel.Statistik;
+                        Statistik stats = dataModel.Statistik;
+                        stats.StreifenLaengeIst = 0;
 
-                        //long streifenLaengeIst = stats.StreifenLaengeIst;
-
-                        //stats.RolleIstLaenge -= streifenLaengeIst;
-                        //stats.HeuteRolleAbgewickelt += streifenLaengeIst;
-                        //stats.StreifenLaengeIst = 0;
-
-                        //dataModel.EinzelSchritt.streifenIstWert.Text = "0";
-                        //dataModel.HalbAuto.streifenIstWert.Text = "0";
-                        //dataModel.Auto.streifenIstWert.Text = "0";
                         break;
                     }
 
@@ -397,15 +391,15 @@ namespace SchneidMaschine
             }
         }
 
-        private void refreshStats() 
+        private void refreshStats(bool isKopfschnitt) 
         {
             Statistik stats = dataModel.Statistik;
 
             long streifenLaengeIst = stats.StreifenLaengeIst;
 
-            bool a = dataModel.SelectedStreifen.Equals(STREIFEN.C4_40_Schachtel_KURZ);
-            bool b = dataModel.SelectedStreifen.Equals(STREIFEN.C4_40_Schachtel_LANG);
-            bool c = dataModel.SelectedStreifen.Equals(STREIFEN.C4_70_Deckel);
+            bool a = dataModel.SelectedStreifen.Equals(STREIFEN.C4_40_Schachtel_KURZ) && !isKopfschnitt;
+            bool b = dataModel.SelectedStreifen.Equals(STREIFEN.C4_40_Schachtel_LANG) && !isKopfschnitt;
+            bool c = dataModel.SelectedStreifen.Equals(STREIFEN.C4_70_Deckel) && !isKopfschnitt;
 
             if(a) stats.HeuteStreifen40erKurz += dataModel.StreifenProSchnitt40er;
             if(b) stats.HeuteStreifen40erLang += dataModel.StreifenProSchnitt40er;

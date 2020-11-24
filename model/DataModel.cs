@@ -13,6 +13,8 @@ using System.Data;
 using SchneidMaschine.db;
 using System.Globalization;
 using System.Windows.Threading;
+using System.Windows;
+using System.IO;
 
 namespace SchneidMaschine.model
 {
@@ -188,7 +190,7 @@ namespace SchneidMaschine.model
                 mainWindow.RolleSchachtel70erDeckel.Text = wert / StreifenProSchachtel_C4_70_Deckel + "";
             };
             stats.ChangedRolleIstLaenge += () => { mainWindow.RolleIstLaenge.Text = stats.RolleIstLaenge + ""; };
-            stats.ChangedRolleIstLaenge += () => { auto.RestLaengeRolle.Text = stats.RolleIstLaenge + ""; };
+            //stats.ChangedRolleIstLaenge += () => { auto.RestLaengeRolle.Text = stats.RolleIstLaenge + ""; };
             stats.ChangedRolleLaengeGesamt += () => { mainWindow.RolleTotal.Text = stats.RolleLaengeGesamt + ""; };
 
             // Langzeit-Total
@@ -249,7 +251,15 @@ namespace SchneidMaschine.model
 
         public void sendText(string text)
         {
-            serialPort1.Write(text + "#");
+            try
+            {
+                serialPort1.Write(text + "#");
+            }
+            catch (Exception e)
+            {              
+                Console.WriteLine("IOException  source: {0}", e.Source);
+                MessageBox.Show("Der Serial-Port zum Arduino wurde nicht geöffnet.\n\nDas Programm muss neu gestartet werden.", "Serial-Port Error");
+            }           
         }
 
         

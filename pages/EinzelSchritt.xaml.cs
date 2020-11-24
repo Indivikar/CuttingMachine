@@ -96,7 +96,7 @@ namespace SchneidMaschine.pages
 
         private void BtnClickKopfschnitt(object sender, RoutedEventArgs e)
         {
-            commandLine.setCommandLine(COMMAND.schneidenStart, 0, ToggleButton_Direction.IsChecked == true);
+            commandLine.setCommandLine(COMMAND.kopfSchnittStart, 0, ToggleButton_Direction.IsChecked == true);
             dataModel.sendText(commandLine.getCommandLine());
         }
 

@@ -65,6 +65,7 @@
                             <Grid  Margin="20,0,30,0" >
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="1*" />
+                                    <ColumnDefinition Width="60" />
                                     <ColumnDefinition Width="1*" />
                                     <ColumnDefinition Width="1*" />
                                     <ColumnDefinition Width="1*" />
@@ -76,19 +77,25 @@
                                 </Grid.RowDefinitions>
                                 <TextBlock Text="Streifen: " FontSize="18" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center"  Margin="5,0,20,0" />
                                 <TextBlock x:Name="TextBlockStreifen" FontSize="18" Text="0" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center"  Margin="0,0,0,0" />
-                                <TextBlock Text="Schachteln: " FontSize="18" Grid.Column="2" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center"  Margin="40,0,20,0" />
-                                <TextBlock x:Name="TextBlockSchachteln" FontSize="18" Text="0" Grid.Column="3" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center"  Margin="0,0,0,0" />
+                                <TextBlock Text="Schachteln: " FontSize="18" Grid.Column="0" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center"  Margin="5,0,20,0" />
+                                <TextBlock x:Name="TextBlockSchachteln" FontSize="18" Text="0" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center"  Margin="0,0,0,0" />
 
-                                <TextBlock Text="max. Streifen: " FontSize="18" Grid.Column="0" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center"  Margin="5,0,20,0" />
-                                <TextBlock x:Name="TextBlockMaxStreifen" FontSize="18" Text="0" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center"  Margin="0,0,0,0" />
-                                <TextBlock Text="max. Schachteln: " FontSize="18" Grid.Column="2" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center"  Margin="40,0,20,0" />
-                                <TextBlock x:Name="TextBlockMaxSchachteln" FontSize="18" Text="0" Grid.Column="3" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center"  Margin="0,0,0,0" />
+                                <Separator Grid.Column="2" Grid.RowSpan="8" Grid.Row="0" Margin="20,0,15,0" Height="1" HorizontalAlignment="center">
+                                    <Separator.LayoutTransform>
+                                        <RotateTransform Angle="90" />
+                                    </Separator.LayoutTransform>
+                                </Separator>
+
+                                <TextBlock Text="max. Streifen: " FontSize="18" Grid.Column="3" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center"  Margin="5,0,20,0" />
+                                <TextBlock x:Name="TextBlockMaxStreifen" FontSize="18" Text="0" Grid.Column="4" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center"  Margin="0,0,0,0" />
+                                <TextBlock Text="max. Schachteln: " FontSize="18" Grid.Column="3" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center"  Margin="5,0,20,0" />
+                                <TextBlock x:Name="TextBlockMaxSchachteln" FontSize="18" Text="0" Grid.Column="4" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center"  Margin="0,0,0,0" />
                                 
-                                <TextBlock Text="max. Durchläufe: " FontSize="18" Grid.Column="0" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center"  Margin="5,0,20,0" />
-                                <TextBlock x:Name="TextBlockMaxRuns" FontSize="18" Text="0" Grid.Column="1" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center"  Margin="0,0,0,0" />
+                                <TextBlock Text="max. Durchläufe: " FontSize="18" Grid.Column="3" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center"  Margin="5,0,20,0" />
+                                <TextBlock x:Name="TextBlockMaxRuns" FontSize="18" Text="0" Grid.Column="4" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center"  Margin="0,0,0,0" />
 
-                                <TextBlock Text="Rest-Länge Rolle (in mm): " Grid.Column="2" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="18" Margin="40,0,20,0" />
-                                <TextBlock x:Name="RestLaengeRolle" Grid.Column="3" Grid.Row="2" Text="0000000" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18" Margin="0,0,0,0" />
+                                <!--<TextBlock Text="Rest-Länge Rolle (in mm): " Grid.Column="2" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="18" Margin="40,0,20,0" />
+                                <TextBlock x:Name="RestLaengeRolle" Grid.Column="3" Grid.Row="2" Text="0000000" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18" Margin="0,0,0,0" />-->
                                 
 
                             </Grid>

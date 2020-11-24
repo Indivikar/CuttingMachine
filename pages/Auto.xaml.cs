@@ -42,6 +42,7 @@ namespace SchneidMaschine.pages
 
         private void init()
         {
+            this.BtnModusAutoStart.IsEnabled = false;
             this.BtnModusAutoPause.IsEnabled = false;
             this.BtnModusAutoStop.IsEnabled = false;
 
@@ -206,6 +207,28 @@ namespace SchneidMaschine.pages
         private void TextBoxRuns_TextChanged(object sender, TextChangedEventArgs e)
         {
             output();
+
+            if (TextBoxRuns.Text == null || TextBoxRuns.Text.Equals("")) 
+            {
+                BtnModusAutoStart.IsEnabled = false;
+                return;
+            }
+
+            int sollDurchlaeufe = int.Parse(TextBoxRuns.Text);
+            int maxDurchlaeufe = int.Parse(TextBlockMaxRuns.Text);
+
+            if (sollDurchlaeufe > maxDurchlaeufe)
+            {
+                TextBoxRuns.Foreground = Brushes.Red;
+                BtnModusAutoStart.IsEnabled = false;
+            }
+            else
+            {
+                TextBoxRuns.Foreground = Brushes.Black;
+                BtnModusAutoStart.IsEnabled = true;
+            }
+
+            
         }
 
         private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
