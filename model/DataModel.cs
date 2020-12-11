@@ -57,7 +57,7 @@ namespace SchneidMaschine.model
     public partial class DataModel
     {
         // Config
-        private double stepToMillimeter = 14.2; // wieviel Steps sind 1mm
+        private double stepToMillimeter = 12.7; // wieviel Steps sind 1mm
 
         private long c4_40_schachtel_kurz = 6;       // Anzahl streifen pro Schachtel
         private long c4_40_schachtel_lang = 2;       // Anzahl streifen pro Schachtel

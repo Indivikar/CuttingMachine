@@ -2,7 +2,7 @@
 /* Usage of CONTROLLINO library allows you to use CONTROLLINO_xx aliases in your sketch. */
 
 // Config
-double mmInSteps = 14.2;         // wieviel Steps sind ein mm
+double mmInSteps = 12.7;         // wieviel Steps sind ein mm
 
 int startDelay = 5000;          // Start-Pause zwischen den Steps für langsamen Anlauf vom SchrittMotor
 int minDelay = 500;             // min-Pause zwischen den Steps, beeinflusst die Drehzahl, darf nicht < 200 sein
@@ -10,7 +10,7 @@ int minDelay = 500;             // min-Pause zwischen den Steps, beeinflusst die
 int A = 13;                     // Pin Handrad - A
 int B = 12;                     // Pin Handrad - B
 
-int motorRunning = 7;              // Puls -> wenn Motor abschneiden Stoppt
+int motorRunning = 7;           // Puls -> wenn Motor abschneiden Stoppt
 
 int puls = 4;                   // Pin Schrittmotor-Treiber - Puls
 int dir = 5;                    // Pin Schrittmotor-Treiber - Direction
@@ -56,6 +56,7 @@ String appendSerialData = "";   // einzelne Zeichen in eine Zeichenkette umwande
     pinMode(motorRunning, INPUT_PULLUP);   // Input von der LOGO Q3
 
     pinMode(CONTROLLINO_IN0, INPUT);       // Taster Schneiden (muss 12V haben)
+    pinMode(CONTROLLINO_IN1, INPUT);       // Puls -> wenn Motor abschneiden Stoppt (muss 12V haben)
     pinMode(CONTROLLINO_D0, INPUT);        // Schneiden
        
     pinMode(puls, OUTPUT);      // Puls      
