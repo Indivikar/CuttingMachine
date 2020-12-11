@@ -53,6 +53,8 @@ namespace SchneidMaschine.pages
             int selectedLength = dataModel.SelectedLength;
             long rollenLaengeAktuell = dataModel.Statistik.RolleIstLaenge;
 
+            if (rollenLaengeAktuell == 0 || selectedLength == 0) { return; }
+
             long erg = rollenLaengeAktuell / Convert.ToInt64(selectedLength);
 
             TextBlockMaxRuns.Text = erg + "";

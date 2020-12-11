@@ -101,7 +101,7 @@ String appendSerialData = "";   // einzelne Zeichen in eine Zeichenkette umwande
   }
 
   void motorFinished() {
-      valMotorRunning = digitalRead(motorRunning);
+      valMotorRunning = digitalRead(CONTROLLINO_IN1);
       if(valMotorRunning == HIGH && isMotorRunning){
            
           if(isKopfSchnitt){
