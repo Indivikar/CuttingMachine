@@ -27,6 +27,19 @@ namespace SchneidMaschine.model
         C5_40_Deckel = 400,
     }
 
+    public enum CharArduino // Von Arduino zu App
+    {
+        // um den Char auszulesen -> (char)CharArduino.END_CHAR
+        START_CHAR = '~',
+        END_CHAR = '@',
+    }
+
+    public enum CharApp // Von App zu Arduino
+    {
+        START_CHAR = '%',
+        END_CHAR = '#',
+    }
+
     public enum COMMAND
     {
         allesStop,
@@ -101,6 +114,11 @@ namespace SchneidMaschine.model
 
         public DataModel(MainWindow mainWindow)
         {
+
+            Console.WriteLine("CharArduino.END_CHAR: " + Char.ToString((char)CharArduino.START_CHAR));
+            
+                
+
             initDB();          
             this.mainWindow = mainWindow;
             init();

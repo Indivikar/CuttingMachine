@@ -57,7 +57,7 @@ String appendSerialData = "";   // einzelne Zeichen in eine Zeichenkette umwande
 
     pinMode(CONTROLLINO_IN0, INPUT);       // Taster Schneiden (muss 12V haben)
     pinMode(CONTROLLINO_IN1, INPUT);       // Puls -> wenn Motor abschneiden Stoppt (muss 12V haben)
-    pinMode(CONTROLLINO_D0, INPUT);        // Schneiden
+    pinMode(CONTROLLINO_D5, INPUT);        // Schneiden
        
     pinMode(puls, OUTPUT);      // Puls      
     pinMode(dir, OUTPUT);       // Direction
@@ -71,12 +71,17 @@ String appendSerialData = "";   // einzelne Zeichen in eine Zeichenkette umwande
     //pinMode(cut, OUTPUT);       // Schneiden
 
     // Ausgangs-Stellung 
-    digitalWrite(CONTROLLINO_D0, LOW);    // Relay Schneiden
+    digitalWrite(CONTROLLINO_D5, LOW);    // Relay Schneiden
     digitalWrite(enable, LOW);  // Schrittmotor-Treiber - Enable
 
   }
 
   void loop() {
+
+    int digitalValueD5 = digitalRead(CONTROLLINO_D5);
+
+//    Serial.print("Digital D5: ");
+//    Serial.println(digitalValueD5);
 
       tasterSchneiden();
       dataReceived();   
@@ -233,9 +238,9 @@ String appendSerialData = "";   // einzelne Zeichen in eine Zeichenkette umwande
   void schneiden() {
       sendCommand("schneidenStartet_", true);                 // Sende Bestätigung, das Schneiden gestartet wird   
       isMotorRunning = true;                                  // Motor abschneiden zurücksetzen
-      digitalWrite(CONTROLLINO_D0, HIGH);                                 // Schalte Relay -> Schneiden Start
+      digitalWrite(CONTROLLINO_D5, HIGH);                                 // Schalte Relay -> Schneiden Start
       delay(500);                                             // Pause zwischen an und aus, sonst schaltet Relay nicht
-      digitalWrite(CONTROLLINO_D0, LOW);                                // Schalte Relay -> Schneiden Stop
+      digitalWrite(CONTROLLINO_D5, LOW);                                // Schalte Relay -> Schneiden Stop
       //stepCounter = 0;                                        // nach dem Schnitt, den Counter wieder auf 0 setzen
       //sendCommand("steps_" + String(stepCounter), true);      // Sende Bestätigung das Schneiden fertig ist
   }
@@ -376,12 +381,12 @@ String appendSerialData = "";   // einzelne Zeichen in eine Zeichenkette umwande
   }
 
   void sendText(String text) {                                  // sende Text an den Serial Monitor, in der C#-App
-        Serial.println("#" + text + "@");                     
+        Serial.println("§" + text + "@");                     
   }
 
   void sendCommand(String text, boolean showText) {             // sende ein Befehl an C#-App (Befehl muss mit "_" enden)
       if(showText) {
-        Serial.println("#" + text + "@");                       // mit Textausgabe im Serial Monitor
+        Serial.println("§" + text + "@");                       // mit Textausgabe im Serial Monitor
       } else {
         Serial.println("%" + text + "@");                       // ohne Textausgabe
       }

@@ -8,11 +8,13 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using MessageBox = System.Windows.Forms.MessageBox;
 
 namespace SchneidMaschine.pages
 {
@@ -69,14 +71,26 @@ namespace SchneidMaschine.pages
         }
 
         private void Btn_100mm_Click(object sender, RoutedEventArgs e)
-        {
+        {            
+            if (ToggleButton_Direction.IsChecked == true && !MessageBoxBack(100))
+            {
+                return;
+            }
+
             StackPanelControls.IsEnabled = false;
+
             commandLine.setCommandLine(COMMAND.stepperStart, 100, ToggleButton_Direction.IsChecked == true);
             dataModel.sendText(commandLine.getCommandLine());
+
         }
 
         private void Btn_soll_Click(object sender, RoutedEventArgs e)
         {
+            if (ToggleButton_Direction.IsChecked == true && !MessageBoxBack(dataModel.SelectedLength))
+            {
+                return;
+            }
+
             StackPanelControls.IsEnabled = false;
 
             commandLine.setCommandLine(COMMAND.stepperStart, dataModel.SelectedLength, ToggleButton_Direction.IsChecked == true);
@@ -145,6 +159,20 @@ namespace SchneidMaschine.pages
         private void EnabledChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             this.BtnStop.IsEnabled = !this.StackPanelControls.IsEnabled;
+        }
+
+        private bool MessageBoxBack(int wert)
+        {
+            DialogResult Result = MessageBox.Show("Willst du wirklich " + wert + "mm zurück Fahren?", "ACHTUNG!" , MessageBoxButtons.YesNo);
+            if (Result == DialogResult.Yes)
+            {
+                return true;
+            }
+            else 
+            {
+                return false;
+            }
+          
         }
 
     }

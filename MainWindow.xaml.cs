@@ -121,7 +121,7 @@ namespace SchneidMaschine
         {
             try
             {
-                serialPort1.Write(textBoxSenden.Text + "#");
+                serialPort1.Write(textBoxSenden.Text + (char)CharApp.END_CHAR);
             }
             catch (Exception error)
             {
@@ -166,7 +166,8 @@ namespace SchneidMaschine
             char[] charArr = text.ToCharArray();
             foreach (char ch in charArr)
             {
-                if (ch.Equals('%') || ch.Equals('#'))
+                // Start der Commandline
+                if (ch.Equals('%') || ch.Equals((char)CharArduino.START_CHAR))
                 {
                     newText = null;
                     befehlBuilder.Clear();
@@ -174,7 +175,8 @@ namespace SchneidMaschine
 
                 befehlBuilder.Append(ch);
 
-                if (ch.Equals('@'))
+                // Ende der Commandline
+                if (ch.Equals((char)CharArduino.END_CHAR))
                 {
                     befehlBuilder.Append("\n");
                     newText = befehlBuilder.ToString();
@@ -215,9 +217,9 @@ namespace SchneidMaschine
                 return;
             }
 
-            if (text.StartsWith("#"))
+            if (text.StartsWith(Char.ToString((char)CharArduino.START_CHAR)))
             {
-                text = Regex.Replace(text, @"#|@|%", "");
+                text = Regex.Replace(text, @"~|#|@|%", "");
                 text = "Arduino antwortet>> " + text;
             }
 
@@ -252,8 +254,8 @@ namespace SchneidMaschine
 
             if (lastChar.Equals("@"))
             {
-                text = Regex.Replace(text, @"#|@|%", "");
-                Console.WriteLine(text);
+                text = Regex.Replace(text, @"~|#|@|%", "");
+                //Console.WriteLine(text);
                 commandReceived(text);
             }
 
@@ -275,6 +277,7 @@ namespace SchneidMaschine
 
         private void commandRun(COMMAND cmd, string[] befehl)
         {
+            Console.WriteLine(cmd);
             switch (cmd)
             {
 

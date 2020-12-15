@@ -365,12 +365,12 @@ String appendSerialData = "";   // einzelne Zeichen in eine Zeichenkette umwande
   }
 
   void sendText(String text) {                                  // sende Text an den Serial Monitor, in der C#-App
-        Serial.println("#" + text + "@");                     
+        Serial.println("~" + text + "@");                     
   }
 
   void sendCommand(String text, boolean showText) {             // sende ein Befehl an C#-App (Befehl muss mit "_" enden)
       if(showText) {
-        Serial.println("#" + text + "@");                       // mit Textausgabe im Serial Monitor
+        Serial.println("~" + text + "@");                       // mit Textausgabe im Serial Monitor
       } else {
         Serial.println("%" + text + "@");                       // ohne Textausgabe
       }
