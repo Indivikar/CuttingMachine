@@ -199,6 +199,11 @@ String appendSerialData = "";   // einzelne Zeichen in eine Zeichenkette umwande
               sendCommand("resetIstWert_"                             // Sende Bestätigung das Reset fertig ist
                   + String(stepCounter), true);
           }
+
+          if(befehl.equals("wartungSchrittMotor")){
+              wartungSchrittMotor();
+          }
+          
   
           appendSerialData = "";                                      // eingegangene Daten löschen
           c = 0;                                                      // eingegangene Daten löschen
@@ -376,6 +381,15 @@ String appendSerialData = "";   // einzelne Zeichen in eine Zeichenkette umwande
       }
   }
 
+
+  void wartungSchrittMotor() {                       // den Schrittmotor permanent laufen lassen, um z.B. die Messer zu schärfen      
+      sendText("SchrittmotorGestartet");
+      while(!allesStoppen){
+        stepper(1, "forward"); 
+      }      
+      sendText("SchrittmotorGestoppt");        
+  }
+  
   String split(String data, char separator, int index) {        // Befehls-Line Trennen, gibt die einzelnen Teile mit Index zurück
       int found = 0;
       int strIndex[] = { 0, -1 };

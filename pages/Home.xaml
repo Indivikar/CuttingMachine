@@ -95,5 +95,6 @@
                 </StackPanel>
             </Grid>
         </StackPanel>
+        <Button x:Name="Btn_Wartung"  FontSize="30" Width="200" Height="50" Grid.Row="1" Click="Btn_Click_Wartung" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0,0,10,10">Wartung</Button>
     </Grid>
 </Page>

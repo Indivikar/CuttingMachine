@@ -58,7 +58,8 @@ namespace SchneidMaschine.model
         kopfSchnittBeendet,
         autoStart,
         autoStop,
-        resetIstWert
+        resetIstWert,
+        wartungSchrittMotor
     }
 
     public enum DIRECTION
@@ -89,7 +90,8 @@ namespace SchneidMaschine.model
         private SchnittModus schnittModus;
         private EinzelSchritt einzelSchritt;
         private HalbAuto halbAuto;
-        private Auto auto;      
+        private Auto auto;
+        private Wartung wartung;
         private string[] portList;    
         private SerialPort serialPort1;
 
@@ -136,6 +138,7 @@ namespace SchneidMaschine.model
             this.einzelSchritt = new EinzelSchritt(this);
             this.halbAuto = new HalbAuto(this);
             this.auto = new Auto(this);
+            this.wartung = new Wartung(this);
 
             this.myThreads = new MyThreads(this);
         }
@@ -303,6 +306,8 @@ namespace SchneidMaschine.model
         public EinzelSchritt EinzelSchritt { get { return einzelSchritt; } }
         public HalbAuto HalbAuto { get { return halbAuto; } }
         public Auto Auto { get { return auto; } }
+        public Wartung Wartung { get { return wartung; } }
+
 
         public CommandLine CommandLine { get { return commandLine; } }
 

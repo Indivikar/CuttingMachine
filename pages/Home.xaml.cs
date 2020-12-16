@@ -99,5 +99,10 @@ namespace SchneidMaschine.pages
             dataModel.MainWindow.Main.Content = dataModel.SchnittModus;
             dataModel.setSelectedLength(STREIFEN.C4_70_Deckel);
         }
+
+        private void Btn_Click_Wartung(object sender, RoutedEventArgs e)
+        {
+            dataModel.MainWindow.Main.Content = dataModel.Wartung;
+        }
     }
 }
