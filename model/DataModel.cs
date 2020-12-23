@@ -71,6 +71,8 @@ namespace SchneidMaschine.model
     public partial class DataModel
     {
         // Config
+        public const string appVersion = "v1.0.0";
+
         private double stepToMillimeter = 12.7; // wieviel Steps sind 1mm
 
         private long c4_40_schachtel_kurz = 6;       // Anzahl streifen pro Schachtel
@@ -297,6 +299,8 @@ namespace SchneidMaschine.model
         }
 
         // Getter
+        public string AppVersion { get { return appVersion; } }
+
         public DBHandler DBHandler { get { return dbHandler; } }
         public Statistik Statistik { get { return stats; } }
 

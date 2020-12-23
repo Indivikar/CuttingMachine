@@ -49,6 +49,8 @@ namespace SchneidMaschine
             this.serialPort1 = dataModel.SerialPort1;
             this.commandLine = dataModel.CommandLine;
 
+            this.Title = "Zuschnitt " + dataModel.AppVersion;
+
             Main.Content = dataModel.Home;
 
             serialPort1.DataReceived += new SerialDataReceivedEventHandler(port_DataReceived_1);
