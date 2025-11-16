@@ -40,7 +40,8 @@ namespace SchneidMaschine
         delegate void SetTextCallback(string text);
 
         
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sbRollenzentrierung = new StringBuilder();
+        StringBuilder sbSchneidmaschine = new StringBuilder();
 
         StringBuilder befehlBuilder = new StringBuilder();
 
@@ -150,7 +151,7 @@ namespace SchneidMaschine
 
         private void BtnClickTextDeleteRollenzentrierung(object sender, RoutedEventArgs e)
         {
-            sb.Clear();
+            sbRollenzentrierung.Clear();
             textBoxAusgabeRollenzentrierung.Text = String.Empty;
         }
 
@@ -189,7 +190,7 @@ namespace SchneidMaschine
                 if (threadCheckConnection_Rollenzentrierung != null && threadCheckConnection_Rollenzentrierung.IsAlive)
                 {
                     threadCheckConnection_Rollenzentrierung.Abort();
-
+                    threadCheckConnection_Rollenzentrierung = null;
                 }
             }
         }
@@ -230,8 +231,8 @@ namespace SchneidMaschine
                 text = "ESP32 antwortet>> " + text;
             }
 
-            sb.Append(text);
-            string allLines = sb.ToString();
+            sbRollenzentrierung.Append(text);
+            string allLines = sbRollenzentrierung.ToString();
             string[] lines = allLines.Split('\n');
 
             if (lines.Length > 100)
@@ -396,7 +397,7 @@ namespace SchneidMaschine
 
         private void BtnClickTextDeleteSchneidmaschine(object sender, RoutedEventArgs e)
         {
-            sb.Clear();
+            sbSchneidmaschine.Clear();
             textBoxAusgabeSchneidmaschine.Text = String.Empty;
         }
 
@@ -435,6 +436,7 @@ namespace SchneidMaschine
                 if (threadCheckConnection_Schneidmaschine != null && threadCheckConnection_Schneidmaschine.IsAlive)
                 {
                     threadCheckConnection_Schneidmaschine.Abort();
+                    threadCheckConnection_Schneidmaschine = null;
                 }
             }
         }
@@ -475,8 +477,8 @@ namespace SchneidMaschine
                 text = "Arduino antwortet>> " + text;
             }
 
-            sb.Append(text);
-            string allLines = sb.ToString();
+            sbSchneidmaschine.Append(text);
+            string allLines = sbSchneidmaschine.ToString();
             string[] lines = allLines.Split('\n');
 
             if (lines.Length > 100)
@@ -690,6 +692,7 @@ namespace SchneidMaschine
                 if (threadCheckConnection_Rollenzentrierung != null && threadCheckConnection_Rollenzentrierung.IsAlive)
                 {
                     threadCheckConnection_Rollenzentrierung.Abort();
+                    threadCheckConnection_Rollenzentrierung = null;
                 }
             }
 
@@ -707,6 +710,7 @@ namespace SchneidMaschine
                 if (threadCheckConnection_Schneidmaschine != null && threadCheckConnection_Schneidmaschine.IsAlive)
                 {
                     threadCheckConnection_Schneidmaschine.Abort();
+                    threadCheckConnection_Schneidmaschine = null;
                 }
             }
         }
