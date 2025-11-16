@@ -12,29 +12,19 @@ using System.Windows.Threading;
 
 namespace SchneidMaschine.threads
 {
-    public class MyThreads
+    public class Thread_Port_Scanner
     {
         private DataModel dataModel;
-        private ComboBox comboBoxPorts;
+        private ComboBox comboBoxPorts_Schneidmaschine;
+        private ComboBox comboBoxPorts_Rollenzentrierung;
 
         public delegate void AddNewPorts(string[] portList);
 
-        public MyThreads(DataModel dataModel) 
+        public Thread_Port_Scanner(DataModel dataModel) 
         {
             this.dataModel = dataModel;
-            this.comboBoxPorts = dataModel.MainWindow.comboBoxPorts;
-        }
-
-        public void checkVerbindung()
-        {
-            while (true)
-            {
-                Thread.Sleep(1000);
-                //Console.WriteLine("neue Ports ");
-                dataModel.MainWindow.Dispatcher.Invoke(() => {
-                    dataModel.MainWindow.checkConnection();
-                });
-            }
+            this.comboBoxPorts_Rollenzentrierung = dataModel.MainWindow.comboBoxPortsRollenzentrierung;
+            this.comboBoxPorts_Schneidmaschine = dataModel.MainWindow.comboBoxPortsSchneidmaschine;
         }
 
         public void checkPorts()
@@ -46,7 +36,7 @@ namespace SchneidMaschine.threads
                 SerialPort serialPort1 = new SerialPort();
                 string[] portList = SerialPort.GetPortNames();
 
-                int oldPorts = comboBoxPorts.Items.Count;
+                int oldPorts = comboBoxPorts_Rollenzentrierung.Items.Count;
                 int newPorts = portList.Length;
 
                 //Console.WriteLine("Ports alt " + oldPorts + " == " + newPorts);
@@ -54,11 +44,15 @@ namespace SchneidMaschine.threads
                 if (oldPorts != newPorts)
                 {
                     //Console.WriteLine("neue Ports ");
-                    comboBoxPorts.Dispatcher.Invoke(() => {
-                        comboBoxPorts.ItemsSource = portList;
+                    comboBoxPorts_Rollenzentrierung.Dispatcher.Invoke(() => {
+                        comboBoxPorts_Rollenzentrierung.ItemsSource = portList;
+                    });
+
+                    comboBoxPorts_Schneidmaschine.Dispatcher.Invoke(() => {
+                        comboBoxPorts_Schneidmaschine.ItemsSource = portList;
                     });
                 }
-               
+
             }
         }
     }

@@ -34,14 +34,14 @@ namespace SchneidMaschine.pages
 
         private void Btn_Click_SchrittMotor_Start(object sender, RoutedEventArgs e)
         {
-            commandLine.setCommandLine(COMMAND.wartungSchrittMotor, 0, false);
-            dataModel.sendText(commandLine.getCommandLine());
+            commandLine.setCommandLine(COMMAND_Schneidmaschine.wartungSchrittMotor, 0, false);
+            dataModel.sendTextSchneidmaschine(commandLine.getCommandLine());
         }
 
         private void Btn_Click_SchrittMotor_Stop(object sender, RoutedEventArgs e)
         {
-            commandLine.setCommandLine(COMMAND.allesStop, 0, false);
-            dataModel.sendText(commandLine.getCommandLine());
+            commandLine.setCommandLine(COMMAND_Schneidmaschine.allesStop, 0, false);
+            dataModel.sendTextSchneidmaschine(commandLine.getCommandLine());
         }
 
         private void BtnClickHome(object sender, RoutedEventArgs e)

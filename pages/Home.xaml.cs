@@ -30,7 +30,7 @@ namespace SchneidMaschine.pages
     {
 
         private DataModel dataModel;
-        private SerialPort serialPort1;
+        private SerialPort serialPortSchneidmaschine;
 
         delegate void SetTextCallback(string text);
 
@@ -38,7 +38,7 @@ namespace SchneidMaschine.pages
         {
             InitializeComponent();
             this.dataModel = dataModel;
-            this.serialPort1 = dataModel.SerialPort1;
+            this.serialPortSchneidmaschine = dataModel.SerialPortSchneidmaschine;
 
             // 70er Streifen gibt es noch nicht
             Btn_C4_70_Deckel.IsEnabled = false;

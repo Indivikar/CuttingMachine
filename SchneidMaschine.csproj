@@ -87,7 +87,9 @@
     <Compile Include="pages\Wartung.xaml.cs">
       <DependentUpon>Wartung.xaml</DependentUpon>
     </Compile>
-    <Compile Include="threads\MyThreads.cs" />
+    <Compile Include="threads\Thread_Port_Scanner.cs" />
+    <Compile Include="threads\Thread_Con_Rollenzentrierung.cs" />
+    <Compile Include="threads\Thread_Con_Schneidmaschine.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -202,6 +204,9 @@
       <DependentUpon>Database.mdf</DependentUpon>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="serialMonitor\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

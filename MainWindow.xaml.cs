@@ -30,9 +30,11 @@ namespace SchneidMaschine
     public partial class MainWindow : Window
     {
         private DataModel dataModel;
-        private SerialPort serialPort1;
+        private SerialPort serialPortRollenzentrierung;
+        private SerialPort serialPortSchneidmaschine;
         private CommandLine commandLine;
-        private Thread threadCheckConnection;
+        private Thread threadCheckConnection_Rollenzentrierung;
+        private Thread threadCheckConnection_Schneidmaschine;
         private Thread threadCheckPorts;
 
         delegate void SetTextCallback(string text);
@@ -45,17 +47,20 @@ namespace SchneidMaschine
         public MainWindow()
         {
             InitializeComponent();
-            this.dataModel = new DataModel(this);            
-            this.serialPort1 = dataModel.SerialPort1;
+            this.dataModel = new DataModel(this);
+            this.serialPortRollenzentrierung = dataModel.SerialPortRollenzentrierung;
+            this.serialPortSchneidmaschine = dataModel.SerialPortSchneidmaschine;
             this.commandLine = dataModel.CommandLine;
 
             this.Title = "Zuschnitt " + dataModel.AppVersion;
 
             Main.Content = dataModel.Home;
 
-            serialPort1.DataReceived += new SerialDataReceivedEventHandler(port_DataReceived_1);
+            serialPortRollenzentrierung.DataReceived += new SerialDataReceivedEventHandler(port_DataReceived_Rollenzentrierung);
+            serialPortSchneidmaschine.DataReceived += new SerialDataReceivedEventHandler(port_DataReceived_Schneidmaschine);
 
-            this.threadCheckPorts = new Thread(dataModel.MyThreads.checkPorts);
+            this.threadCheckPorts = new Thread(dataModel.Thread_Port_Scanner.checkPorts);
+            threadCheckPorts.Name = "Port_Scanner";
             threadCheckPorts.Start();
 
             Init();
@@ -63,40 +68,52 @@ namespace SchneidMaschine
 
         private void Init()
         {
-            BtnVerbinden.IsEnabled = true;
-            BtnTrennen.IsEnabled = false;
+            BtnVerbindenRollenzentrierung.IsEnabled = true;
+            BtnTrennenRollenzentrierung.IsEnabled = false;
+            BtnVerbindenSchneidmaschine.IsEnabled = true;
+            BtnTrennenSchneidmaschine.IsEnabled = false;
+
             Main.IsEnabled = false;
 
-            comboBoxPorts.ItemsSource = dataModel.PortList;
+            comboBoxPortsRollenzentrierung.ItemsSource = dataModel.PortList;
+            comboBoxPortsSchneidmaschine.ItemsSource = dataModel.PortList;
 
-            SetText("&-----------------------------------------------------------------------------------------------\n" +
+            SetTextRollenzentrierung("&-----------------------------------------------------------------------------------------------\n" +
+                "Der ESP32 muss mit \"Connected\" antworten, wenn der ESP32 nicht antwortet,\n" +
+                "könnte es der falsche Port sein oder es ist das falsche Programm auf dem ESP32.\n" +
+                "-----------------------------------------------------------------------------------------------\n\n&");
+
+            SetTextSchneidmaschine("&-----------------------------------------------------------------------------------------------\n" +
                 "Der Arduino muss mit \"Connected\" antworten, wenn der Arduino nicht antwortet,\n" +
                 "könnte es der falsche Port sein oder es ist das falsche Programm auf dem Arduino.\n" +
                 "-----------------------------------------------------------------------------------------------\n\n&");
         }
 
+        // --------------------------------------
+        //      Verbindung Rollenzentrierung
+        // --------------------------------------
 
-        private void BtnClickVerbinden(object sender, RoutedEventArgs e)
+        private void BtnClickVerbindenRollenzentrierung(object sender, RoutedEventArgs e)
         {
             try
             {
-                Console.WriteLine("try to Connect with Arduino...");                
-                SetText("&try to Connect with Arduino....&\n");
-                
-                serialPort1.PortName = comboBoxPorts.Text;
-                serialPort1.BaudRate = Convert.ToInt32(comboBoxBautRate.Text);
+                Console.WriteLine("try to Connect with ESP32...");
+                SetTextRollenzentrierung("&try to Connect with ESP32....&\n");
 
-                //          serialPort1 = new SerialPort("COM5",
+                serialPortRollenzentrierung.PortName = comboBoxPortsRollenzentrierung.Text;
+                serialPortRollenzentrierung.BaudRate = Convert.ToInt32(comboBoxBautRateRollenzentrierung.Text);
+
+                //          serialPortSchneidmaschine = new SerialPort("COM5",
                 //9600, Parity.None, 8, StopBits.One);
 
-                //serialPort1.DataBits = Convert.ToInt32(cBoxDataBits.Text);
-                //serialPort1.StopBits = (StopBits)Enum.Parse(typeof(StopBits), cBoxStopBits.Text);
-                //serialPort1.Parity = (Parity)Enum.Parse(typeof(Parity), cBoxParityBits.Text);
-                //serialPort1.DataReceived += new SerialDataReceivedEventHandler(dataModel.port_DataReceived_1);
-                //serialPort1.DataReceived += new SerialDataReceivedEventHandler(tmrPollForRecivedData_Tick);
-                serialPort1.Open();
+                //serialPortSchneidmaschine.DataBits = Convert.ToInt32(cBoxDataBits.Text);
+                //serialPortSchneidmaschine.StopBits = (StopBits)Enum.Parse(typeof(StopBits), cBoxStopBits.Text);
+                //serialPortSchneidmaschine.Parity = (Parity)Enum.Parse(typeof(Parity), cBoxParityBits.Text);
+                //serialPortSchneidmaschine.DataReceived += new SerialDataReceivedEventHandler(dataModel.port_DataReceived_Schneidmaschine);
+                //serialPortSchneidmaschine.DataReceived += new SerialDataReceivedEventHandler(tmrPollForRecivedData_Tick);
+                serialPortRollenzentrierung.Open();
 
-                isConnected();
+                isConnected_Rollenzentrierung();
 
                 //ProgressBarStatus.Value = 100;
             }
@@ -106,12 +123,12 @@ namespace SchneidMaschine
             }
         }
 
-        private void BtnClickTrennen(object sender, RoutedEventArgs e)
+        private void BtnClickTrennenRollenzentrierung(object sender, RoutedEventArgs e)
         {
             try
             {
-                serialPort1.Close();
-                isConnected();
+                serialPortRollenzentrierung.Close();
+                isConnected_Rollenzentrierung();
             }
             catch (Exception error)
             {
@@ -119,11 +136,11 @@ namespace SchneidMaschine
             }
         }
 
-        private void BtnClickSenden(object sender, RoutedEventArgs e)
+        private void BtnClickSendenRollenzentrierung(object sender, RoutedEventArgs e)
         {
             try
             {
-                serialPort1.Write(textBoxSenden.Text + (char)CharApp.END_CHAR);
+                serialPortRollenzentrierung.Write(textBoxSendenRollenzentrierung.Text + (char)CharApp.END_CHAR);
             }
             catch (Exception error)
             {
@@ -131,17 +148,523 @@ namespace SchneidMaschine
             }
         }
 
-        private void BtnClickTextDelete(object sender, RoutedEventArgs e)
+        private void BtnClickTextDeleteRollenzentrierung(object sender, RoutedEventArgs e)
         {
             sb.Clear();
-            textBoxAusgabe.Text = String.Empty;
+            textBoxAusgabeRollenzentrierung.Text = String.Empty;
         }
+
+        private void isConnected_Rollenzentrierung()
+        {
+            if (serialPortRollenzentrierung.IsOpen)
+            {
+                BtnVerbindenRollenzentrierung.IsEnabled = false;
+                BtnTrennenRollenzentrierung.IsEnabled = true;
+
+                commandLine.setCommandLine(COMMAND_Schneidmaschine.Connected, 0, false);
+                dataModel.sendTextRollenzentrierung(commandLine.getCommandLine());
+
+                if (threadCheckConnection_Rollenzentrierung == null)
+                {
+                    this.threadCheckConnection_Rollenzentrierung = new Thread(dataModel.Thread_Con_Rollenzentrierung.checkVerbindung_Rollenzentrierung);
+                    threadCheckConnection_Rollenzentrierung.Name = "Rollenzentrierung_VerbindungsCheck";
+                    //threadCheckConnection_Rollenzentrierung.IsBackground = true;
+                }
+
+                if (!threadCheckConnection_Rollenzentrierung.IsAlive)
+                {
+                    threadCheckConnection_Rollenzentrierung.Start();
+                }
+            }
+            else
+            {
+                BtnVerbindenRollenzentrierung.IsEnabled = true;
+                BtnTrennenRollenzentrierung.IsEnabled = false;
+                //Main.IsEnabled = false;
+                labelConnectionRollenzentrierung.Foreground = Brushes.Red;
+                labelConnectionRollenzentrierung.Text = "DISCONNECTED R";
+                Console.WriteLine("Disconnected Rollenzentrierung");
+                SetTextRollenzentrierung("Disconnected Rollenzentrierung\n");
+
+                if (threadCheckConnection_Rollenzentrierung != null && threadCheckConnection_Rollenzentrierung.IsAlive)
+                {
+                    threadCheckConnection_Rollenzentrierung.Abort();
+
+                }
+            }
+        }
+
+        private void SetTextRollenzentrierung(string text)
+        {
+
+            // normaler Text aus C# Programm
+            if (text.StartsWith("&"))
+            {
+                text = Regex.Replace(text, @"&", "");
+                this.textBoxAusgabeRollenzentrierung.Text += text;
+                return;
+            }
+
+            if (stringToChar(text) == null)
+            {
+                return;
+            }
+
+            text = befehlBuilder.ToString();
+
+            handleCommandLineRollenzentrierung(text);
+
+            //Console.WriteLine("text -> " + text);
+
+            //string firstChar = text.Substring(0, 1);
+
+            // Befehl von Arduino an C# ohne Text-Ausgabe
+            if (text.StartsWith("%"))
+            {
+                return;
+            }
+             
+            if (text.StartsWith(Char.ToString((char)CharArduino.START_CHAR)))
+            {
+                text = Regex.Replace(text, @"~|#|@|%", "");
+                text = "ESP32 antwortet>> " + text;
+            }
+
+            sb.Append(text);
+            string allLines = sb.ToString();
+            string[] lines = allLines.Split('\n');
+
+            if (lines.Length > 100)
+            {
+                var _values = lines.Skip(Math.Max(0, lines.Count() - 100));
+
+                var last_lines = string.Join("\n", _values.ToArray());
+
+                this.textBoxAusgabeRollenzentrierung.Text = last_lines;
+            }
+            else
+            {
+                this.textBoxAusgabeRollenzentrierung.Text += text;
+            }
+
+            textBoxAusgabeRollenzentrierung.ScrollToEnd();
+        }
+
+        private void handleCommandLineRollenzentrierung(string text)
+        {
+
+            text = text.Trim();
+            text = Regex.Replace(text, @"\t|\n|\r", "");
+
+            //string firstChar = text.Substring(0, 1);
+            string lastChar = text.Substring(text.Length - 1);
+
+
+            if (lastChar.Equals("@"))
+            {
+                text = Regex.Replace(text, @"~|#|@|%", "");
+                //Console.WriteLine(text);
+                commandReceivedRollenzentrierung(text);
+            }
+        }
+
+        private void commandReceivedRollenzentrierung(string text)
+        {
+
+            Console.WriteLine("commandReceivedRollenzentrierung: " + text);
+
+            string[] befehl = text.Split('_');
+
+            foreach (COMMAND_Rollenzentrierung item in (COMMAND_Rollenzentrierung[])Enum.GetValues(typeof(COMMAND_Rollenzentrierung)))
+            {
+                if (befehl[0].Equals(item.ToString()))
+                {
+                    commandRunRollenzentrierung(item, befehl);
+                }
+            }
+        }
+
+        private void commandRunRollenzentrierung(COMMAND_Rollenzentrierung cmd, string[] befehl)
+        {
+            Console.WriteLine(cmd);
+            switch (cmd)
+            {
+
+                case COMMAND_Rollenzentrierung.steps:
+                    {
+                        Console.WriteLine("COMMAND_Rollenzentrierung.steps_" + befehl[1]);
+                        dataModel.setIstWert(befehl[1]);
+                        //dataModel.EinzelSchritt.setIstWertInMM(befehl[1]);
+                        break;
+                    }
+
+                case COMMAND_Rollenzentrierung.stepperFinished:
+                    {
+                        Console.WriteLine("COMMAND_Rollenzentrierung.stepperFinished -> " + befehl[1]);
+                        dataModel.IsStepperFinished = true;
+                        dataModel.setIstWert(befehl[1]);
+
+                        if (dataModel.EinzelSchritt.IsVisible)
+                        {
+                            dataModel.EinzelSchritt.StackPanelControlsEnable();
+                        }
+                        break;
+                    }
+
+                case COMMAND_Rollenzentrierung.Connected:
+                    {
+                        Console.WriteLine("COMMAND_Rollenzentrierung.Connected");
+                        Main.IsEnabled = true;
+                        labelConnectionRollenzentrierung.Foreground = Brushes.Green;
+                        labelConnectionRollenzentrierung.Text = "CONNECTED";
+                        Console.WriteLine("Connected");
+
+                        break;
+                    }
+
+                default: break;
+            }
+        }
+
+        private void port_DataReceived_Rollenzentrierung(object sender, SerialDataReceivedEventArgs e)
+        {
+            string InputData = serialPortRollenzentrierung.ReadExisting();
+            if (InputData != String.Empty)
+            {
+                Dispatcher.BeginInvoke(new SetTextCallback(SetTextRollenzentrierung), new object[] { InputData });
+            }
+        }
+
+        // --------------------------------------
+        //      Verbindung Schneidmaschine
+        // --------------------------------------
+
+        private void BtnClickVerbindenSchneidmaschine(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Console.WriteLine("try to Connect with Arduino...");
+                SetTextSchneidmaschine("&try to Connect with Arduino....&\n");
+
+                serialPortSchneidmaschine.PortName = comboBoxPortsSchneidmaschine.Text;
+                serialPortSchneidmaschine.BaudRate = Convert.ToInt32(comboBoxBautRateSchneidmaschine.Text);
+
+                //          serialPortSchneidmaschine = new SerialPort("COM5",
+                //9600, Parity.None, 8, StopBits.One);
+
+                //serialPortSchneidmaschine.DataBits = Convert.ToInt32(cBoxDataBits.Text);
+                //serialPortSchneidmaschine.StopBits = (StopBits)Enum.Parse(typeof(StopBits), cBoxStopBits.Text);
+                //serialPortSchneidmaschine.Parity = (Parity)Enum.Parse(typeof(Parity), cBoxParityBits.Text);
+                //serialPortSchneidmaschine.DataReceived += new SerialDataReceivedEventHandler(dataModel.port_DataReceived_Schneidmaschine);
+                //serialPortSchneidmaschine.DataReceived += new SerialDataReceivedEventHandler(tmrPollForRecivedData_Tick);
+                serialPortSchneidmaschine.Open();
+
+                isConnected_Schneidmaschine();
+
+                //ProgressBarStatus.Value = 100;
+            }
+            catch (Exception error)
+            {
+                MessageBox.Show(error.Message);
+            }
+        }
+
+        private void BtnClickTrennenSchneidmaschine(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                serialPortSchneidmaschine.Close();
+                isConnected_Schneidmaschine();
+            }
+            catch (Exception error)
+            {
+                MessageBox.Show(error.Message);
+            }
+        }
+
+        private void BtnClickSendenSchneidmaschine(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                serialPortSchneidmaschine.Write(textBoxSendenSchneidmaschine.Text + (char)CharApp.END_CHAR);
+            }
+            catch (Exception error)
+            {
+                MessageBox.Show(error.Message);
+            }
+        }
+
+        private void BtnClickTextDeleteSchneidmaschine(object sender, RoutedEventArgs e)
+        {
+            sb.Clear();
+            textBoxAusgabeSchneidmaschine.Text = String.Empty;
+        }
+
+        private void isConnected_Schneidmaschine()
+        {
+            if (serialPortSchneidmaschine.IsOpen)
+            {
+                BtnVerbindenSchneidmaschine.IsEnabled = false;
+                BtnTrennenSchneidmaschine.IsEnabled = true;
+
+                commandLine.setCommandLine(COMMAND_Schneidmaschine.Connected, 0, false);
+                dataModel.sendTextSchneidmaschine(commandLine.getCommandLine());
+
+                if (threadCheckConnection_Schneidmaschine == null)
+                {
+                    this.threadCheckConnection_Schneidmaschine = new Thread(dataModel.Thread_Con_Schneidmaschine.checkVerbindung_Schneidmaschine);
+                    threadCheckConnection_Schneidmaschine.Name = "Schneidmaschine_VerbindungsCheck";
+                }
+
+                if (!threadCheckConnection_Schneidmaschine.IsAlive)
+                {
+                    threadCheckConnection_Schneidmaschine.Start();
+                }
+            }
+            else
+            {
+                BtnVerbindenSchneidmaschine.IsEnabled = true;
+                BtnTrennenSchneidmaschine.IsEnabled = false;
+                Main.IsEnabled = false;
+                labelConnectionSchneidmaschine.Foreground = Brushes.Red;
+                labelConnectionSchneidmaschine.Text = "DISCONNECTED S";
+                Console.WriteLine("Disconnected Schneidmaschine");
+                SetTextSchneidmaschine("Disconnected Schneidmaschine\n");
+
+
+                if (threadCheckConnection_Schneidmaschine != null && threadCheckConnection_Schneidmaschine.IsAlive)
+                {
+                    threadCheckConnection_Schneidmaschine.Abort();
+                }
+            }
+        }
+
+        private void SetTextSchneidmaschine(string text)
+        {
+            
+            // normaler Text aus C# Programm
+            if (text.StartsWith("&"))
+            {
+                text = Regex.Replace(text, @"&", "");
+                this.textBoxAusgabeSchneidmaschine.Text += text;
+                return;
+            }
+
+            if (stringToChar(text) == null)
+            {
+                return;
+            }
+
+            text = befehlBuilder.ToString();
+
+            handleCommandLineSchneidmaschine(text);
+
+            //Console.WriteLine("text -> " + text);
+
+            //string firstChar = text.Substring(0, 1);
+
+            // Befehl von Arduino an C# ohne Text-Ausgabe
+            if (text.StartsWith("%"))
+            {
+                return;
+            }
+
+            if (text.StartsWith(Char.ToString((char)CharArduino.START_CHAR)))
+            {
+                text = Regex.Replace(text, @"~|#|@|%", "");
+                text = "Arduino antwortet>> " + text;
+            }
+
+            sb.Append(text);
+            string allLines = sb.ToString();
+            string[] lines = allLines.Split('\n');
+
+            if (lines.Length > 100)
+            {
+                var _values = lines.Skip(Math.Max(0, lines.Count() - 100));
+
+                var last_lines = string.Join("\n", _values.ToArray());
+
+                this.textBoxAusgabeSchneidmaschine.Text = last_lines;
+            }
+            else
+            {
+                this.textBoxAusgabeSchneidmaschine.Text += text;
+            }
+
+            textBoxAusgabeSchneidmaschine.ScrollToEnd();
+        }
+
+        private void handleCommandLineSchneidmaschine(string text) {
+
+            text = text.Trim();
+            text = Regex.Replace(text, @"\t|\n|\r", "");
+
+            //string firstChar = text.Substring(0, 1);
+            string lastChar = text.Substring(text.Length - 1);
+
+
+            if (lastChar.Equals("@"))
+            {
+                text = Regex.Replace(text, @"~|#|@|%", "");
+                //Console.WriteLine(text);
+                commandReceivedSchneidmaschine(text);
+            }
+        }
+
+        private void commandReceivedSchneidmaschine(string text) {
+
+            Console.WriteLine("commandReceivedSchneidmaschine: " + text);
+
+            string[] befehl = text.Split('_');
+
+            foreach (COMMAND_Schneidmaschine item in (COMMAND_Schneidmaschine[])Enum.GetValues(typeof(COMMAND_Schneidmaschine)))
+            {
+                if (befehl[0].Equals(item.ToString())) {
+                    commandRunSchneidmaschine(item, befehl);
+                }
+            }
+        }
+
+        private void commandRunSchneidmaschine(COMMAND_Schneidmaschine cmd, string[] befehl)
+        {
+            Console.WriteLine(cmd);
+            switch (cmd)
+            {
+
+                case COMMAND_Schneidmaschine.allesGestoppt:
+                    {
+                        Console.WriteLine("COMMAND_Schneidmaschine.allesGestoppt");
+                        dataModel.HalbAuto.BtnModusHalbAutoStart.IsEnabled = true;
+                        dataModel.HalbAuto.BtnModusHalbAutoStop.IsEnabled = false;
+
+                        dataModel.Auto.TextBoxRuns.IsEnabled = true;
+                        dataModel.Auto.BtnModusAutoStart.IsEnabled = true;
+                        dataModel.Auto.BtnModusAutoPause.IsEnabled = false;
+                        dataModel.Auto.BtnModusAutoStop.IsEnabled = false;
+
+                        SetTextSchneidmaschine("#alles gestoppt@");
+                        break;
+                    }
+
+                case COMMAND_Schneidmaschine.handradOn:
+                    {
+                        Console.WriteLine("COMMAND_Schneidmaschine.handradOn");
+                        dataModel.EinzelSchritt.ToggleBtn_Handwheel.IsChecked = true;
+                        break;
+                    }
+
+                case COMMAND_Schneidmaschine.handradOff:
+                    {
+                        Console.WriteLine("COMMAND_Schneidmaschine.handradOff");
+                        dataModel.EinzelSchritt.ToggleBtn_Handwheel.IsChecked = false;
+                        break;
+                    }
+
+                case COMMAND_Schneidmaschine.schneidenStartet:
+                    {
+                        Console.WriteLine("COMMAND_Schneidmaschine.schneidenStartet");
+                        Main.IsEnabled = false;
+                        break;
+                    }
+                    
+
+                case COMMAND_Schneidmaschine.schneidenBeendet:
+                    {
+                        Console.WriteLine("COMMAND_Schneidmaschine.schneidenBeendet");
+                        dataModel.IsCutFinished = true;
+                        Main.IsEnabled = true;
+                        refreshStats(false);
+                        dataModel.DBHandler.updateCut();
+                        break;
+                    }
+
+                case COMMAND_Schneidmaschine.kopfSchnittBeendet:
+                    {
+                        Console.WriteLine("COMMAND_Schneidmaschine.kopfSchnittBeendet");
+                        dataModel.IsCutFinished = true;
+                        Main.IsEnabled = true;
+                        refreshStats(true);
+                        dataModel.DBHandler.updateCut();
+                        break;
+                    }
+
+                case COMMAND_Schneidmaschine.steps:
+                    {
+                        Console.WriteLine("COMMAND_Schneidmaschine.steps_" + befehl[1]);
+                        dataModel.setIstWert(befehl[1]);
+                        //dataModel.EinzelSchritt.setIstWertInMM(befehl[1]);
+                        break;
+                    }
+
+                case COMMAND_Schneidmaschine.stepperFinished:
+                    {
+                        Console.WriteLine("COMMAND_Schneidmaschine.stepperFinished -> " + befehl[1]);
+                        dataModel.IsStepperFinished = true;
+                        dataModel.setIstWert(befehl[1]);
+
+                        if (dataModel.EinzelSchritt.IsVisible)
+                        {
+                            dataModel.EinzelSchritt.StackPanelControlsEnable();
+                        }
+                        
+                        //if (dataModel.HalbAuto.IsVisible) 
+                        //{
+                        //    dataModel.HalbAuto.cut();
+                        //}
+
+
+
+                        //dataModel.EinzelSchritt.setIstWertInMM(befehl[1]);
+                        //this.textBoxAusgabe.Text += Regex.Replace(befehl[0], @"_", "");
+                        break;
+                    }
+
+                case COMMAND_Schneidmaschine.Connected:
+                    {
+                        Console.WriteLine("COMMAND_Schneidmaschine.Connected");
+                        Main.IsEnabled = true;
+                        labelConnectionSchneidmaschine.Foreground = Brushes.Green;
+                        labelConnectionSchneidmaschine.Text = "CONNECTED";
+                        Console.WriteLine("Connected");
+
+                        break;
+                    }
+
+                case COMMAND_Schneidmaschine.resetIstWert:
+                    {
+                        Console.WriteLine("COMMAND_Schneidmaschine.resetIstWert");
+
+                        Statistik stats = dataModel.Statistik;
+                        stats.StreifenLaengeIst = 0;
+
+                        break;
+                    }
+
+                default: break;
+            }
+        }
+
+        private void port_DataReceived_Schneidmaschine(object sender, SerialDataReceivedEventArgs e)
+        {
+            string InputData = serialPortSchneidmaschine.ReadExisting();
+            if (InputData != String.Empty)
+            {
+                Dispatcher.BeginInvoke(new SetTextCallback(SetTextSchneidmaschine), new object[] { InputData });
+            }
+        }
+
+        // --------------------------------------------------------
+        //      Verbindung Rollenzentrierung & Schneidmaschine
+        // --------------------------------------------------------
 
         private void DataWindow_Closing(object sender, CancelEventArgs e)
         {
-            serialPort1.Close();
-            if (threadCheckConnection != null) {
-                threadCheckConnection.Abort();
+            serialPortRollenzentrierung.Close();
+            serialPortSchneidmaschine.Close();
+
+            if (threadCheckConnection_Schneidmaschine != null) {
+                threadCheckConnection_Schneidmaschine.Abort();
             }
 
             if (threadCheckPorts != null) {
@@ -149,16 +672,80 @@ namespace SchneidMaschine
             }
         }
 
-        private void port_DataReceived_1(object sender, SerialDataReceivedEventArgs e)
+
+
+        public void checkConnection()
         {
-            string InputData = serialPort1.ReadExisting();
-            if (InputData != String.Empty)
+            if (!serialPortRollenzentrierung.IsOpen)
             {
-                Dispatcher.BeginInvoke(new SetTextCallback(SetText), new object[] { InputData });
+                BtnVerbindenRollenzentrierung.IsEnabled = true;
+                BtnTrennenRollenzentrierung.IsEnabled = false;
+
+                //Main.IsEnabled = false;
+                labelConnectionRollenzentrierung.Foreground = Brushes.Red;
+                labelConnectionRollenzentrierung.Text = "Disconnected R";
+                Console.WriteLine("Disconnected R");
+                SetTextRollenzentrierung("Disconnected R\n");
+
+                if (threadCheckConnection_Rollenzentrierung != null && threadCheckConnection_Rollenzentrierung.IsAlive)
+                {
+                    threadCheckConnection_Rollenzentrierung.Abort();
+                }
+            }
+
+            if (!serialPortSchneidmaschine.IsOpen)
+            {
+                BtnVerbindenSchneidmaschine.IsEnabled = true;
+                BtnTrennenSchneidmaschine.IsEnabled = false;
+
+                Main.IsEnabled = false;
+                labelConnectionSchneidmaschine.Foreground = Brushes.Red;
+                labelConnectionSchneidmaschine.Text = "Disconnected S";
+                Console.WriteLine("Disconnected S");
+                SetTextSchneidmaschine("Disconnected S\n");
+
+                if (threadCheckConnection_Schneidmaschine != null && threadCheckConnection_Schneidmaschine.IsAlive)
+                {
+                    threadCheckConnection_Schneidmaschine.Abort();
+                }
             }
         }
 
-        private string stringToChar(string text) {
+        // --------------------------------------
+        //               Statistik
+        // --------------------------------------
+
+        private void refreshStats(bool isKopfschnitt) 
+        {
+            Statistik stats = dataModel.Statistik;
+
+            long streifenLaengeIst = stats.StreifenLaengeIst;
+
+            bool a = dataModel.SelectedStreifen.Equals(STREIFEN.C4_40_Schachtel_KURZ) && !isKopfschnitt;
+            bool b = dataModel.SelectedStreifen.Equals(STREIFEN.C4_40_Schachtel_LANG) && !isKopfschnitt;
+            bool c = dataModel.SelectedStreifen.Equals(STREIFEN.C4_70_Deckel) && !isKopfschnitt;
+
+            if(a) stats.HeuteStreifen40erKurz += dataModel.StreifenProSchnitt40er;
+            if(b) stats.HeuteStreifen40erLang += dataModel.StreifenProSchnitt40er;
+            if(c) stats.HeuteStreifen70erDeckel += dataModel.StreifenProSchnitt70er;
+            stats.HeuteRolleAbgewickelt += streifenLaengeIst;
+
+            if(a) stats.RolleStreifen40erKurz += dataModel.StreifenProSchnitt40er;
+            if(b) stats.RolleStreifen40erLang += dataModel.StreifenProSchnitt40er;
+            if(c) stats.RolleStreifen70erDeckel += dataModel.StreifenProSchnitt70er;
+            stats.RolleIstLaenge -= streifenLaengeIst;
+
+            if(a) stats.LangzeitStreifen40erKurz += dataModel.StreifenProSchnitt40er;
+            if(b) stats.LangzeitStreifen40erLang += dataModel.StreifenProSchnitt40er;
+            if(c) stats.LangzeitStreifen70erDeckel += dataModel.StreifenProSchnitt70er;
+
+            stats.StreifenLaengeIst = 0;
+
+            dataModel.Auto.SetMaxDurchlauf();
+        }
+
+        private string stringToChar(string text)
+        {
 
             string newText = null;
 
@@ -189,301 +776,16 @@ namespace SchneidMaschine
         }
 
 
-        private void SetText(string text)
+        private void ButtonOpenConnections_Click(object sender, RoutedEventArgs e)
         {
-            
-            // normaler Text aus C# Programm
-            if (text.StartsWith("&"))
-            {
-                text = Regex.Replace(text, @"&", "");
-                this.textBoxAusgabe.Text += text;
-                return;
-            }
-
-            if (stringToChar(text) == null)
-            {
-                return;
-            }
-
-            text = befehlBuilder.ToString();
-
-            handleCommandLine(text);
-
-            //Console.WriteLine("text -> " + text);
-
-            //string firstChar = text.Substring(0, 1);
-
-            // Befehl von Arduino an C# ohne Text-Ausgabe
-            if (text.StartsWith("%"))
-            {
-                return;
-            }
-
-            if (text.StartsWith(Char.ToString((char)CharArduino.START_CHAR)))
-            {
-                text = Regex.Replace(text, @"~|#|@|%", "");
-                text = "Arduino antwortet>> " + text;
-            }
-
-            sb.Append(text);
-            string allLines = sb.ToString();
-            string[] lines = allLines.Split('\n');
-
-            if (lines.Length > 100)
-            {
-                var _values = lines.Skip(Math.Max(0, lines.Count() - 100));
-
-                var last_lines = string.Join("\n", _values.ToArray());
-
-                this.textBoxAusgabe.Text = last_lines;
-            }
-            else
-            {
-                this.textBoxAusgabe.Text += text;
-            }
-
-            textBoxAusgabe.ScrollToEnd();
+            ButtonOpenConnections.Visibility = Visibility.Collapsed;
+            ButtonCloseConnections.Visibility = Visibility.Visible;
         }
 
-        private void handleCommandLine(string text) {
-
-            text = text.Trim();
-            text = Regex.Replace(text, @"\t|\n|\r", "");
-
-            //string firstChar = text.Substring(0, 1);
-            string lastChar = text.Substring(text.Length - 1);
-
-
-            if (lastChar.Equals("@"))
-            {
-                text = Regex.Replace(text, @"~|#|@|%", "");
-                //Console.WriteLine(text);
-                commandReceived(text);
-            }
-
-        }
-
-        private void commandReceived(string text) {
-
-            Console.WriteLine("commandReceived: " + text);
-
-            string[] befehl = text.Split('_');
-
-            foreach (COMMAND item in (COMMAND[])Enum.GetValues(typeof(COMMAND)))
-            {
-                if (befehl[0].Equals(item.ToString())) {
-                    commandRun(item, befehl);
-                }
-            }
-        }
-
-        private void commandRun(COMMAND cmd, string[] befehl)
+        private void ButtonCloseConnections_Click(object sender, RoutedEventArgs e)
         {
-            Console.WriteLine(cmd);
-            switch (cmd)
-            {
-
-                case COMMAND.allesGestoppt:
-                    {
-                        Console.WriteLine("COMMAND.allesGestoppt");
-                        dataModel.HalbAuto.BtnModusHalbAutoStart.IsEnabled = true;
-                        dataModel.HalbAuto.BtnModusHalbAutoStop.IsEnabled = false;
-
-                        dataModel.Auto.TextBoxRuns.IsEnabled = true;
-                        dataModel.Auto.BtnModusAutoStart.IsEnabled = true;
-                        dataModel.Auto.BtnModusAutoPause.IsEnabled = false;
-                        dataModel.Auto.BtnModusAutoStop.IsEnabled = false;
-
-                        SetText("#alles gestoppt@");
-                        break;
-                    }
-
-                case COMMAND.handradOn:
-                    {
-                        Console.WriteLine("COMMAND.handradOn");
-                        dataModel.EinzelSchritt.ToggleBtn_Handwheel.IsChecked = true;
-                        break;
-                    }
-
-                case COMMAND.handradOff:
-                    {
-                        Console.WriteLine("COMMAND.handradOff");
-                        dataModel.EinzelSchritt.ToggleBtn_Handwheel.IsChecked = false;
-                        break;
-                    }
-
-                case COMMAND.schneidenStartet:
-                    {
-                        Console.WriteLine("COMMAND.schneidenStartet");
-                        Main.IsEnabled = false;
-                        break;
-                    }
-                    
-
-                case COMMAND.schneidenBeendet:
-                    {
-                        Console.WriteLine("COMMAND.schneidenBeendet");
-                        dataModel.IsCutFinished = true;
-                        Main.IsEnabled = true;
-                        refreshStats(false);
-                        dataModel.DBHandler.updateCut();
-                        break;
-                    }
-
-                case COMMAND.kopfSchnittBeendet:
-                    {
-                        Console.WriteLine("COMMAND.kopfSchnittBeendet");
-                        dataModel.IsCutFinished = true;
-                        Main.IsEnabled = true;
-                        refreshStats(true);
-                        dataModel.DBHandler.updateCut();
-                        break;
-                    }
-
-                case COMMAND.steps:
-                    {
-                        Console.WriteLine("COMMAND.steps_" + befehl[1]);
-                        dataModel.setIstWert(befehl[1]);
-                        //dataModel.EinzelSchritt.setIstWertInMM(befehl[1]);
-                        break;
-                    }
-
-                case COMMAND.stepperFinished:
-                    {
-                        Console.WriteLine("COMMAND.stepperFinished -> " + befehl[1]);
-                        dataModel.IsStepperFinished = true;
-                        dataModel.setIstWert(befehl[1]);
-
-                        if (dataModel.EinzelSchritt.IsVisible)
-                        {
-                            dataModel.EinzelSchritt.StackPanelControlsEnable();
-                        }
-                        
-                        //if (dataModel.HalbAuto.IsVisible) 
-                        //{
-                        //    dataModel.HalbAuto.cut();
-                        //}
-
-
-
-                        //dataModel.EinzelSchritt.setIstWertInMM(befehl[1]);
-                        //this.textBoxAusgabe.Text += Regex.Replace(befehl[0], @"_", "");
-                        break;
-                    }
-
-                case COMMAND.Connected:
-                    {
-                        Console.WriteLine("COMMAND.Connected");
-                        Main.IsEnabled = true;
-                        labelConnection.Foreground = Brushes.Green;
-                        labelConnection.Text = "CONNECTED";
-                        Console.WriteLine("Connected");
-
-                        break;
-                    }
-
-                case COMMAND.resetIstWert:
-                    {
-                        Console.WriteLine("COMMAND.resetIstWert");
-
-                        Statistik stats = dataModel.Statistik;
-                        stats.StreifenLaengeIst = 0;
-
-                        break;
-                    }
-
-                default: break;
-            }
-        }
-
-        private void refreshStats(bool isKopfschnitt) 
-        {
-            Statistik stats = dataModel.Statistik;
-
-            long streifenLaengeIst = stats.StreifenLaengeIst;
-
-            bool a = dataModel.SelectedStreifen.Equals(STREIFEN.C4_40_Schachtel_KURZ) && !isKopfschnitt;
-            bool b = dataModel.SelectedStreifen.Equals(STREIFEN.C4_40_Schachtel_LANG) && !isKopfschnitt;
-            bool c = dataModel.SelectedStreifen.Equals(STREIFEN.C4_70_Deckel) && !isKopfschnitt;
-
-            if(a) stats.HeuteStreifen40erKurz += dataModel.StreifenProSchnitt40er;
-            if(b) stats.HeuteStreifen40erLang += dataModel.StreifenProSchnitt40er;
-            if(c) stats.HeuteStreifen70erDeckel += dataModel.StreifenProSchnitt70er;
-            stats.HeuteRolleAbgewickelt += streifenLaengeIst;
-
-            if(a) stats.RolleStreifen40erKurz += dataModel.StreifenProSchnitt40er;
-            if(b) stats.RolleStreifen40erLang += dataModel.StreifenProSchnitt40er;
-            if(c) stats.RolleStreifen70erDeckel += dataModel.StreifenProSchnitt70er;
-            stats.RolleIstLaenge -= streifenLaengeIst;
-
-            if(a) stats.LangzeitStreifen40erKurz += dataModel.StreifenProSchnitt40er;
-            if(b) stats.LangzeitStreifen40erLang += dataModel.StreifenProSchnitt40er;
-            if(c) stats.LangzeitStreifen70erDeckel += dataModel.StreifenProSchnitt70er;
-
-
-            stats.StreifenLaengeIst = 0;
-
-            dataModel.Auto.SetMaxDurchlauf();
-        }
-
-
-        private void isConnected()
-        {
-            if (serialPort1.IsOpen)
-            {                
-                BtnVerbinden.IsEnabled = false;
-                BtnTrennen.IsEnabled = true;
-                //Main.IsEnabled = true;
-                //labelConnection.Foreground = Brushes.Green;
-                //labelConnection.Text = "CONNECTED";
-                //Console.WriteLine("Connected");              
-                //serialPort1.Write("Connected#");
-
-                commandLine.setCommandLine(COMMAND.Connected, 0, false);
-                dataModel.sendText(commandLine.getCommandLine());
-
-                this.threadCheckConnection = new Thread(dataModel.MyThreads.checkVerbindung);
-                threadCheckConnection.Start();
-            }
-            else
-            {
-                BtnVerbinden.IsEnabled = true;
-                BtnTrennen.IsEnabled = false;
-                Main.IsEnabled = false;
-                labelConnection.Foreground = Brushes.Red;
-                labelConnection.Text = "DISCONNECTED";
-                Console.WriteLine("Disconnected");
-                SetText("Disconnected\n");
-
-                threadCheckConnection.Abort();               
-            }
-        }
-
-        public void checkConnection() {
-            if (!serialPort1.IsOpen)
-            {
-                BtnVerbinden.IsEnabled = true;
-                BtnTrennen.IsEnabled = false;
-                Main.IsEnabled = false;
-                labelConnection.Foreground = Brushes.Red;
-                labelConnection.Text = "Disconnected";
-                Console.WriteLine("Disconnected");
-                SetText("Disconnected\n");
-
-                threadCheckConnection.Abort();
-            }
-        }
-
-        private void ButtonOpenMenu_Click(object sender, RoutedEventArgs e)
-        {
-            ButtonOpenMenu.Visibility = Visibility.Collapsed;
-            ButtonCloseMenu.Visibility = Visibility.Visible;
-        }
-
-        private void ButtonCloseMenu_Click(object sender, RoutedEventArgs e)
-        {
-            ButtonOpenMenu.Visibility = Visibility.Visible;
-            ButtonCloseMenu.Visibility = Visibility.Collapsed;
+            ButtonOpenConnections.Visibility = Visibility.Visible;
+            ButtonCloseConnections.Visibility = Visibility.Collapsed;
         }
 
         private void ButtonStatsOpen_Click(object sender, RoutedEventArgs e)

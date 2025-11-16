@@ -40,7 +40,16 @@ namespace SchneidMaschine.model
         END_CHAR = '#',
     }
 
-    public enum COMMAND
+    public enum COMMAND_Rollenzentrierung
+    {
+        Connected,
+        steps,
+        stepperStart,
+        stepperStop,
+        stepperFinished
+    }
+
+    public enum COMMAND_Schneidmaschine
     {
         allesStop,
         allesGestoppt,
@@ -95,11 +104,14 @@ namespace SchneidMaschine.model
         private Auto auto;
         private Wartung wartung;
         private string[] portList;    
-        private SerialPort serialPort1;
+        private SerialPort serialPortSchneidmaschine;
+        private SerialPort serialPortRollenzentrierung;
 
         private CommandLine commandLine;
 
-        private MyThreads myThreads;
+        private Thread_Port_Scanner thread_Port_Scanner;
+        private Thread_Con_Rollenzentrierung thread_Con_Rollenzentrierung;
+        private Thread_Con_Schneidmaschine thread_Con_Schneidmaschine;
 
         private STREIFEN selectedStreifen;
         private long streifenProSchachtel;
@@ -120,8 +132,6 @@ namespace SchneidMaschine.model
         {
 
             Console.WriteLine("CharArduino.END_CHAR: " + Char.ToString((char)CharArduino.START_CHAR));
-            
-                
 
             initDB();          
             this.mainWindow = mainWindow;
@@ -131,7 +141,8 @@ namespace SchneidMaschine.model
 
         private void init()
         {
-            this.serialPort1 = new SerialPort();
+            this.serialPortSchneidmaschine = new SerialPort();
+            this.serialPortRollenzentrierung = new SerialPort();
             this.portList = SerialPort.GetPortNames();
             this.commandLine = new CommandLine(this);
 
@@ -142,7 +153,9 @@ namespace SchneidMaschine.model
             this.auto = new Auto(this);
             this.wartung = new Wartung(this);
 
-            this.myThreads = new MyThreads(this);
+            this.thread_Port_Scanner = new Thread_Port_Scanner(this);
+            this.thread_Con_Rollenzentrierung = new Thread_Con_Rollenzentrierung(this);
+            this.thread_Con_Schneidmaschine = new Thread_Con_Schneidmaschine(this);
         }
 
         private void initDB()
@@ -272,11 +285,11 @@ namespace SchneidMaschine.model
             stats.LangzeitVerbrauchteRollen = dbHandler.GetVerbrauchteRollenLangzeit();
         }
 
-        public void sendText(string text)
+        public void sendTextSchneidmaschine(string text)
         {
             try
             {
-                serialPort1.Write(text + "#");
+                serialPortSchneidmaschine.Write(text + "#");
             }
             catch (Exception e)
             {              
@@ -285,7 +298,19 @@ namespace SchneidMaschine.model
             }           
         }
 
-        
+        public void sendTextRollenzentrierung(string text)
+        {
+            try
+            {
+                serialPortRollenzentrierung.Write(text + "#");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("IOException  source: {0}", e.Source);
+                MessageBox.Show("Der Serial-Port zum Arduino wurde nicht geöffnet.\n\nDas Programm muss neu gestartet werden.", "Serial-Port Error");
+            }
+        }
+
         public int mmToSteps(double mm)
         {
             double result = mm * stepToMillimeter;
@@ -315,7 +340,9 @@ namespace SchneidMaschine.model
 
         public CommandLine CommandLine { get { return commandLine; } }
 
-        public MyThreads MyThreads { get { return myThreads; } }
+        public Thread_Con_Rollenzentrierung Thread_Con_Rollenzentrierung { get { return thread_Con_Rollenzentrierung; } }
+        public Thread_Con_Schneidmaschine Thread_Con_Schneidmaschine { get { return thread_Con_Schneidmaschine; } }
+        public Thread_Port_Scanner Thread_Port_Scanner { get { return thread_Port_Scanner; } }
 
         public string[] PortList { get { return portList; } }
 
@@ -329,12 +356,11 @@ namespace SchneidMaschine.model
         public long StreifenProSchnitt40er { get { return streifenProSchnitt40er; } }
         public long StreifenProSchnitt70er { get { return streifenProSchnitt70er; } }
 
-        public SerialPort SerialPort1 { get => serialPort1; set => serialPort1 = value; }
+        public SerialPort SerialPortSchneidmaschine { get => serialPortSchneidmaschine; set => serialPortSchneidmaschine = value; }
+        public SerialPort SerialPortRollenzentrierung { get => serialPortRollenzentrierung; set => serialPortRollenzentrierung = value; }
 
         //public string RollenLaenge { get => rollenLaenge; set => rollenLaenge = value; }
         //public string RollenLaengeAktuell { get => rollenLaengeAktuell; set => rollenLaengeAktuell = value; }
-
-        
 
         public bool IsCutFinished { get => isCutFinished; set => isCutFinished = value; }
         public bool IsStepperFinished { get => isStepperFinished; set => isStepperFinished = value; }

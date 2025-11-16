@@ -9,8 +9,9 @@
         WindowStartupLocation="CenterScreen" 
         Title="MainWindow" Height="900" Width="1300">
 
+    
     <Window.Resources>
-        <!--Drawer links-->
+        <!--Drawer links-->       
         <Style TargetType="{x:Type Button}" x:Key="ButtonWindowClose">
             <Setter Property="Background" Value="#FF5C99D6" />
             <Setter Property="TextBlock.TextAlignment" Value="Center" />
@@ -58,12 +59,12 @@
         <Storyboard x:Key="OpenMenu">
             <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(FrameworkElement.Width)" Storyboard.TargetName="GridMenu">
                 <EasingDoubleKeyFrame KeyTime="0" Value="40"/>
-                <EasingDoubleKeyFrame KeyTime="0:0:0.2" Value="400"/>
+                <EasingDoubleKeyFrame KeyTime="0:0:0.2" Value="950"/>
             </DoubleAnimationUsingKeyFrames>
         </Storyboard>
         <Storyboard x:Key="CloseMenu">
             <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(FrameworkElement.Width)" Storyboard.TargetName="GridMenu">
-                <EasingDoubleKeyFrame KeyTime="0" Value="400"/>
+                <EasingDoubleKeyFrame KeyTime="0" Value="950"/>
                 <EasingDoubleKeyFrame KeyTime="0:0:0.2" Value="40"/>
             </DoubleAnimationUsingKeyFrames>
         </Storyboard>
@@ -128,10 +129,10 @@
     </Window.Resources>
     <Window.Triggers>
         <!--Drawer links-->
-        <EventTrigger RoutedEvent="ButtonBase.Click" SourceName="ButtonOpenMenu">
+        <EventTrigger RoutedEvent="ButtonBase.Click" SourceName="ButtonOpenConnections">
             <BeginStoryboard Storyboard="{StaticResource OpenMenu}"/>
         </EventTrigger>
-        <EventTrigger RoutedEvent="ButtonBase.Click" SourceName="ButtonCloseMenu">
+        <EventTrigger RoutedEvent="ButtonBase.Click" SourceName="ButtonCloseConnections">
             <BeginStoryboard Storyboard="{StaticResource CloseMenu}"/>
         </EventTrigger>
 
@@ -144,58 +145,51 @@
         </EventTrigger>
     </Window.Triggers>
 
-    <Grid Height="832">
-        <Grid>
-            <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Center">
-                <GroupBox Header="Verbindung mit Arduino" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,0,50,10" Height="300" Width="400">
-                    <StackPanel Margin="0,20,0,0">
-                        <StackPanel Orientation="Horizontal" Margin="10,10,0,10" HorizontalAlignment="Left">
-                            <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0" Width="150" FontSize="20">COM Port:</TextBlock>
-                            <ComboBox x:Name="comboBoxPorts" Width="200" FontSize="32" Height="50"></ComboBox>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal" Margin="10,0,0,10">
-                            <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0" Width="150" FontSize="20">BAUT Rate:</TextBlock>
-                            <ComboBox x:Name="comboBoxBautRate" Width="200" Height="50" FontSize="32">
-                                <ComboBoxItem>300</ComboBoxItem>
-                                <ComboBoxItem>1200</ComboBoxItem>
-                                <ComboBoxItem>2400</ComboBoxItem>
-                                <ComboBoxItem>4800</ComboBoxItem>
-                                <ComboBoxItem IsSelected="True">9600</ComboBoxItem>
-                                <ComboBoxItem>19200</ComboBoxItem>
-                                <ComboBoxItem>38400</ComboBoxItem>
-                                <ComboBoxItem>57600</ComboBoxItem>
-                                <ComboBoxItem>74880</ComboBoxItem>
-                                <ComboBoxItem>115200</ComboBoxItem>
-                                <ComboBoxItem>230400</ComboBoxItem>
-                                <ComboBoxItem>250000</ComboBoxItem>
-                                <ComboBoxItem>500000</ComboBoxItem>
-                                <ComboBoxItem>1000000</ComboBoxItem>
-                                <ComboBoxItem>2000000</ComboBoxItem>
-                            </ComboBox>
+    <Grid Height="832" VerticalAlignment="Top">
 
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal" Height="50" Margin="10,0,0,10">
-                            <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0" Width="150" FontSize="20">Status:</TextBlock>
-                            <TextBlock x:Name="labelConnection" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,0,0" Foreground="Red" FontSize="20">DISCONNECTED</TextBlock>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal" Margin="10,10,0,10" Height="40">
-                            <Button x:Name="BtnVerbinden" Click="BtnClickVerbinden" Margin="0,0,10,0" Width="179" Height="40" FontSize="24">Verbinden</Button>
-                            <Button x:Name="BtnTrennen" Click="BtnClickTrennen" Width="179" Height="40" FontSize="24">Trennen</Button>
-                        </StackPanel>
-                    </StackPanel>
-                </GroupBox>
-                <GroupBox Header="Serial Monitor Arduino" Width="650" Height="300" VerticalAlignment="Top" HorizontalAlignment="Center" >
+        <!-- Menu-Bar -->
+        <Grid Margin="0,0,0,0" Width="auto" Height="auto" VerticalAlignment="Top">
+            <DockPanel Width="auto" Height="24" VerticalAlignment="Center">
+                <Menu DockPanel.Dock="Top">
+                    <MenuItem Header="_Datei" Margin="5,2,0,0">
+                        <MenuItem Header="_Einstellungen" />
+                        <MenuItem Header="_Keybinding" />
+                        <Separator/>
+                        <MenuItem Header="_Beenden" />
+                    </MenuItem>
+                </Menu>
+            </DockPanel>
+        </Grid>
+        
+        <Grid Margin="0,30,5,5">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Center">
+
+                <!-- Serial Monitor Rollenzentrierung -->
+                <GroupBox Header="Serial Monitor Rollenzentrierung" Width="650" Height="300" VerticalAlignment="Top" HorizontalAlignment="Center" >
                     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Top" Width="620" Height="250" Margin="0,20">
                         <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                            <TextBox Name="textBoxSenden" Margin="0,0,5,5" Width="370" />
-                            <Button x:Name="buttonSenden" Click="BtnClickSenden" Width="120" HorizontalAlignment="Right" Margin="0,0,5,5" Content="Senden" />
-                            <Button x:Name="buutonTextDelete" Click="BtnClickTextDelete" Width="120" HorizontalAlignment="Right" Margin="0,0,0,5" >Text löschen</Button>
+                            <TextBox Name="textBoxSendenRollenzentrierung" Margin="0,0,5,5" Width="370" />
+                            <Button x:Name="buttonSendenRollenzentrierung" Click="BtnClickSendenRollenzentrierung" Width="120" HorizontalAlignment="Right" Margin="0,0,5,5" Content="Senden" />
+                            <Button x:Name="buutonTextDeleteRollenzentrierung" Click="BtnClickTextDeleteRollenzentrierung" Width="120" HorizontalAlignment="Right" Margin="0,0,0,5" >Text löschen</Button>
                         </StackPanel>
-                        <TextBox x:Name="textBoxAusgabe" AcceptsReturn="True" TextWrapping="Wrap" Width="620" Height="202" 
+                        <TextBox x:Name="textBoxAusgabeRollenzentrierung" AcceptsReturn="True" TextWrapping="Wrap" Width="620" Height="202" 
+                            ScrollViewer.HorizontalScrollBarVisibility="Visible" ScrollViewer.VerticalScrollBarVisibility="Visible"/>
+                    </StackPanel>
+                </GroupBox>
+
+                <!-- Serial Monitor Schneidmaschine -->
+                <GroupBox Header="Serial Monitor Schneidmaschine" Width="650" Height="300" VerticalAlignment="Top" HorizontalAlignment="Center" >
+                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Top" Width="620" Height="250" Margin="0,20">
+                        <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                            <TextBox Name="textBoxSendenSchneidmaschine" Margin="0,0,5,5" Width="370" />
+                            <Button x:Name="buttonSendenSchneidmaschine" Click="BtnClickSendenSchneidmaschine" Width="120" HorizontalAlignment="Right" Margin="0,0,5,5" Content="Senden" />
+                            <Button x:Name="buutonTextDeleteSchneidmaschine" Click="BtnClickTextDeleteSchneidmaschine" Width="120" HorizontalAlignment="Right" Margin="0,0,0,5" >Text löschen</Button>
+                        </StackPanel>
+                        <TextBox x:Name="textBoxAusgabeSchneidmaschine" AcceptsReturn="True" TextWrapping="Wrap" Width="620" Height="202" 
                                  ScrollViewer.HorizontalScrollBarVisibility="Visible" ScrollViewer.VerticalScrollBarVisibility="Visible"/>
                     </StackPanel>
                 </GroupBox>
-
+  
             </StackPanel>
             <Separator Margin="0,310,0,0" VerticalAlignment="Top"/>
             <StackPanel Orientation="Horizontal" >
@@ -203,30 +197,106 @@
             </StackPanel>
         </Grid>
         <!--Drawer links-->
-        <Grid x:Name="GridMenu" Width="40" Height="300" HorizontalAlignment="Left"  VerticalAlignment="Top" Background="{DynamicResource {x:Static SystemColors.MenuBarBrushKey}}">
+        <Grid x:Name="GridMenu" Width="40" Height="310" Margin="0,27,0,0" HorizontalAlignment="Left"  VerticalAlignment="Top" Background="{DynamicResource {x:Static SystemColors.MenuBarBrushKey}}">
             <Grid.Effect>
                 <DropShadowEffect BlurRadius="2" ShadowDepth="1" Color="#FFAEAEAE"/>
             </Grid.Effect>
-            <Grid x:Name="GridContent" HorizontalAlignment="Center" VerticalAlignment="center" Margin="0,0,40,0">
-                <TextBlock Text="Content" FontSize="20" />
-            </Grid>
+            <Grid x:Name="GridContent" Width="880" HorizontalAlignment="Center" VerticalAlignment="center" Margin="0,0,0,0">
+                <!-- Content -->
 
-            <Grid Width="40" Height="300" HorizontalAlignment="Right"  VerticalAlignment="Top" Background="{DynamicResource {x:Static SystemColors.MenuHighlightBrushKey}}">
-                <Button x:Name="ButtonOpenMenu" Height="300" Width="40" HorizontalAlignment="Center" VerticalAlignment="center" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="#FF31577E" Click="ButtonOpenMenu_Click">
+                <!-- Verbindung mit Rollenzentrierung -->
+                <GroupBox Header="Verbindung mit Rollenzentrierung" VerticalAlignment="Top" HorizontalAlignment="left" Margin="0,10,50,10" Height="290" Width="400">
+                    <StackPanel Margin="0,20,0,0">
+                        <StackPanel Orientation="Horizontal" Margin="10,10,0,10" HorizontalAlignment="Left">
+                            <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0" Width="150" FontSize="20">COM Port:</TextBlock>
+                            <ComboBox x:Name="comboBoxPortsRollenzentrierung" Width="200" FontSize="32" Height="50"></ComboBox>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="10,0,0,10">
+                            <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0" Width="150" FontSize="20">BAUT Rate:</TextBlock>
+                            <ComboBox x:Name="comboBoxBautRateRollenzentrierung" Width="200" Height="50" FontSize="32">
+                                <ComboBoxItem>300</ComboBoxItem>
+                                <ComboBoxItem>1200</ComboBoxItem>
+                                <ComboBoxItem>2400</ComboBoxItem>
+                                <ComboBoxItem>4800</ComboBoxItem>
+                                <ComboBoxItem>9600</ComboBoxItem>
+                                <ComboBoxItem>19200</ComboBoxItem>
+                                <ComboBoxItem>38400</ComboBoxItem>
+                                <ComboBoxItem>57600</ComboBoxItem>
+                                <ComboBoxItem>74880</ComboBoxItem>
+                                <ComboBoxItem IsSelected="True">115200</ComboBoxItem>
+                                <ComboBoxItem>230400</ComboBoxItem>
+                                <ComboBoxItem>250000</ComboBoxItem>
+                                <ComboBoxItem>500000</ComboBoxItem>
+                                <ComboBoxItem>1000000</ComboBoxItem>
+                                <ComboBoxItem>2000000</ComboBoxItem>
+                            </ComboBox>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Height="50" Margin="10,0,0,10">
+                            <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0" Width="150" FontSize="20">Status:</TextBlock>
+                            <TextBlock x:Name="labelConnectionRollenzentrierung" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,0,0" Foreground="Red" FontSize="20">DISCONNECTED</TextBlock>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="10,10,0,10" Height="40">
+                            <Button x:Name="BtnVerbindenRollenzentrierung" Click="BtnClickVerbindenRollenzentrierung" Margin="0,0,10,0" Width="179" Height="40" FontSize="24">Verbinden</Button>
+                            <Button x:Name="BtnTrennenRollenzentrierung" Click="BtnClickTrennenRollenzentrierung" Width="179" Height="40" FontSize="24">Trennen</Button>
+                        </StackPanel>
+                    </StackPanel>
+                </GroupBox>
+
+                <!-- Verbindung mit Schneidmaschine -->
+                <GroupBox Header="Verbindung mit Schneidmaschine" VerticalAlignment="Top" HorizontalAlignment="right" Margin="0,10,50,10" Height="290" Width="400">
+                    <StackPanel Margin="0,20,0,0">
+                        <StackPanel Orientation="Horizontal" Margin="10,10,0,10" HorizontalAlignment="Left">
+                            <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0" Width="150" FontSize="20">COM Port:</TextBlock>
+                            <ComboBox x:Name="comboBoxPortsSchneidmaschine" Width="200" FontSize="32" Height="50"></ComboBox>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="10,0,0,10">
+                            <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0" Width="150" FontSize="20">BAUT Rate:</TextBlock>
+                            <ComboBox x:Name="comboBoxBautRateSchneidmaschine" Width="200" Height="50" FontSize="32">
+                                <ComboBoxItem>300</ComboBoxItem>
+                                <ComboBoxItem>1200</ComboBoxItem>
+                                <ComboBoxItem>2400</ComboBoxItem>
+                                <ComboBoxItem>4800</ComboBoxItem>
+                                <ComboBoxItem>9600</ComboBoxItem>
+                                <ComboBoxItem>19200</ComboBoxItem>
+                                <ComboBoxItem>38400</ComboBoxItem>
+                                <ComboBoxItem>57600</ComboBoxItem>
+                                <ComboBoxItem>74880</ComboBoxItem>
+                                <ComboBoxItem IsSelected="True">115200</ComboBoxItem>
+                                <ComboBoxItem>230400</ComboBoxItem>
+                                <ComboBoxItem>250000</ComboBoxItem>
+                                <ComboBoxItem>500000</ComboBoxItem>
+                                <ComboBoxItem>1000000</ComboBoxItem>
+                                <ComboBoxItem>2000000</ComboBoxItem>
+                            </ComboBox>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Height="50" Margin="10,0,0,10">
+                            <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0" Width="150" FontSize="20">Status:</TextBlock>
+                            <TextBlock x:Name="labelConnectionSchneidmaschine" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,0,0" Foreground="Red" FontSize="20">DISCONNECTED</TextBlock>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="10,10,0,10" Height="40">
+                            <Button x:Name="BtnVerbindenSchneidmaschine" Click="BtnClickVerbindenSchneidmaschine" Margin="0,0,10,0" Width="179" Height="40" FontSize="24">Verbinden</Button>
+                            <Button x:Name="BtnTrennenSchneidmaschine" Click="BtnClickTrennenSchneidmaschine" Width="179" Height="40" FontSize="24">Trennen</Button>
+                        </StackPanel>
+                    </StackPanel>
+                </GroupBox>
+
+            </Grid>
+            <Grid Width="40" Height="310" HorizontalAlignment="Right" VerticalAlignment="Top" Background="{DynamicResource {x:Static SystemColors.MenuHighlightBrushKey}}">
+                <Button x:Name="ButtonOpenConnections" Click="ButtonOpenConnections_Click" Height="310" Width="40" HorizontalAlignment="Center" VerticalAlignment="center" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="#FF31577E">
                     <Grid>
                         <TextBlock Text="&gt;&gt;" FontSize="20" Margin="0,-10,0,0" />
-                        <TextBlock Text="Open" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="center">
+                        <TextBlock Text="Open Connections" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="center">
                             <TextBlock.LayoutTransform>
                                 <RotateTransform Angle="90" />
                             </TextBlock.LayoutTransform>
                         </TextBlock>
-                        <TextBlock Text="&gt;&gt;" FontSize="20" Margin="0,250,0,0" />
+                        <TextBlock Text="&gt;&gt;" FontSize="20" Margin="0,260,0,0" />
                     </Grid>
                 </Button>
-                <Button x:Name="ButtonCloseMenu" Visibility="Collapsed" Height="300" Width="40" HorizontalAlignment="Right" VerticalAlignment="Top" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="#FF31577E" Click="ButtonCloseMenu_Click">
+                <Button x:Name="ButtonCloseConnections" Click="ButtonCloseConnections_Click" Visibility="Collapsed" Height="310" Width="40" HorizontalAlignment="Right" VerticalAlignment="Top" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="#FF31577E">
                     <Grid>
                         <TextBlock Text="&lt;&lt;" FontSize="20" Margin="0,-10,0,0" />
-                        <TextBlock Text="Close" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="center">
+                        <TextBlock Text="Close Connections" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="center">
                             <TextBlock.LayoutTransform>
                                 <RotateTransform Angle="90" />
                             </TextBlock.LayoutTransform>
@@ -238,7 +308,7 @@
         </Grid>
 
         <!--Drawer rechts-->
-        <Grid x:Name="GridStats" Width="40" Height="300" HorizontalAlignment="Right"  VerticalAlignment="Top" Background="{DynamicResource {x:Static SystemColors.MenuBarBrushKey}}">
+        <Grid x:Name="GridStats" Width="40" Height="310" Margin="0,27,0,0" HorizontalAlignment="Right" VerticalAlignment="Top" Background="{DynamicResource {x:Static SystemColors.MenuBarBrushKey}}">
             <Grid.Effect>
                 <DropShadowEffect BlurRadius="2" ShadowDepth="1" Color="#FFAEAEAE"/>
             </Grid.Effect>
@@ -360,8 +430,8 @@
                 </Grid>
             </Grid>
             
-            <Grid Width="40" Height="300" HorizontalAlignment="Left"  VerticalAlignment="Top" Background="{DynamicResource {x:Static SystemColors.MenuHighlightBrushKey}}">
-                <Button x:Name="ButtonStatsOpen" Height="300" Width="40" HorizontalAlignment="Center" VerticalAlignment="center" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="#FF31577E" Click="ButtonStatsOpen_Click">
+            <Grid Width="40" Height="310" HorizontalAlignment="Left"  VerticalAlignment="Top" Background="{DynamicResource {x:Static SystemColors.MenuHighlightBrushKey}}">
+                <Button x:Name="ButtonStatsOpen" Height="310" Width="40" HorizontalAlignment="Center" VerticalAlignment="center" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="#FF31577E" Click="ButtonStatsOpen_Click">
                     <Grid>
                         <TextBlock Text="&lt;&lt;" FontSize="20" Margin="0,-10,0,0" />
                         <TextBlock Text="Open Stats" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="center" >
@@ -369,10 +439,10 @@
                                 <RotateTransform Angle="90" />
                             </TextBlock.LayoutTransform>
                         </TextBlock>
-                        <TextBlock Text="&lt;&lt;" FontSize="20" Margin="0,250,0,0" />
+                        <TextBlock Text="&lt;&lt;" FontSize="20" Margin="0,260,0,0" />
                     </Grid>
                 </Button>
-                <Button x:Name="ButtonStatsClose" Visibility="Collapsed" Height="300" Width="40" HorizontalAlignment="Left" VerticalAlignment="Top" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="#FF31577E" Click="ButtonStatsClose_Click">
+                <Button x:Name="ButtonStatsClose" Visibility="Collapsed" Height="310" Width="40" HorizontalAlignment="Left" VerticalAlignment="Top" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="#FF31577E" Click="ButtonStatsClose_Click">
                     <Grid>
                         <TextBlock Text="&gt;&gt;" FontSize="20" Margin="0,-10,0,0" />
                         <TextBlock Text="Close Stats" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="center">
@@ -385,7 +455,7 @@
                 </Button>
             </Grid>
         </Grid>
-        <Frame x:Name="Main" Margin="0,320,0,0" FontSize="36" 
+        <Frame x:Name="Main" Margin="0,360,0,0" FontSize="36" 
                HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" NavigationUIVisibility="Hidden"/>
     </Grid>
 </Window>

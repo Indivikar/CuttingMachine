@@ -52,22 +52,22 @@ namespace SchneidMaschine.pages
 
         private void Btn_Click_Reset_IstWert(object sender, RoutedEventArgs e)
         {
-            commandLine.setCommandLine(COMMAND.resetIstWert, 0, true);
-            dataModel.sendText(commandLine.getCommandLine());
+            commandLine.setCommandLine(COMMAND_Schneidmaschine.resetIstWert, 0, true);
+            dataModel.sendTextSchneidmaschine(commandLine.getCommandLine());
         }
 
         private void Btn_1mm_Click(object sender, RoutedEventArgs e)
         {
             StackPanelControls.IsEnabled = false;
-            commandLine.setCommandLine(COMMAND.stepperStart, 1, ToggleButton_Direction.IsChecked == true);
-            dataModel.sendText(commandLine.getCommandLine());
+            commandLine.setCommandLine(COMMAND_Schneidmaschine.stepperStart, 1, ToggleButton_Direction.IsChecked == true);
+            dataModel.sendTextSchneidmaschine(commandLine.getCommandLine());
         }
 
         private void Btn_10mm_Click(object sender, RoutedEventArgs e)
         {
             StackPanelControls.IsEnabled = false;
-            commandLine.setCommandLine(COMMAND.stepperStart, 10, ToggleButton_Direction.IsChecked == true);
-            dataModel.sendText(commandLine.getCommandLine());
+            commandLine.setCommandLine(COMMAND_Schneidmaschine.stepperStart, 10, ToggleButton_Direction.IsChecked == true);
+            dataModel.sendTextSchneidmaschine(commandLine.getCommandLine());
         }
 
         private void Btn_100mm_Click(object sender, RoutedEventArgs e)
@@ -79,8 +79,8 @@ namespace SchneidMaschine.pages
 
             StackPanelControls.IsEnabled = false;
 
-            commandLine.setCommandLine(COMMAND.stepperStart, 100, ToggleButton_Direction.IsChecked == true);
-            dataModel.sendText(commandLine.getCommandLine());
+            commandLine.setCommandLine(COMMAND_Schneidmaschine.stepperStart, 100, ToggleButton_Direction.IsChecked == true);
+            dataModel.sendTextSchneidmaschine(commandLine.getCommandLine());
 
         }
 
@@ -93,8 +93,8 @@ namespace SchneidMaschine.pages
 
             StackPanelControls.IsEnabled = false;
 
-            commandLine.setCommandLine(COMMAND.stepperStart, dataModel.SelectedLength, ToggleButton_Direction.IsChecked == true);
-            dataModel.sendText(commandLine.getCommandLine());
+            commandLine.setCommandLine(COMMAND_Schneidmaschine.stepperStart, dataModel.SelectedLength, ToggleButton_Direction.IsChecked == true);
+            dataModel.sendTextSchneidmaschine(commandLine.getCommandLine());
         }
 
         public void StackPanelControlsEnable()
@@ -104,14 +104,14 @@ namespace SchneidMaschine.pages
 
         private void Btn_Cut(object sender, RoutedEventArgs e)
         {
-            commandLine.setCommandLine(COMMAND.schneidenStart, 0, ToggleButton_Direction.IsChecked == true);
-            dataModel.sendText(commandLine.getCommandLine());           
+            commandLine.setCommandLine(COMMAND_Schneidmaschine.schneidenStart, 0, ToggleButton_Direction.IsChecked == true);
+            dataModel.sendTextSchneidmaschine(commandLine.getCommandLine());           
         }
 
         private void BtnClickKopfschnitt(object sender, RoutedEventArgs e)
         {
-            commandLine.setCommandLine(COMMAND.kopfSchnittStart, 0, ToggleButton_Direction.IsChecked == true);
-            dataModel.sendText(commandLine.getCommandLine());
+            commandLine.setCommandLine(COMMAND_Schneidmaschine.kopfSchnittStart, 0, ToggleButton_Direction.IsChecked == true);
+            dataModel.sendTextSchneidmaschine(commandLine.getCommandLine());
         }
 
         private void ToggleBtn_Click_Handwheel(object sender, RoutedEventArgs e)
@@ -122,14 +122,14 @@ namespace SchneidMaschine.pages
 
             if (b)
             {
-                commandLine.setCommandLine(COMMAND.handradOn, 0, false);
-                dataModel.sendText(commandLine.getCommandLine());
+                commandLine.setCommandLine(COMMAND_Schneidmaschine.handradOn, 0, false);
+                dataModel.sendTextSchneidmaschine(commandLine.getCommandLine());
                 // Console.WriteLine("An");
             }
             else
             {
-                commandLine.setCommandLine(COMMAND.handradOff, 0, false);
-                dataModel.sendText(commandLine.getCommandLine());
+                commandLine.setCommandLine(COMMAND_Schneidmaschine.handradOff, 0, false);
+                dataModel.sendTextSchneidmaschine(commandLine.getCommandLine());
                 // Console.WriteLine("Aus");
             }
         }
@@ -152,8 +152,8 @@ namespace SchneidMaschine.pages
 
         private void Btn_Stop(object sender, RoutedEventArgs e)
         {          
-            commandLine.setCommandLine(COMMAND.allesStop, 0, false);
-            dataModel.sendText(commandLine.getCommandLine());
+            commandLine.setCommandLine(COMMAND_Schneidmaschine.allesStop, 0, false);
+            dataModel.sendTextSchneidmaschine(commandLine.getCommandLine());
         }
 
         private void EnabledChanged(object sender, DependencyPropertyChangedEventArgs e)

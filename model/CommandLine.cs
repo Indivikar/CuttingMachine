@@ -10,7 +10,7 @@ namespace SchneidMaschine.model
     {
         private DataModel dataModel;
 
-        private COMMAND command;
+        private COMMAND_Schneidmaschine command;
         private int steps;
         private DIRECTION direction;
 
@@ -38,7 +38,7 @@ namespace SchneidMaschine.model
 
 
 
-        public void setCommandLine(COMMAND command, int stepsAsMM, bool wert)
+        public void setCommandLine(COMMAND_Schneidmaschine command, int stepsAsMM, bool wert)
         {
             if (wert)
             {
@@ -50,7 +50,7 @@ namespace SchneidMaschine.model
             }
         }
 
-        public void setCommandLine(COMMAND command, int steps, DIRECTION direction)
+        public void setCommandLine(COMMAND_Schneidmaschine command, int steps, DIRECTION direction)
         {
             this.command = command;
             this.steps = steps;
@@ -58,19 +58,19 @@ namespace SchneidMaschine.model
 
             Console.WriteLine("setCommandLine -> " + command + "_" + steps + "-" + direction);
 
-            if (COMMAND.schneidenStart.Equals(command)) {
+            if (COMMAND_Schneidmaschine.schneidenStart.Equals(command)) {
                 Console.WriteLine("set dataModel.IsCutFinished = false");
                 dataModel.IsCutFinished = false;
             }
 
-            if (COMMAND.stepperStart.Equals(command))
+            if (COMMAND_Schneidmaschine.stepperStart.Equals(command))
             {
                 Console.WriteLine("set dataModel.IsStepperFinished = false");
                 dataModel.IsStepperFinished = false;
             }
         }
 
-        public COMMAND Command { get => command; set => command = value; }
+        public COMMAND_Schneidmaschine Command { get => command; set => command = value; }
         public int Steps { get => steps; set => steps = value; }
         public DIRECTION Direction { get => direction; set => direction = value; }
     }

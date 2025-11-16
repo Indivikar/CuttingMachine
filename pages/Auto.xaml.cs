@@ -123,13 +123,13 @@ namespace SchneidMaschine.pages
 
                 while (!dataModel.IsCutFinished) Thread.Sleep(1000);
 
-                commandLine. setCommandLine(COMMAND.stepperStart, dataModel.SelectedLength, false);
-                dataModel.sendText(commandLine.getCommandLine());
+                commandLine. setCommandLine(COMMAND_Schneidmaschine.stepperStart, dataModel.SelectedLength, false);
+                dataModel.sendTextSchneidmaschine(commandLine.getCommandLine());
 
                 while (!dataModel.IsStepperFinished) Thread.Sleep(1000);
 
-                commandLine.setCommandLine(COMMAND.schneidenStart, 0, false);
-                dataModel.sendText(commandLine.getCommandLine());
+                commandLine.setCommandLine(COMMAND_Schneidmaschine.schneidenStart, 0, false);
+                dataModel.sendTextSchneidmaschine(commandLine.getCommandLine());
 
                 // for-Schleife pausieren, wenn Pause gedrückt wurde
                 while (isPause) Thread.Sleep(200);
@@ -161,8 +161,8 @@ namespace SchneidMaschine.pages
 
         private void Btn_Click_Reset_IstWert(object sender, RoutedEventArgs e)
         {
-            commandLine.setCommandLine(COMMAND.resetIstWert, 0, true);
-            dataModel.sendText(commandLine.getCommandLine());
+            commandLine.setCommandLine(COMMAND_Schneidmaschine.resetIstWert, 0, true);
+            dataModel.sendTextSchneidmaschine(commandLine.getCommandLine());
         }
 
         private void BtnClickModusAutoStart(object sender, RoutedEventArgs e)
@@ -202,8 +202,8 @@ namespace SchneidMaschine.pages
         private void BtnClickModusAutoStop(object sender, RoutedEventArgs e)
         {
             isStop = true;
-            commandLine.setCommandLine(COMMAND.allesStop, 0, false);
-            dataModel.sendText(commandLine.getCommandLine());
+            commandLine.setCommandLine(COMMAND_Schneidmaschine.allesStop, 0, false);
+            dataModel.sendTextSchneidmaschine(commandLine.getCommandLine());
         }
 
         private void TextBoxRuns_TextChanged(object sender, TextChangedEventArgs e)

@@ -82,8 +82,8 @@ namespace SchneidMaschine.pages
 
             if (!allesStoppen)
             {
-                commandLine.setCommandLine(COMMAND.stepperStart, dataModel.SelectedLength, false);
-                dataModel.sendText(commandLine.getCommandLine());
+                commandLine.setCommandLine(COMMAND_Schneidmaschine.stepperStart, dataModel.SelectedLength, false);
+                dataModel.sendTextSchneidmaschine(commandLine.getCommandLine());
             }
         }
 
@@ -93,8 +93,8 @@ namespace SchneidMaschine.pages
 
             if (!allesStoppen)
             {
-                commandLine.setCommandLine(COMMAND.schneidenStart, 0, false);
-                dataModel.sendText(commandLine.getCommandLine());
+                commandLine.setCommandLine(COMMAND_Schneidmaschine.schneidenStart, 0, false);
+                dataModel.sendTextSchneidmaschine(commandLine.getCommandLine());
             }
         }
 
@@ -110,8 +110,8 @@ namespace SchneidMaschine.pages
 
         private void Btn_Click_Reset_IstWert(object sender, RoutedEventArgs e)
         {
-            commandLine.setCommandLine(COMMAND.resetIstWert, 0, true);
-            dataModel.sendText(commandLine.getCommandLine());
+            commandLine.setCommandLine(COMMAND_Schneidmaschine.resetIstWert, 0, true);
+            dataModel.sendTextSchneidmaschine(commandLine.getCommandLine());
         }
 
         private void BtnClickModusHalbAutoStart(object sender, RoutedEventArgs e)
@@ -122,23 +122,23 @@ namespace SchneidMaschine.pages
 
             this.taskHalbAutoRun = TaskHalbAutoModus(RadioButtonLaenge.IsChecked == true);
 
-            //commandLine.setCommandLine(COMMAND.stepperStart, dataModel.SelectedLength, false);
-            //dataModel.sendText(commandLine.getCommandLine());
+            //commandLine.setCommandLine(COMMAND_Schneidmaschine.stepperStart, dataModel.SelectedLength, false);
+            //dataModel.sendTextSchneidmaschine(commandLine.getCommandLine());
         }
 
         private void BtnClickModusHalbAutoStop(object sender, RoutedEventArgs e)
         {
             allesStoppen = true;
-            commandLine.setCommandLine(COMMAND.allesStop, 0, false);
-            dataModel.sendText(commandLine.getCommandLine());
+            commandLine.setCommandLine(COMMAND_Schneidmaschine.allesStop, 0, false);
+            dataModel.sendTextSchneidmaschine(commandLine.getCommandLine());
         }
 
 
         public void cut() {
             if (!allesStoppen) 
             {
-                commandLine.setCommandLine(COMMAND.schneidenStart, 0, true);
-                dataModel.sendText(commandLine.getCommandLine());
+                commandLine.setCommandLine(COMMAND_Schneidmaschine.schneidenStart, 0, true);
+                dataModel.sendTextSchneidmaschine(commandLine.getCommandLine());
             }
 
 
