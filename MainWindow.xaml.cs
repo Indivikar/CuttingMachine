@@ -315,7 +315,7 @@ namespace SchneidMaschine
         {
 
             text = text.Trim();
-            text = Regex.Replace(text, @"\t|\n|\r", "");
+            text = Regex.Replace(text, @"[\t\n\r]", ""); // Entfernt nur Tab, Newline, Carriage Return
 
             //string firstChar = text.Substring(0, 1);
             string lastChar = text.Substring(text.Length - 1);
@@ -605,7 +605,7 @@ namespace SchneidMaschine
         private void handleCommandLineSchneidmaschine(string text) {
 
             text = text.Trim();
-            text = Regex.Replace(text, @"\t|\n|\r", "");
+            text = Regex.Replace(text, @"[\t\n\r]", ""); // Entfernt nur Tab, Newline, Carriage Return
 
             //string firstChar = text.Substring(0, 1);
             string lastChar = text.Substring(text.Length - 1);
@@ -860,7 +860,7 @@ namespace SchneidMaschine
             string newText = null;
 
             text = text.Trim();
-            text = Regex.Replace(text, @"\t+|\n+|\r+|(\r\n)+", "");
+            text = Regex.Replace(text, @"[\t\n\r]+", ""); // Entfernt nur Tab, Newline, Carriage Return - behält normale Leerzeichen
 
             char[] charArr = text.ToCharArray();
             foreach (char ch in charArr)
@@ -890,7 +890,7 @@ namespace SchneidMaschine
             string newText = null;
 
             text = text.Trim();
-            text = Regex.Replace(text, @"\t+|\n+|\r+|(\r\n)+", "");
+            text = Regex.Replace(text, @"[\t\n\r]+", ""); // Entfernt nur Tab, Newline, Carriage Return - behält normale Leerzeichen
 
             char[] charArr = text.ToCharArray();
             foreach (char ch in charArr)

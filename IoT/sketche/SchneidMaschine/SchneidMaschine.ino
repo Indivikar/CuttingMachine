@@ -13,7 +13,7 @@ Serial.begin(115200);
 void loop() {
   delay(1000);                       // warten
   
-  // Sende Ping-Nachricht - nur eine saubere Ausgabe
+  // Sende Ping-Nachricht - nur eine saubere Ausgabe mit garantiertem Leerzeichen
   String pingMessage = "Ping " + String(counter++);
   sendText(pingMessage);              // Nur für CS-App TextBox, nicht doppelt
 
