@@ -315,7 +315,8 @@ namespace SchneidMaschine
         {
 
             text = text.Trim();
-            text = Regex.Replace(text, @"[\t\n\r]", ""); // Entfernt nur Tab, Newline, Carriage Return
+            // Entferne nur spezifische Steuerzeichen, aber behalte normale Leerzeichen
+            text = text.Replace("\t", "").Replace("\n", "").Replace("\r", "");
 
             //string firstChar = text.Substring(0, 1);
             string lastChar = text.Substring(text.Length - 1);
@@ -470,17 +471,17 @@ namespace SchneidMaschine
             {
                 try
                 {
-                    serialPortRollenzentrierung.WriteLine("%TEST#");
-                    SetTextRollenzentrierung("Test-Befehl an Rollenzentrierung gesendet\n");
+                    serialPortRollenzentrierung.Write("%TEST" + (char)CharApp.END_CHAR);
+                    SetTextRollenzentrierung("&Test-Befehl an Rollenzentrierung gesendet\n&");
                 }
                 catch (Exception ex)
                 {
-                    SetTextRollenzentrierung("Fehler beim Senden des Test-Befehls: " + ex.Message + "\n");
+                    SetTextRollenzentrierung("&Fehler beim Senden des Test-Befehls: " + ex.Message + "\n&");
                 }
             }
             else
             {
-                SetTextRollenzentrierung("Rollenzentrierung nicht verbunden - Test nicht möglich\n");
+                SetTextRollenzentrierung("&Rollenzentrierung nicht verbunden - Test nicht möglich\n&");
             }
         }
         
@@ -490,17 +491,17 @@ namespace SchneidMaschine
             {
                 try
                 {
-                    serialPortSchneidmaschine.WriteLine("%TEST#");
-                    SetTextSchneidmaschine("Test-Befehl an Schneidmaschine gesendet\n");
+                    serialPortSchneidmaschine.Write("%TEST" + (char)CharApp.END_CHAR);
+                    SetTextSchneidmaschine("&Test-Befehl an Schneidmaschine gesendet\n&");
                 }
                 catch (Exception ex)
                 {
-                    SetTextSchneidmaschine("Fehler beim Senden des Test-Befehls: " + ex.Message + "\n");
+                    SetTextSchneidmaschine("&Fehler beim Senden des Test-Befehls: " + ex.Message + "\n&");
                 }
             }
             else
             {
-                SetTextSchneidmaschine("Schneidmaschine nicht verbunden - Test nicht möglich\n");
+                SetTextSchneidmaschine("&Schneidmaschine nicht verbunden - Test nicht möglich\n&");
             }
         }
 
@@ -605,7 +606,8 @@ namespace SchneidMaschine
         private void handleCommandLineSchneidmaschine(string text) {
 
             text = text.Trim();
-            text = Regex.Replace(text, @"[\t\n\r]", ""); // Entfernt nur Tab, Newline, Carriage Return
+            // Entferne nur spezifische Steuerzeichen, aber behalte normale Leerzeichen
+            text = text.Replace("\t", "").Replace("\n", "").Replace("\r", "");
 
             //string firstChar = text.Substring(0, 1);
             string lastChar = text.Substring(text.Length - 1);
@@ -860,7 +862,8 @@ namespace SchneidMaschine
             string newText = null;
 
             text = text.Trim();
-            text = Regex.Replace(text, @"[\t\n\r]+", ""); // Entfernt nur Tab, Newline, Carriage Return - behält normale Leerzeichen
+            // Entferne nur spezifische Steuerzeichen, aber behalte normale Leerzeichen
+            text = text.Replace("\t", "").Replace("\n", "").Replace("\r", "");
 
             char[] charArr = text.ToCharArray();
             foreach (char ch in charArr)
@@ -890,7 +893,8 @@ namespace SchneidMaschine
             string newText = null;
 
             text = text.Trim();
-            text = Regex.Replace(text, @"[\t\n\r]+", ""); // Entfernt nur Tab, Newline, Carriage Return - behält normale Leerzeichen
+            // Entferne nur spezifische Steuerzeichen, aber behalte normale Leerzeichen
+            text = text.Replace("\t", "").Replace("\n", "").Replace("\r", "");
 
             char[] charArr = text.ToCharArray();
             foreach (char ch in charArr)
