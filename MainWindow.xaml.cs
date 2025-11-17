@@ -43,7 +43,8 @@ namespace SchneidMaschine
         StringBuilder sbRollenzentrierung = new StringBuilder();
         StringBuilder sbSchneidmaschine = new StringBuilder();
 
-        StringBuilder befehlBuilder = new StringBuilder();
+        StringBuilder befehlBuilderRollenzentrierung = new StringBuilder();
+        StringBuilder befehlBuilderSchneidmaschine = new StringBuilder();
         
         // Zeitstempel für Verbindungsüberwachung
         DateTime lastCommunicationSchneidmaschine = DateTime.MinValue;
@@ -265,12 +266,12 @@ namespace SchneidMaschine
                 return;
             }
 
-            if (stringToChar(text) == null)
+            if (stringToCharRollenzentrierung(text) == null)
             {
                 return;
             }
 
-            text = befehlBuilder.ToString();
+            text = befehlBuilderRollenzentrierung.ToString();
 
             handleCommandLineRollenzentrierung(text);
 
@@ -556,12 +557,12 @@ namespace SchneidMaschine
                 return;
             }
 
-            if (stringToChar(text) == null)
+            if (stringToCharSchneidmaschine(text) == null)
             {
                 return;
             }
 
-            text = befehlBuilder.ToString();
+            text = befehlBuilderSchneidmaschine.ToString();
 
             handleCommandLineSchneidmaschine(text);
 
@@ -854,9 +855,8 @@ namespace SchneidMaschine
             dataModel.Auto.SetMaxDurchlauf();
         }
 
-        private string stringToChar(string text)
+        private string stringToCharRollenzentrierung(string text)
         {
-
             string newText = null;
 
             text = text.Trim();
@@ -869,16 +869,46 @@ namespace SchneidMaschine
                 if (ch.Equals('%') || ch.Equals((char)CharArduino.START_CHAR))
                 {
                     newText = null;
-                    befehlBuilder.Clear();
+                    befehlBuilderRollenzentrierung.Clear();
                 }
 
-                befehlBuilder.Append(ch);
+                befehlBuilderRollenzentrierung.Append(ch);
 
                 // Ende der Commandline
                 if (ch.Equals((char)CharArduino.END_CHAR))
                 {
-                    befehlBuilder.Append("\n");
-                    newText = befehlBuilder.ToString();
+                    befehlBuilderRollenzentrierung.Append("\n");
+                    newText = befehlBuilderRollenzentrierung.ToString();
+                }
+            }
+
+            return newText;
+        }
+        
+        private string stringToCharSchneidmaschine(string text)
+        {
+            string newText = null;
+
+            text = text.Trim();
+            text = Regex.Replace(text, @"\t+|\n+|\r+|(\r\n)+", "");
+
+            char[] charArr = text.ToCharArray();
+            foreach (char ch in charArr)
+            {
+                // Start der Commandline
+                if (ch.Equals('%') || ch.Equals((char)CharArduino.START_CHAR))
+                {
+                    newText = null;
+                    befehlBuilderSchneidmaschine.Clear();
+                }
+
+                befehlBuilderSchneidmaschine.Append(ch);
+
+                // Ende der Commandline
+                if (ch.Equals((char)CharArduino.END_CHAR))
+                {
+                    befehlBuilderSchneidmaschine.Append("\n");
+                    newText = befehlBuilderSchneidmaschine.ToString();
                 }
             }
 

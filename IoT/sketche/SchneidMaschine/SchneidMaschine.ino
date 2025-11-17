@@ -13,10 +13,9 @@ Serial.begin(115200);
 void loop() {
   delay(1000);                       // warten
   
-  // Sende Ping-Nachricht sowohl an Serial als auch an CS-App
+  // Sende Ping-Nachricht - nur eine saubere Ausgabe
   String pingMessage = "Ping " + String(counter++);
-  Serial.println(pingMessage);        // Für Serial Monitor
-  sendText(pingMessage);              // Für CS-App TextBox
+  sendText(pingMessage);              // Nur für CS-App TextBox, nicht doppelt
 
   dataReceived();
 }
@@ -57,8 +56,7 @@ void dataReceived() {
         } 
         else if(befehl.equals("TEST")) {
             String testResponse = "Test OK - SchneidMaschine antwortet - Counter: " + String(counter);
-            Serial.println(testResponse);                 // Für Serial Monitor
-            sendText(testResponse);                       // Für CS-App TextBox
+            sendText(testResponse);                       // Nur für CS-App TextBox, nicht doppelt
         } 
 
         appendSerialData = "";                                      // eingegangene Daten löschen

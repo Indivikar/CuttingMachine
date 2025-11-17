@@ -368,10 +368,9 @@ void sendText(String text) {                                  // sende Text an d
       Serial.println("~" + text + "@");                     
 }
 
-// Neue Funktion: Sendet Text sowohl an Serial Monitor als auch an CS-App
+// Neue Funktion: Sendet Text nur an CS-App (um doppelte Ausgaben zu vermeiden)
 void printAndSend(String text) {
-    Serial.println(text);              // Für Serial Monitor
-    sendText(text);                    // Für CS-App TextBox
+    sendText(text);                    // Nur für CS-App TextBox
 }
 
 void sendCommand(String text, boolean showText) {             // sende ein Befehl an C#-App (Befehl muss mit "_" enden)
@@ -402,8 +401,7 @@ void dataReceived() {
         } 
         else if(befehl.equals("TEST")) {
             String testResponse = "Test OK - Rollenzentrierung antwortet - Sensoren bereit: S1=" + String(sensor1Ready ? "JA" : "NEIN") + " S2=" + String(sensor2Ready ? "JA" : "NEIN");
-            Serial.println(testResponse);                 // Für Serial Monitor
-            sendText(testResponse);                       // Für CS-App TextBox
+            sendText(testResponse);                       // Nur für CS-App TextBox, nicht doppelt
         } 
 
         appendSerialData = "";                                      // eingegangene Daten löschen
