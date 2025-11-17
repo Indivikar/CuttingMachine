@@ -104,15 +104,24 @@ namespace SchneidMaschine
             statusDotSchneidmaschine.Fill = schneidmaschineConnected ? Brushes.Green : Brushes.Red;
             statusDotRollenzentrierung.Fill = rollenzentrierungConnected ? Brushes.Green : Brushes.Red;
             
-            // Zeitstempel anzeigen
-            string lastComm = "";
-            if (lastCommunicationSchneidmaschine != DateTime.MinValue || lastCommunicationRollenzentrierung != DateTime.MinValue)
+            // Separate Zeitstempel für jedes Gerät anzeigen
+            if (lastCommunicationRollenzentrierung != DateTime.MinValue)
             {
-                DateTime latest = lastCommunicationSchneidmaschine > lastCommunicationRollenzentrierung ? 
-                                lastCommunicationSchneidmaschine : lastCommunicationRollenzentrierung;
-                lastComm = "Letzte Kommunikation: " + latest.ToString("HH:mm:ss");
+                textBlockLastCommRollenzentrierung.Text = "(" + lastCommunicationRollenzentrierung.ToString("HH:mm:ss") + ")";
             }
-            textBlockLastCommunication.Text = lastComm;
+            else
+            {
+                textBlockLastCommRollenzentrierung.Text = "(nie)";
+            }
+            
+            if (lastCommunicationSchneidmaschine != DateTime.MinValue)
+            {
+                textBlockLastCommSchneidmaschine.Text = "(" + lastCommunicationSchneidmaschine.ToString("HH:mm:ss") + ")";
+            }
+            else
+            {
+                textBlockLastCommSchneidmaschine.Text = "(nie)";
+            }
         }
 
         private void Init()
@@ -209,6 +218,7 @@ namespace SchneidMaschine
             {
                 BtnVerbindenRollenzentrierung.IsEnabled = false;
                 BtnTrennenRollenzentrierung.IsEnabled = true;
+                buttonTestRollenzentrierung.IsEnabled = true;
 
                 commandLine.setCommandLine(COMMAND_Schneidmaschine.Connected, 0, false);
                 dataModel.sendTextRollenzentrierung(commandLine.getCommandLine());
@@ -229,6 +239,7 @@ namespace SchneidMaschine
             {
                 BtnVerbindenRollenzentrierung.IsEnabled = true;
                 BtnTrennenRollenzentrierung.IsEnabled = false;
+                buttonTestRollenzentrierung.IsEnabled = false;
                 //Main.IsEnabled = false;
                 labelConnectionRollenzentrierung.Foreground = Brushes.Red;
                 labelConnectionRollenzentrierung.Text = "DISCONNECTED R";
@@ -450,6 +461,47 @@ namespace SchneidMaschine
             sbSchneidmaschine.Clear();
             textBoxAusgabeSchneidmaschine.Text = String.Empty;
         }
+        
+        // Test-Button-Handler für Verbindungstests
+        private void BtnClickTestRollenzentrierung(object sender, RoutedEventArgs e)
+        {
+            if (serialPortRollenzentrierung.IsOpen)
+            {
+                try
+                {
+                    serialPortRollenzentrierung.WriteLine("%TEST#");
+                    SetTextRollenzentrierung("Test-Befehl an Rollenzentrierung gesendet\n");
+                }
+                catch (Exception ex)
+                {
+                    SetTextRollenzentrierung("Fehler beim Senden des Test-Befehls: " + ex.Message + "\n");
+                }
+            }
+            else
+            {
+                SetTextRollenzentrierung("Rollenzentrierung nicht verbunden - Test nicht möglich\n");
+            }
+        }
+        
+        private void BtnClickTestSchneidmaschine(object sender, RoutedEventArgs e)
+        {
+            if (serialPortSchneidmaschine.IsOpen)
+            {
+                try
+                {
+                    serialPortSchneidmaschine.WriteLine("%TEST#");
+                    SetTextSchneidmaschine("Test-Befehl an Schneidmaschine gesendet\n");
+                }
+                catch (Exception ex)
+                {
+                    SetTextSchneidmaschine("Fehler beim Senden des Test-Befehls: " + ex.Message + "\n");
+                }
+            }
+            else
+            {
+                SetTextSchneidmaschine("Schneidmaschine nicht verbunden - Test nicht möglich\n");
+            }
+        }
 
         private void isConnected_Schneidmaschine()
         {
@@ -457,6 +509,7 @@ namespace SchneidMaschine
             {
                 BtnVerbindenSchneidmaschine.IsEnabled = false;
                 BtnTrennenSchneidmaschine.IsEnabled = true;
+                buttonTestSchneidmaschine.IsEnabled = true;
 
                 commandLine.setCommandLine(COMMAND_Schneidmaschine.Connected, 0, false);
                 dataModel.sendTextSchneidmaschine(commandLine.getCommandLine());
@@ -476,6 +529,7 @@ namespace SchneidMaschine
             {
                 BtnVerbindenSchneidmaschine.IsEnabled = true;
                 BtnTrennenSchneidmaschine.IsEnabled = false;
+                buttonTestSchneidmaschine.IsEnabled = false;
                 Main.IsEnabled = false;
                 labelConnectionSchneidmaschine.Foreground = Brushes.Red;
                 labelConnectionSchneidmaschine.Text = "DISCONNECTED S";

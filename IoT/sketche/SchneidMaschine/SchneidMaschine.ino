@@ -55,6 +55,11 @@ void dataReceived() {
         if(befehl.equals("Connected")) {      
             sendText("Connected");                        // Sendet Bestätigung das Verbunden wurde                                                     // Setzt Standart-Werte nach Verbindung
         } 
+        else if(befehl.equals("TEST")) {
+            String testResponse = "Test OK - SchneidMaschine antwortet - Counter: " + String(counter);
+            Serial.println(testResponse);                 // Für Serial Monitor
+            sendText(testResponse);                       // Für CS-App TextBox
+        } 
 
         appendSerialData = "";                                      // eingegangene Daten löschen
         c = 0;                                                      // eingegangene Daten löschen

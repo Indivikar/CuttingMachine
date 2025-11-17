@@ -400,6 +400,11 @@ void dataReceived() {
         if(befehl.equals("Connected")) {      
             sendText("Connected");                        // Sendet Bestätigung das Verbunden wurde                                                     // Setzt Standart-Werte nach Verbindung
         } 
+        else if(befehl.equals("TEST")) {
+            String testResponse = "Test OK - Rollenzentrierung antwortet - Sensoren bereit: S1=" + String(sensor1Ready ? "JA" : "NEIN") + " S2=" + String(sensor2Ready ? "JA" : "NEIN");
+            Serial.println(testResponse);                 // Für Serial Monitor
+            sendText(testResponse);                       // Für CS-App TextBox
+        } 
 
         appendSerialData = "";                                      // eingegangene Daten löschen
         c = 0;                                                      // eingegangene Daten löschen
