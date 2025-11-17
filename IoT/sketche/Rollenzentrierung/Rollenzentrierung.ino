@@ -75,9 +75,9 @@ void setup() {
   // Warten bis die serielle Verbindung hergestellt ist
   delay(2000);
   
-  Serial.println("\n\n-------------------------------------");
-  Serial.println("ESP32 TMC2209 Sensor-Stepper - Optimierte Version mit Trigger-Count");
-  Serial.println("-------------------------------------");
+  printAndSend("\n\n-------------------------------------");
+  printAndSend("ESP32 TMC2209 Sensor-Stepper - Optimierte Version mit Trigger-Count");
+  printAndSend("-------------------------------------");
   
   // I2C starten
   Wire.begin(SDA_PIN, SCL_PIN);
@@ -98,10 +98,10 @@ void setup() {
   // Warte kurz, bis alles initialisiert ist
   delay(1000);
   
-  Serial.println("Setup abgeschlossen.");
-  Serial.println("Schwellenwert für Sensoren: " + String(SENSOR_THRESHOLD) + " mm");
-  Serial.println("Erforderliche Trigger: " + String(SENSOR_TRIGGER_COUNT) + " mal hintereinander");
-  Serial.println("-------------------------------------");
+  printAndSend("Setup abgeschlossen.");
+  printAndSend("Schwellenwert für Sensoren: " + String(SENSOR_THRESHOLD) + " mm");
+  printAndSend("Erforderliche Trigger: " + String(SENSOR_TRIGGER_COUNT) + " mal hintereinander");
+  printAndSend("-------------------------------------");
   
   // Führe Kalibrierung durch (fährt beim Start nach links und rechts, bis die jeweiligen Sensoren erreicht werden)
   //calibrateSystem();
@@ -368,6 +368,12 @@ void sendText(String text) {                                  // sende Text an d
       Serial.println("~" + text + "@");                     
 }
 
+// Neue Funktion: Sendet Text sowohl an Serial Monitor als auch an CS-App
+void printAndSend(String text) {
+    Serial.println(text);              // Für Serial Monitor
+    sendText(text);                    // Für CS-App TextBox
+}
+
 void sendCommand(String text, boolean showText) {             // sende ein Befehl an C#-App (Befehl muss mit "_" enden)
   if(showText) {
     Serial.println("~" + text + "@");                       // mit Textausgabe im Serial Monitor
@@ -462,7 +468,7 @@ void loop() {
         // Prüfe ob Schwellenwert unterschritten
         if (distance1 < SENSOR_THRESHOLD) {
           sensor1TriggerCount++;
-          Serial.println("Sensor 1 Distanz: " + String(distance1) + " mm ** UNTER SCHWELLENWERT ** [" + 
+          printAndSend("Sensor 1 Distanz: " + String(distance1) + " mm ** UNTER SCHWELLENWERT ** [" + 
                        String(sensor1TriggerCount) + "/" + String(SENSOR_TRIGGER_COUNT) + "]");
         } else {
           // Schwellenwert nicht unterschritten - Counter zurücksetzen
@@ -510,13 +516,13 @@ void loop() {
     // Schrittmotor steuern basierend auf Sensorwerten und Trigger-Count
     if (sensor1TriggerCount >= SENSOR_TRIGGER_COUNT) {
       // Sensor 1 wurde ausreichend oft getriggert - nach rechts bewegen
-      Serial.println("!!! Sensor 1 " + String(SENSOR_TRIGGER_COUNT) + "x getriggert, bewege nach rechts !!!");
+      printAndSend("!!! Sensor 1 " + String(SENSOR_TRIGGER_COUNT) + "x getriggert, bewege nach rechts !!!");
       motorIsMoving = true;  // Flag setzen
       respondToSensor(distance1, RIGHT_DIRECTION);
     } 
     else if (sensor2TriggerCount >= SENSOR_TRIGGER_COUNT) {
       // Sensor 2 wurde ausreichend oft getriggert - nach links bewegen
-      Serial.println("!!! Sensor 2 " + String(SENSOR_TRIGGER_COUNT) + "x getriggert, bewege nach links !!!");
+      printAndSend("!!! Sensor 2 " + String(SENSOR_TRIGGER_COUNT) + "x getriggert, bewege nach links !!!");
       motorIsMoving = true;  // Flag setzen
       respondToSensor(distance2, LEFT_DIRECTION);
     } 

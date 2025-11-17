@@ -12,12 +12,13 @@ Serial.begin(115200);
 
 void loop() {
   delay(1000);                       // warten
-  // Serial.print("Ping ");
-  Serial.println(counter++);
+  
+  // Sende Ping-Nachricht sowohl an Serial als auch an CS-App
+  String pingMessage = "Ping " + String(counter++);
+  Serial.println(pingMessage);        // Für Serial Monitor
+  sendText(pingMessage);              // Für CS-App TextBox
 
   dataReceived();
-
-  // sendText("Ping ");
 }
 
 //---------------------------------------------------

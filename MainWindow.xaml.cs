@@ -44,6 +44,13 @@ namespace SchneidMaschine
         StringBuilder sbSchneidmaschine = new StringBuilder();
 
         StringBuilder befehlBuilder = new StringBuilder();
+        
+        // Zeitstempel für Verbindungsüberwachung
+        DateTime lastCommunicationSchneidmaschine = DateTime.MinValue;
+        DateTime lastCommunicationRollenzentrierung = DateTime.MinValue;
+        
+        // Timer für Verbindungsüberwachung
+        System.Windows.Threading.DispatcherTimer connectionCheckTimer;
 
         public MainWindow()
         {
@@ -64,7 +71,48 @@ namespace SchneidMaschine
             threadCheckPorts.Name = "Port_Scanner";
             threadCheckPorts.Start();
 
+            // Timer für Verbindungsüberwachung initialisieren
+            InitializeConnectionMonitoring();
+
             Init();
+        }
+        
+        private void InitializeConnectionMonitoring()
+        {
+            connectionCheckTimer = new System.Windows.Threading.DispatcherTimer();
+            connectionCheckTimer.Interval = TimeSpan.FromSeconds(2); // Check alle 2 Sekunden
+            connectionCheckTimer.Tick += ConnectionCheckTimer_Tick;
+            connectionCheckTimer.Start();
+            
+            // Initial alle Punkte auf rot setzen
+            UpdateConnectionStatus(false, false);
+        }
+        
+        private void ConnectionCheckTimer_Tick(object sender, EventArgs e)
+        {
+            // Prüfe ob letzte Kommunikation länger als 5 Sekunden her ist
+            DateTime now = DateTime.Now;
+            bool schneidmaschineConnected = (now - lastCommunicationSchneidmaschine).TotalSeconds < 5;
+            bool rollenzentrierungConnected = (now - lastCommunicationRollenzentrierung).TotalSeconds < 5;
+            
+            UpdateConnectionStatus(schneidmaschineConnected, rollenzentrierungConnected);
+        }
+        
+        private void UpdateConnectionStatus(bool schneidmaschineConnected, bool rollenzentrierungConnected)
+        {
+            // Status-Punkte aktualisieren
+            statusDotSchneidmaschine.Fill = schneidmaschineConnected ? Brushes.Green : Brushes.Red;
+            statusDotRollenzentrierung.Fill = rollenzentrierungConnected ? Brushes.Green : Brushes.Red;
+            
+            // Zeitstempel anzeigen
+            string lastComm = "";
+            if (lastCommunicationSchneidmaschine != DateTime.MinValue || lastCommunicationRollenzentrierung != DateTime.MinValue)
+            {
+                DateTime latest = lastCommunicationSchneidmaschine > lastCommunicationRollenzentrierung ? 
+                                lastCommunicationSchneidmaschine : lastCommunicationRollenzentrierung;
+                lastComm = "Letzte Kommunikation: " + latest.ToString("HH:mm:ss");
+            }
+            textBlockLastCommunication.Text = lastComm;
         }
 
         private void Init()
@@ -332,6 +380,8 @@ namespace SchneidMaschine
             string InputData = serialPortRollenzentrierung.ReadExisting();
             if (InputData != String.Empty)
             {
+                // Zeitstempel für Verbindungsüberwachung aktualisieren
+                lastCommunicationRollenzentrierung = DateTime.Now;
                 Dispatcher.BeginInvoke(new SetTextCallback(SetTextRollenzentrierung), new object[] { InputData });
             }
         }
@@ -652,6 +702,8 @@ namespace SchneidMaschine
             string InputData = serialPortSchneidmaschine.ReadExisting();
             if (InputData != String.Empty)
             {
+                // Zeitstempel für Verbindungsüberwachung aktualisieren
+                lastCommunicationSchneidmaschine = DateTime.Now;
                 Dispatcher.BeginInvoke(new SetTextCallback(SetTextSchneidmaschine), new object[] { InputData });
             }
         }
