@@ -100,12 +100,27 @@
 
                             </Grid>
                         </StackPanel>
-                        <Button x:Name="BtnModusAutoStart" Click="BtnClickModusAutoStart" 
-                            Margin="5" FontSize="36" Width="330" Height="200" Grid.Row="1" Grid.Column="0" >Start</Button>
-                        <Button x:Name="BtnModusAutoPause" Click="BtnClickModusAutoPause" 
-                            Margin="5" FontSize="36" Width="330" Height="200" Grid.Row="1" Grid.Column="1" >Pause</Button>
-                        <Button x:Name="BtnModusAutoStop" Click="BtnClickModusAutoStop" 
-                            Margin="5" FontSize="36" Width="330" Height="200" Grid.Row="1"  Grid.Column="2" >Stop</Button>
+                        <Button x:Name="BtnModusAutoStart" Click="BtnClickModusAutoStart"
+                            Margin="5" Width="330" Height="200" Grid.Row="1" Grid.Column="0">
+                            <StackPanel>
+                                <TextBlock x:Name="BtnModusAutoStart_MainText" Text="Start" FontSize="36" HorizontalAlignment="Center" />
+                                <TextBlock x:Name="BtnModusAutoStart_KeyText" Text="(F1)" FontSize="18" Foreground="#FF555555" HorizontalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
+                        <Button x:Name="BtnModusAutoPause" Click="BtnClickModusAutoPause"
+                            Margin="5" Width="330" Height="200" Grid.Row="1" Grid.Column="1">
+                            <StackPanel>
+                                <TextBlock x:Name="BtnModusAutoPause_MainText" Text="Pause" FontSize="36" HorizontalAlignment="Center" />
+                                <TextBlock x:Name="BtnModusAutoPause_KeyText" Text="(F2)" FontSize="18" Foreground="#FF555555" HorizontalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
+                        <Button x:Name="BtnModusAutoStop" Click="BtnClickModusAutoStop"
+                            Margin="5" Width="330" Height="200" Grid.Row="1"  Grid.Column="2">
+                            <StackPanel>
+                                <TextBlock x:Name="BtnModusAutoStop_MainText" Text="Stop" FontSize="36" HorizontalAlignment="Center" />
+                                <TextBlock x:Name="BtnModusAutoStop_KeyText" Text="(Escape)" FontSize="18" Foreground="#FF555555" HorizontalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
                     </Grid>
                 </StackPanel>
             </Grid>

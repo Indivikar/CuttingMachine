@@ -137,7 +137,12 @@
         </StackPanel>
 
         <Grid Margin="0,0,881,213" VerticalAlignment="Bottom" HorizontalAlignment="Center" >
-            <Button x:Name="BtnStop" Margin="10" FontSize="36" Width="310" Height="100" Click="Btn_Stop" IsEnabled="False" >Stop</Button>
+            <Button x:Name="BtnStop" Margin="10" Width="310" Height="100" Click="Btn_Stop" IsEnabled="False">
+                <StackPanel>
+                    <TextBlock x:Name="BtnStop_MainText" Text="Stop" FontSize="36" HorizontalAlignment="Center" />
+                    <TextBlock x:Name="BtnStop_KeyText" Text="(Escape)" FontSize="18" Foreground="#FF555555" HorizontalAlignment="Center" />
+                </StackPanel>
+            </Button>
         </Grid>
 
         <StackPanel x:Name="StackPanelControls" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="10,0,10,0" Orientation="Horizontal" IsEnabledChanged="EnabledChanged">
@@ -151,22 +156,47 @@
                     <RowDefinition Height="1*" />
                     <RowDefinition Height="1*" />
                 </Grid.RowDefinitions>
-                <Button x:Name="Btn1mm" 
-                        Margin="5" FontSize="36" Width="150" Height="100"  Grid.Row="0" Grid.Column="0" Click="Btn_1mm_Click" >1 mm</Button>
-                <Button x:Name="BtnM10mm" 
-                        Margin="5" FontSize="36" Width="150" Height="100" Grid.Row="0" Grid.Column="1" Click="Btn_10mm_Click" >10 mm</Button>
-                <Button x:Name="Btn100mm" 
-                        Margin="5" FontSize="36" Width="150" Height="100" Grid.Row="0" Grid.Column="2" Click="Btn_100mm_Click" >100 mm</Button>
-                <Button x:Name="BtnSollwert" 
-                        Margin="5" FontSize="36" Width="150" Height="100" Grid.Row="1" Grid.Column="0" Click="Btn_soll_Click" >320 mm</Button>
+                <Button x:Name="Btn1mm"
+                        Margin="5" Width="150" Height="100"  Grid.Row="0" Grid.Column="0" Click="Btn_1mm_Click">
+                    <StackPanel>
+                        <TextBlock x:Name="Btn1mm_MainText" Text="1 mm" FontSize="36" HorizontalAlignment="Center" />
+                        <TextBlock x:Name="Btn1mm_KeyText" Text="(F1)" FontSize="18" Foreground="#FF555555" HorizontalAlignment="Center" />
+                    </StackPanel>
+                </Button>
+                <Button x:Name="BtnM10mm"
+                        Margin="5" Width="150" Height="100" Grid.Row="0" Grid.Column="1" Click="Btn_10mm_Click">
+                    <StackPanel>
+                        <TextBlock x:Name="BtnM10mm_MainText" Text="10 mm" FontSize="36" HorizontalAlignment="Center" />
+                        <TextBlock x:Name="BtnM10mm_KeyText" Text="(F2)" FontSize="18" Foreground="#FF555555" HorizontalAlignment="Center" />
+                    </StackPanel>
+                </Button>
+                <Button x:Name="Btn100mm"
+                        Margin="5" Width="150" Height="100" Grid.Row="0" Grid.Column="2" Click="Btn_100mm_Click">
+                    <StackPanel>
+                        <TextBlock x:Name="Btn100mm_MainText" Text="100 mm" FontSize="36" HorizontalAlignment="Center" />
+                        <TextBlock x:Name="Btn100mm_KeyText" Text="(F3)" FontSize="18" Foreground="#FF555555" HorizontalAlignment="Center" />
+                    </StackPanel>
+                </Button>
+                <Button x:Name="BtnSollwert"
+                        Margin="5" Width="150" Height="100" Grid.Row="1" Grid.Column="0" Click="Btn_soll_Click">
+                    <StackPanel>
+                        <TextBlock x:Name="BtnSollwert_MainText" Text="320 mm" FontSize="36" HorizontalAlignment="Center" />
+                        <TextBlock x:Name="BtnSollwert_KeyText" Text="(F4)" FontSize="18" Foreground="#FF555555" HorizontalAlignment="Center" />
+                    </StackPanel>
+                </Button>
                 <ToggleButton x:Name="ToggleButton_Direction"  Style="{StaticResource ToggleButtonStyle1}"
                     Margin="5" FontSize="36" Width="310" Height="100" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3"  ></ToggleButton>
             </Grid>
 
                 
                     <Grid Margin="0,0,30,0" >
-                    <Button x:Name="BtnSchneiden" 
-                            Margin="5" FontSize="36" Width="300" Height="210" Click="Btn_Cut" >Schneiden</Button>
+                    <Button x:Name="BtnSchneiden"
+                            Margin="5" Width="300" Height="210" Click="Btn_Cut">
+                        <StackPanel>
+                            <TextBlock x:Name="BtnSchneiden_MainText" Text="Schneiden" FontSize="36" HorizontalAlignment="Center" />
+                            <TextBlock x:Name="BtnSchneiden_KeyText" Text="(F5)" FontSize="18" Foreground="#FF555555" HorizontalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
                     </Grid>
 
                 <Grid Margin="0,0,30,0" >
@@ -184,7 +214,7 @@
                 <ToggleButton x:Name="ToggleBtn_Handwheel" Style="{StaticResource ToggleButtonStyle2}"
                     Margin="5" FontSize="36" Width="310" Height="100" Grid.Row="1" Grid.Column="1" Click="ToggleBtn_Click_Handwheel" ></ToggleButton>
 
-                <Button x:Name="BtnKopfschnitt" Content="Kopfschnitt" FontSize="36" Width="310" Height="50" Grid.Row="2" Grid.Column="1" Click="BtnClickKopfschnitt">
+                <Button x:Name="BtnKopfschnitt" Width="310" Height="50" Grid.Row="2" Grid.Column="1" Click="BtnClickKopfschnitt">
                     <Button.ToolTip>
                         <StackPanel>
                             <TextBlock FontWeight="Bold" FontSize="14" Margin="0,0,0,5">Kopfschnitt</TextBlock>
@@ -193,6 +223,10 @@
                             </TextBlock>
                         </StackPanel>
                     </Button.ToolTip>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <TextBlock x:Name="BtnKopfschnitt_MainText" Text="Kopfschnitt" FontSize="24" VerticalAlignment="Center" Margin="0,0,5,0" />
+                        <TextBlock x:Name="BtnKopfschnitt_KeyText" Text="(F6)" FontSize="16" Foreground="#FF555555" VerticalAlignment="Center" />
+                    </StackPanel>
                 </Button>
             </Grid>
         </StackPanel>

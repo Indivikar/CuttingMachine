@@ -44,7 +44,7 @@ namespace SchneidMaschine.model
             keybindings["EinzelSchritt_Stop"] = Key.Escape;
 
             // HalbAuto
-            keybindings["HalbAuto_Sollwert"] = Key.F1;
+            keybindings["HalbAuto_Start"] = Key.F1;
             keybindings["HalbAuto_Schneiden"] = Key.F2;
             keybindings["HalbAuto_Stop"] = Key.Escape;
 

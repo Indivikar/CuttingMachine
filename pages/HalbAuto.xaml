@@ -48,10 +48,20 @@
                         <RowDefinition Height="1*" />
                         <RowDefinition Height="1*" />
                     </Grid.RowDefinitions>
-                    <Button x:Name="BtnModusHalbAutoStart" Click="BtnClickModusHalbAutoStart" 
-                            Margin="5" FontSize="36" Width="330" Height="200" Grid.Column="0" >Start</Button>
-                    <Button x:Name="BtnModusHalbAutoStop" Click="BtnClickModusHalbAutoStop" 
-                            Margin="5" FontSize="36" Width="330" Height="200" Grid.Column="1" >Stop</Button>
+                    <Button x:Name="BtnModusHalbAutoStart" Click="BtnClickModusHalbAutoStart"
+                            Margin="5" Width="330" Height="200" Grid.Column="0">
+                        <StackPanel>
+                            <TextBlock x:Name="BtnModusHalbAutoStart_MainText" Text="Start" FontSize="36" HorizontalAlignment="Center" />
+                            <TextBlock x:Name="BtnModusHalbAutoStart_KeyText" Text="(F1)" FontSize="18" Foreground="#FF555555" HorizontalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                    <Button x:Name="BtnModusHalbAutoStop" Click="BtnClickModusHalbAutoStop"
+                            Margin="5" Width="330" Height="200" Grid.Column="1">
+                        <StackPanel>
+                            <TextBlock x:Name="BtnModusHalbAutoStop_MainText" Text="Stop" FontSize="36" HorizontalAlignment="Center" />
+                            <TextBlock x:Name="BtnModusHalbAutoStop_KeyText" Text="(Escape)" FontSize="18" Foreground="#FF555555" HorizontalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
                     <StackPanel Margin="0" Grid.Row="1" Grid.ColumnSpan="2">
                         <Viewbox Height="26" HorizontalAlignment="Left" >
                             <RadioButton Name="RadioButtonLaenge" GroupName="reinfolge" IsChecked="True">erst Soll-Länge anfahren und danach einmal abschneiden</RadioButton>

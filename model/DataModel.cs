@@ -402,15 +402,15 @@ namespace SchneidMaschine.model
             auto.output();
         }
 
-        public int SelectedLength { get => selectedLength; 
-            set  
-            { 
+        public int SelectedLength { get => selectedLength;
+            set
+            {
                 selectedLength = value;
 
                 schnittModus.StreifenSollWert.Text = value.ToString();
 
                 einzelSchritt.StreifenSollWert.Text = value.ToString();
-                einzelSchritt.BtnSollwert.Content = value.ToString() + " mm";
+                einzelSchritt.BtnSollwert_MainText.Text = value.ToString() + " mm";
 
                 halbAuto.StreifenSollWert.Text = value.ToString();
 
@@ -445,23 +445,43 @@ namespace SchneidMaschine.model
         public void UpdateButtonTexts()
         {
             // EinzelSchritt
-            einzelSchritt.Btn1mm.Content = "1mm (" + keybindingManager.GetKeyDisplayName(keybindingManager.GetKey("EinzelSchritt_1mm")) + ")";
-            einzelSchritt.BtnM10mm.Content = "10mm (" + keybindingManager.GetKeyDisplayName(keybindingManager.GetKey("EinzelSchritt_10mm")) + ")";
-            einzelSchritt.Btn100mm.Content = "100mm (" + keybindingManager.GetKeyDisplayName(keybindingManager.GetKey("EinzelSchritt_100mm")) + ")";
-            einzelSchritt.BtnSollwert.Content = SelectedLength + " mm (" + keybindingManager.GetKeyDisplayName(keybindingManager.GetKey("EinzelSchritt_Sollwert")) + ")";
-            einzelSchritt.BtnSchneiden.Content = "Schneiden (" + keybindingManager.GetKeyDisplayName(keybindingManager.GetKey("EinzelSchritt_Schneiden")) + ")";
-            einzelSchritt.BtnKopfschnitt.Content = "Kopfschnitt (" + keybindingManager.GetKeyDisplayName(keybindingManager.GetKey("EinzelSchritt_Kopfschnitt")) + ")";
-            // Note: There's no BtnHandrad control - it's a ToggleButton named ToggleBtn_Handwheel
-            einzelSchritt.BtnStop.Content = "Stop (" + keybindingManager.GetKeyDisplayName(keybindingManager.GetKey("EinzelSchritt_Stop")) + ")";
+            einzelSchritt.Btn1mm_MainText.Text = "1mm";
+            einzelSchritt.Btn1mm_KeyText.Text = "(" + keybindingManager.GetKeyDisplayName(keybindingManager.GetKey("EinzelSchritt_1mm")) + ")";
+
+            einzelSchritt.BtnM10mm_MainText.Text = "10mm";
+            einzelSchritt.BtnM10mm_KeyText.Text = "(" + keybindingManager.GetKeyDisplayName(keybindingManager.GetKey("EinzelSchritt_10mm")) + ")";
+
+            einzelSchritt.Btn100mm_MainText.Text = "100mm";
+            einzelSchritt.Btn100mm_KeyText.Text = "(" + keybindingManager.GetKeyDisplayName(keybindingManager.GetKey("EinzelSchritt_100mm")) + ")";
+
+            einzelSchritt.BtnSollwert_MainText.Text = SelectedLength + " mm";
+            einzelSchritt.BtnSollwert_KeyText.Text = "(" + keybindingManager.GetKeyDisplayName(keybindingManager.GetKey("EinzelSchritt_Sollwert")) + ")";
+
+            einzelSchritt.BtnSchneiden_MainText.Text = "Schneiden";
+            einzelSchritt.BtnSchneiden_KeyText.Text = "(" + keybindingManager.GetKeyDisplayName(keybindingManager.GetKey("EinzelSchritt_Schneiden")) + ")";
+
+            einzelSchritt.BtnKopfschnitt_MainText.Text = "Kopfschnitt";
+            einzelSchritt.BtnKopfschnitt_KeyText.Text = "(" + keybindingManager.GetKeyDisplayName(keybindingManager.GetKey("EinzelSchritt_Kopfschnitt")) + ")";
+
+            einzelSchritt.BtnStop_MainText.Text = "Stop";
+            einzelSchritt.BtnStop_KeyText.Text = "(" + keybindingManager.GetKeyDisplayName(keybindingManager.GetKey("EinzelSchritt_Stop")) + ")";
 
             // HalbAuto
-            halbAuto.BtnModusHalbAutoStart.Content = "Start (" + keybindingManager.GetKeyDisplayName(keybindingManager.GetKey("HalbAuto_Start")) + ")";
-            halbAuto.BtnModusHalbAutoStop.Content = "Stop (" + keybindingManager.GetKeyDisplayName(keybindingManager.GetKey("HalbAuto_Stop")) + ")";
+            halbAuto.BtnModusHalbAutoStart_MainText.Text = "Start";
+            halbAuto.BtnModusHalbAutoStart_KeyText.Text = "(" + keybindingManager.GetKeyDisplayName(keybindingManager.GetKey("HalbAuto_Start")) + ")";
+
+            halbAuto.BtnModusHalbAutoStop_MainText.Text = "Stop";
+            halbAuto.BtnModusHalbAutoStop_KeyText.Text = "(" + keybindingManager.GetKeyDisplayName(keybindingManager.GetKey("HalbAuto_Stop")) + ")";
 
             // Auto
-            auto.BtnModusAutoStart.Content = "Start (" + keybindingManager.GetKeyDisplayName(keybindingManager.GetKey("Auto_Start")) + ")";
-            auto.BtnModusAutoPause.Content = "Pause (" + keybindingManager.GetKeyDisplayName(keybindingManager.GetKey("Auto_Pause")) + ")";
-            auto.BtnModusAutoStop.Content = "Stop (" + keybindingManager.GetKeyDisplayName(keybindingManager.GetKey("Auto_Stop")) + ")";
+            auto.BtnModusAutoStart_MainText.Text = "Start";
+            auto.BtnModusAutoStart_KeyText.Text = "(" + keybindingManager.GetKeyDisplayName(keybindingManager.GetKey("Auto_Start")) + ")";
+
+            auto.BtnModusAutoPause_MainText.Text = "Pause";
+            auto.BtnModusAutoPause_KeyText.Text = "(" + keybindingManager.GetKeyDisplayName(keybindingManager.GetKey("Auto_Pause")) + ")";
+
+            auto.BtnModusAutoStop_MainText.Text = "Stop";
+            auto.BtnModusAutoStop_KeyText.Text = "(" + keybindingManager.GetKeyDisplayName(keybindingManager.GetKey("Auto_Stop")) + ")";
         }
     }
 
