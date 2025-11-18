@@ -47,7 +47,8 @@ namespace SchneidMaschine.model
         stepperStart,
         stepperStop,
         stepperFinished,
-        BoardIdentification
+        BoardIdentification,
+        WHOAMI
     }
 
     public enum COMMAND_Schneidmaschine
@@ -70,7 +71,8 @@ namespace SchneidMaschine.model
         autoStop,
         resetIstWert,
         wartungSchrittMotor,
-        BoardIdentification
+        BoardIdentification,
+        WHOAMI
     }
 
     public enum DIRECTION

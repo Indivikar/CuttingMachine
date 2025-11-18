@@ -63,6 +63,9 @@ void dataReceived() {
             String testResponse = "TEST";
             sendText(testResponse);                       // Sendet TEST-Bestätigung zurück
         }
+        else if(befehl.equals("WHOAMI")) {
+            sendCommand("WHOAMI_Schneidmaschine", false); // Sendet Board-Identifikation ohne Textausgabe
+        }
 
         appendSerialData = "";                                      // eingegangene Daten löschen
         c = 0;                                                      // eingegangene Daten löschen

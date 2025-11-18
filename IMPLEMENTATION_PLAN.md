@@ -2014,3 +2014,41 @@ if(c == '#') {
 **Update-Datum**: 18. November 2025
 **Aufwand**: ~20 Minuten
 **Status**: ✅ TEST-Button für beide Boards funktionsfähig
+
+---
+
+## Verbesserung 12: COM-Port Identifikation - Boards werden in ComboBox angezeigt
+
+**Problem**:
+- ComboBox zeigte nur "COM3", "COM4" etc.
+- Bei mehreren COM-Geräten war unklar, welches Board an welchem Port ist
+- Ports können wechseln (COM3 ist mal Rollenzentrierung, mal Schneidmaschine)
+- Keine Möglichkeit zu erkennen, welches Gerät verbunden ist
+
+**Lösung**:
+1. **WHOAMI-Befehl in Arduino-Sketchen** implementiert
+2. **Port-Identitäten** werden gespeichert (Dictionary: Port → Gerätename)
+3. **ComboBox zeigt Gerätenamen**: "COM3 - Rollenzentrierung", "COM4 - Schneidmaschine"
+
+**Workflow**:
+1. User wählt Port und verbindet
+2. App sendet automatisch WHOAMI-Befehl
+3. Board antwortet: "WHOAMI_Rollenzentrierung" oder "WHOAMI_Schneidmaschine"
+4. App speichert: portIdentities["COM3"] = "Rollenzentrierung"
+5. ComboBox wird aktualisiert: "COM3 - Rollenzentrierung"
+6. Bei jedem Scan wird gespeicherte Identität verwendet
+
+**Geänderte Dateien**:
+- `IoT/sketche/Rollenzentrierung/Rollenzentrierung.ino` (WHOAMI-Handler)
+- `IoT/sketche/SchneidMaschine/SchneidMaschine.ino` (WHOAMI-Handler)
+- `model/DataModel.cs` (COMMAND enums erweitert)
+- `MainWindow.xaml.cs` (Dictionary, WHOAMI-Response Handler)
+- `threads/Thread_Port_Scanner.cs` (UpdatePortIdentities Methode)
+
+**Status**: ✅ COM-Ports zeigen jetzt Gerätenamen
+
+---
+
+**Update-Datum**: 18. November 2025
+**Aufwand**: ~40 Minuten
+**Status**: ✅ Automatische Board-Identifikation funktioniert

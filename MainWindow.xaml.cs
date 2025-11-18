@@ -57,6 +57,9 @@ namespace SchneidMaschine
         bool autoScrollRollenzentrierung = true;
         bool autoScrollSchneidmaschine = true;
 
+        // Dictionary zur Speicherung der Port-Identitäten (COM3 → "Rollenzentrierung")
+        public static Dictionary<string, string> portIdentities = new Dictionary<string, string>();
+
         public MainWindow()
         {
             InitializeComponent();
@@ -505,6 +508,29 @@ namespace SchneidMaschine
                         break;
                     }
 
+                case COMMAND_Rollenzentrierung.WHOAMI:
+                    {
+                        Console.WriteLine("COMMAND_Rollenzentrierung.WHOAMI");
+
+                        if (befehl.Length > 1)
+                        {
+                            string boardType = befehl[1];
+                            string currentPort = serialPortRollenzentrierung.PortName;
+
+                            Console.WriteLine("WHOAMI-Response: Port=" + currentPort + ", Board=" + boardType);
+
+                            // Speichere Port-Identität
+                            portIdentities[currentPort] = boardType;
+
+                            // Aktualisiere ComboBoxen
+                            dataModel.Thread_Port_Scanner.UpdatePortIdentities();
+
+                            SetTextRollenzentrierung("&✓ Board identifiziert: " + boardType + " an " + currentPort + "\n&");
+                        }
+
+                        break;
+                    }
+
                 default: break;
             }
         }
@@ -947,6 +973,29 @@ namespace SchneidMaschine
                             {
                                 SetTextSchneidmaschine("&✓ Korrektes Board erkannt: " + boardType + "\n&");
                             }
+                        }
+
+                        break;
+                    }
+
+                case COMMAND_Schneidmaschine.WHOAMI:
+                    {
+                        Console.WriteLine("COMMAND_Schneidmaschine.WHOAMI");
+
+                        if (befehl.Length > 1)
+                        {
+                            string boardType = befehl[1];
+                            string currentPort = serialPortSchneidmaschine.PortName;
+
+                            Console.WriteLine("WHOAMI-Response: Port=" + currentPort + ", Board=" + boardType);
+
+                            // Speichere Port-Identität
+                            portIdentities[currentPort] = boardType;
+
+                            // Aktualisiere ComboBoxen
+                            dataModel.Thread_Port_Scanner.UpdatePortIdentities();
+
+                            SetTextSchneidmaschine("&✓ Board identifiziert: " + boardType + " an " + currentPort + "\n&");
                         }
 
                         break;

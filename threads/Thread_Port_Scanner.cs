@@ -74,33 +74,50 @@ namespace SchneidMaschine.threads
 
                 if (oldPorts != newPorts)
                 {
-                    // Hole Port-Beschreibungen via WMI
-                    var descriptions = GetPortDescriptions();
-                    var enhancedPortList = new List<string>();
-
-                    foreach (string port in portList)
-                    {
-                        if (descriptions.ContainsKey(port))
-                        {
-                            enhancedPortList.Add($"{port} ({descriptions[port]})");
-                        }
-                        else
-                        {
-                            enhancedPortList.Add(port);
-                        }
-                    }
-
-                    comboBoxPorts_Rollenzentrierung.Dispatcher.Invoke(() =>
-                    {
-                        comboBoxPorts_Rollenzentrierung.ItemsSource = enhancedPortList;
-                    });
-
-                    comboBoxPorts_Schneidmaschine.Dispatcher.Invoke(() =>
-                    {
-                        comboBoxPorts_Schneidmaschine.ItemsSource = enhancedPortList;
-                    });
+                    UpdatePortList(portList);
                 }
             }
+        }
+
+        public void UpdatePortIdentities()
+        {
+            // Diese Methode wird aufgerufen, wenn ein Board identifiziert wurde
+            string[] portList = SerialPort.GetPortNames();
+            UpdatePortList(portList);
+        }
+
+        private void UpdatePortList(string[] portList)
+        {
+            // Hole Port-Beschreibungen via WMI
+            var descriptions = GetPortDescriptions();
+            var enhancedPortList = new List<string>();
+
+            foreach (string port in portList)
+            {
+                string displayText = port;
+
+                // Prüfe ob wir eine Identität für diesen Port haben
+                if (MainWindow.portIdentities.ContainsKey(port))
+                {
+                    displayText = $"{port} - {MainWindow.portIdentities[port]}";
+                }
+                else if (descriptions.ContainsKey(port))
+                {
+                    displayText = $"{port} ({descriptions[port]})";
+                }
+
+                enhancedPortList.Add(displayText);
+            }
+
+            comboBoxPorts_Rollenzentrierung.Dispatcher.Invoke(() =>
+            {
+                comboBoxPorts_Rollenzentrierung.ItemsSource = enhancedPortList;
+            });
+
+            comboBoxPorts_Schneidmaschine.Dispatcher.Invoke(() =>
+            {
+                comboBoxPorts_Schneidmaschine.ItemsSource = enhancedPortList;
+            });
         }
     }
 }
