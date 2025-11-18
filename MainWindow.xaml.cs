@@ -316,7 +316,7 @@ namespace SchneidMaschine
             if (text.StartsWith("&"))
             {
                 text = Regex.Replace(text, @"&", "");
-                this.textBoxAusgabeRollenzentrierung.Text += text;
+                this.textBoxAusgabeRollenzentrierung.Text += text + Environment.NewLine;
                 return;
             }
 
@@ -349,7 +349,7 @@ namespace SchneidMaschine
                 text = "ESP32 antwortet>> " + text;
             }
 
-            sbRollenzentrierung.Append(text);
+            sbRollenzentrierung.AppendLine(text);
             string allLines = sbRollenzentrierung.ToString();
             string[] lines = allLines.Split('\n');
 
@@ -363,7 +363,7 @@ namespace SchneidMaschine
             }
             else
             {
-                this.textBoxAusgabeRollenzentrierung.Text += text;
+                this.textBoxAusgabeRollenzentrierung.Text += text + Environment.NewLine;
             }
 
             textBoxAusgabeRollenzentrierung.ScrollToEnd();
@@ -666,12 +666,12 @@ namespace SchneidMaschine
 
         private void SetTextSchneidmaschine(string text)
         {
-            
+
             // normaler Text aus C# Programm
             if (text.StartsWith("&"))
             {
                 text = Regex.Replace(text, @"&", "");
-                this.textBoxAusgabeSchneidmaschine.Text += text;
+                this.textBoxAusgabeSchneidmaschine.Text += text + Environment.NewLine;
                 return;
             }
 
@@ -704,7 +704,7 @@ namespace SchneidMaschine
                 text = "Arduino antwortet>> " + text;
             }
 
-            sbSchneidmaschine.Append(text);
+            sbSchneidmaschine.AppendLine(text);
             string allLines = sbSchneidmaschine.ToString();
             string[] lines = allLines.Split('\n');
 
@@ -718,7 +718,7 @@ namespace SchneidMaschine
             }
             else
             {
-                this.textBoxAusgabeSchneidmaschine.Text += text;
+                this.textBoxAusgabeSchneidmaschine.Text += text + Environment.NewLine;
             }
 
             textBoxAusgabeSchneidmaschine.ScrollToEnd();
