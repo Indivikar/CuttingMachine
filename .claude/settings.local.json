@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dotnet run:*)",
+      "Bash(dotnet build:*)",
+      "Bash(where msbuild)",
+      "Bash(\"C:\\Program Files\\Microsoft Visual Studio\\18\\Community\\MSBuild\\Current\\Bin\\amd64\\MSBuild.exe\" \"C:\\Users\\Inge\\Documents\\workspace_cs\\Streifen-Schneidmaschinen-App\\SchneidMaschine.sln\" /t:Clean)",
+      "Bash(\"C:\\Program Files\\Microsoft Visual Studio\\18\\Community\\MSBuild\\Current\\Bin\\amd64\\MSBuild.exe\" \"C:\\Users\\Inge\\Documents\\workspace_cs\\Streifen-Schneidmaschinen-App\\SchneidMaschine.sln\" /t:Rebuild /p:Configuration=Debug)",
+      "Bash(\"C:\\Program Files\\Microsoft Visual Studio\\18\\Community\\MSBuild\\Current\\Bin\\amd64\\MSBuild.exe\" \"C:\\Users\\Inge\\Documents\\workspace_cs\\Streifen-Schneidmaschinen-App\\SchneidMaschine.csproj\" -t:Rebuild -p:Configuration=Debug)",
+      "Bash(start SchneidMaschine.exe)",
+      "Bash(\"C:\\Program Files\\Microsoft Visual Studio\\18\\Community\\MSBuild\\Current\\Bin\\amd64\\MSBuild.exe\" \"C:\\Users\\Inge\\Documents\\workspace_cs\\Streifen-Schneidmaschinen-App\\SchneidMaschine.csproj\" -t:Build -p:Configuration=Debug)",
+      "Bash(dotnet clean:*)",
+      "Bash(findstr:*)",
+      "Bash(start binDebugSchneidMaschine.exe)",
+      "Bash(start \"C:\\Users\\Inge\\Documents\\workspace_cs\\Streifen-Schneidmaschinen-App\\bin\\Debug\\SchneidMaschine.exe\")"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

@@ -104,7 +104,30 @@ namespace SchneidMaschine
             // Status-Punkte aktualisieren
             statusDotSchneidmaschine.Fill = schneidmaschineConnected ? Brushes.Green : Brushes.Red;
             statusDotRollenzentrierung.Fill = rollenzentrierungConnected ? Brushes.Green : Brushes.Red;
-            
+
+            // Slider-Labels aktualisieren (gleiche Logik wie Footer)
+            if (rollenzentrierungConnected)
+            {
+                labelConnectionRollenzentrierung.Text = "CONNECTED";
+                labelConnectionRollenzentrierung.Foreground = Brushes.Green;
+            }
+            else
+            {
+                labelConnectionRollenzentrierung.Text = "DISCONNECTED";
+                labelConnectionRollenzentrierung.Foreground = Brushes.Red;
+            }
+
+            if (schneidmaschineConnected)
+            {
+                labelConnectionSchneidmaschine.Text = "CONNECTED";
+                labelConnectionSchneidmaschine.Foreground = Brushes.Green;
+            }
+            else
+            {
+                labelConnectionSchneidmaschine.Text = "DISCONNECTED";
+                labelConnectionSchneidmaschine.Foreground = Brushes.Red;
+            }
+
             // Separate Zeitstempel für jedes Gerät anzeigen
             if (lastCommunicationRollenzentrierung != DateTime.MinValue)
             {
@@ -114,7 +137,7 @@ namespace SchneidMaschine
             {
                 textBlockLastCommRollenzentrierung.Text = "(nie)";
             }
-            
+
             if (lastCommunicationSchneidmaschine != DateTime.MinValue)
             {
                 textBlockLastCommSchneidmaschine.Text = "(" + lastCommunicationSchneidmaschine.ToString("HH:mm:ss") + ")";
@@ -152,6 +175,20 @@ namespace SchneidMaschine
         //      Verbindung Rollenzentrierung
         // --------------------------------------
 
+        private string ExtractPortName(string comboBoxText)
+        {
+            // Extrahiere "COM3" aus "COM3 (USB Serial Device)"
+            if (string.IsNullOrEmpty(comboBoxText))
+                return comboBoxText;
+
+            int spaceIndex = comboBoxText.IndexOf(' ');
+            if (spaceIndex > 0)
+            {
+                return comboBoxText.Substring(0, spaceIndex);
+            }
+            return comboBoxText;
+        }
+
         private void BtnClickVerbindenRollenzentrierung(object sender, RoutedEventArgs e)
         {
             try
@@ -159,7 +196,7 @@ namespace SchneidMaschine
                 Console.WriteLine("try to Connect with ESP32...");
                 SetTextRollenzentrierung("&try to Connect with ESP32....&\n");
 
-                serialPortRollenzentrierung.PortName = comboBoxPortsRollenzentrierung.Text;
+                serialPortRollenzentrierung.PortName = ExtractPortName(comboBoxPortsRollenzentrierung.Text);
                 serialPortRollenzentrierung.BaudRate = Convert.ToInt32(comboBoxBautRateRollenzentrierung.Text);
 
                 //          serialPortSchneidmaschine = new SerialPort("COM5",
@@ -173,6 +210,23 @@ namespace SchneidMaschine
                 serialPortRollenzentrierung.Open();
 
                 isConnected_Rollenzentrierung();
+
+                // Sende Board-Identifikations-Befehl
+                System.Threading.Tasks.Task.Delay(500).ContinueWith(_ =>
+                {
+                    try
+                    {
+                        if (serialPortRollenzentrierung.IsOpen)
+                        {
+                            serialPortRollenzentrierung.Write("%WHOAMI" + (char)CharApp.END_CHAR);
+                            Console.WriteLine("WHOAMI-Befehl an Rollenzentrierung gesendet");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Fehler beim Senden des WHOAMI-Befehls: " + ex.Message);
+                    }
+                });
 
                 //ProgressBarStatus.Value = 100;
             }
@@ -288,6 +342,10 @@ namespace SchneidMaschine
             if (text.StartsWith(Char.ToString((char)CharArduino.START_CHAR)))
             {
                 text = Regex.Replace(text, @"~|#|@|%", "");
+                // Entferne überschüssige Leerzeichen (mehrere Leerzeichen zu einem reduzieren)
+                text = Regex.Replace(text, @"\s+", " ");
+                // Entferne Leerzeichen vor Satzzeichen
+                text = Regex.Replace(text, @"\s+([!,\.])", "$1");
                 text = "ESP32 antwortet>> " + text;
             }
 
@@ -337,6 +395,14 @@ namespace SchneidMaschine
 
             string[] befehl = text.Split('_');
 
+            // Prüfe auf TEST-Antwort
+            if (befehl[0].Equals("TEST", StringComparison.OrdinalIgnoreCase) ||
+                text.IndexOf("TEST", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                SetTextRollenzentrierung("&✓ TEST erfolgreich - Board antwortet!\n&");
+                return;
+            }
+
             foreach (COMMAND_Rollenzentrierung item in (COMMAND_Rollenzentrierung[])Enum.GetValues(typeof(COMMAND_Rollenzentrierung)))
             {
                 if (befehl[0].Equals(item.ToString()))
@@ -384,6 +450,40 @@ namespace SchneidMaschine
                         break;
                     }
 
+                case COMMAND_Rollenzentrierung.BoardIdentification:
+                    {
+                        Console.WriteLine("COMMAND_Rollenzentrierung.BoardIdentification");
+
+                        if (befehl.Length > 1)
+                        {
+                            string boardType = befehl[1];
+                            Console.WriteLine("Board-Typ erkannt: " + boardType);
+
+                            // Prüfen ob richtiges Board
+                            if (!boardType.Equals("Rollenzentrierung", StringComparison.OrdinalIgnoreCase))
+                            {
+                                MessageBox.Show(
+                                    "ACHTUNG! Falsches Board verbunden.\n\n" +
+                                    "Erwartet: Rollenzentrierung\n" +
+                                    "Gefunden: " + boardType + "\n\n" +
+                                    "Die Verbindung wird getrennt.",
+                                    "Falsches Board",
+                                    MessageBoxButton.OK,
+                                    MessageBoxImage.Warning
+                                );
+
+                                // Verbindung trennen
+                                BtnClickTrennenRollenzentrierung(null, null);
+                            }
+                            else
+                            {
+                                SetTextRollenzentrierung("&✓ Korrektes Board erkannt: " + boardType + "\n&");
+                            }
+                        }
+
+                        break;
+                    }
+
                 default: break;
             }
         }
@@ -410,7 +510,7 @@ namespace SchneidMaschine
                 Console.WriteLine("try to Connect with Arduino...");
                 SetTextSchneidmaschine("&try to Connect with Arduino....&\n");
 
-                serialPortSchneidmaschine.PortName = comboBoxPortsSchneidmaschine.Text;
+                serialPortSchneidmaschine.PortName = ExtractPortName(comboBoxPortsSchneidmaschine.Text);
                 serialPortSchneidmaschine.BaudRate = Convert.ToInt32(comboBoxBautRateSchneidmaschine.Text);
 
                 //          serialPortSchneidmaschine = new SerialPort("COM5",
@@ -424,6 +524,23 @@ namespace SchneidMaschine
                 serialPortSchneidmaschine.Open();
 
                 isConnected_Schneidmaschine();
+
+                // Sende Board-Identifikations-Befehl
+                System.Threading.Tasks.Task.Delay(500).ContinueWith(_ =>
+                {
+                    try
+                    {
+                        if (serialPortSchneidmaschine.IsOpen)
+                        {
+                            serialPortSchneidmaschine.Write("%WHOAMI" + (char)CharApp.END_CHAR);
+                            Console.WriteLine("WHOAMI-Befehl an Schneidmaschine gesendet");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Fehler beim Senden des WHOAMI-Befehls: " + ex.Message);
+                    }
+                });
 
                 //ProgressBarStatus.Value = 100;
             }
@@ -580,6 +697,10 @@ namespace SchneidMaschine
             if (text.StartsWith(Char.ToString((char)CharArduino.START_CHAR)))
             {
                 text = Regex.Replace(text, @"~|#|@|%", "");
+                // Entferne überschüssige Leerzeichen (mehrere Leerzeichen zu einem reduzieren)
+                text = Regex.Replace(text, @"\s+", " ");
+                // Entferne Leerzeichen vor Satzzeichen
+                text = Regex.Replace(text, @"\s+([!,\.])", "$1");
                 text = "Arduino antwortet>> " + text;
             }
 
@@ -626,6 +747,14 @@ namespace SchneidMaschine
             Console.WriteLine("commandReceivedSchneidmaschine: " + text);
 
             string[] befehl = text.Split('_');
+
+            // Prüfe auf TEST-Antwort
+            if (befehl[0].Equals("TEST", StringComparison.OrdinalIgnoreCase) ||
+                text.IndexOf("TEST", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                SetTextSchneidmaschine("&✓ TEST erfolgreich - Board antwortet!\n&");
+                return;
+            }
 
             foreach (COMMAND_Schneidmaschine item in (COMMAND_Schneidmaschine[])Enum.GetValues(typeof(COMMAND_Schneidmaschine)))
             {
@@ -746,6 +875,40 @@ namespace SchneidMaschine
 
                         Statistik stats = dataModel.Statistik;
                         stats.StreifenLaengeIst = 0;
+
+                        break;
+                    }
+
+                case COMMAND_Schneidmaschine.BoardIdentification:
+                    {
+                        Console.WriteLine("COMMAND_Schneidmaschine.BoardIdentification");
+
+                        if (befehl.Length > 1)
+                        {
+                            string boardType = befehl[1];
+                            Console.WriteLine("Board-Typ erkannt: " + boardType);
+
+                            // Prüfen ob richtiges Board
+                            if (!boardType.Equals("Schneidmaschine", StringComparison.OrdinalIgnoreCase))
+                            {
+                                MessageBox.Show(
+                                    "ACHTUNG! Falsches Board verbunden.\n\n" +
+                                    "Erwartet: Schneidmaschine\n" +
+                                    "Gefunden: " + boardType + "\n\n" +
+                                    "Die Verbindung wird getrennt.",
+                                    "Falsches Board",
+                                    MessageBoxButton.OK,
+                                    MessageBoxImage.Warning
+                                );
+
+                                // Verbindung trennen
+                                BtnClickTrennenSchneidmaschine(null, null);
+                            }
+                            else
+                            {
+                                SetTextSchneidmaschine("&✓ Korrektes Board erkannt: " + boardType + "\n&");
+                            }
+                        }
 
                         break;
                     }
@@ -967,6 +1130,76 @@ namespace SchneidMaschine
         {
             dataModel.DBHandler.resetLangzeit();
 
+        }
+
+        private void MenuKeybinding_Click(object sender, RoutedEventArgs e)
+        {
+            var keybindingSettings = new KeybindingSettings(dataModel);
+            Main.Content = keybindingSettings;
+        }
+
+        private void Window_KeyDown(object sender, KeyEventArgs e)
+        {
+            // Bestimme welche Seite gerade aktiv ist
+            if (Main.Content == dataModel.EinzelSchritt)
+            {
+                HandleEinzelSchrittKeys(e.Key);
+                e.Handled = true;
+            }
+            else if (Main.Content == dataModel.HalbAuto)
+            {
+                HandleHalbAutoKeys(e.Key);
+                e.Handled = true;
+            }
+            else if (Main.Content == dataModel.Auto)
+            {
+                HandleAutoKeys(e.Key);
+                e.Handled = true;
+            }
+        }
+
+        private void HandleEinzelSchrittKeys(Key key)
+        {
+            var km = dataModel.KeybindingManager;
+
+            if (key == km.GetKey("EinzelSchritt_1mm"))
+                dataModel.EinzelSchritt.Btn_1mm_Click(null, null);
+            else if (key == km.GetKey("EinzelSchritt_10mm"))
+                dataModel.EinzelSchritt.Btn_10mm_Click(null, null);
+            else if (key == km.GetKey("EinzelSchritt_100mm"))
+                dataModel.EinzelSchritt.Btn_100mm_Click(null, null);
+            else if (key == km.GetKey("EinzelSchritt_Sollwert"))
+                dataModel.EinzelSchritt.Btn_soll_Click(null, null);
+            else if (key == km.GetKey("EinzelSchritt_Schneiden"))
+                dataModel.EinzelSchritt.Btn_Cut(null, null);
+            else if (key == km.GetKey("EinzelSchritt_Kopfschnitt"))
+                dataModel.EinzelSchritt.BtnClickKopfschnitt(null, null);
+            else if (key == km.GetKey("EinzelSchritt_Handrad"))
+                dataModel.EinzelSchritt.ToggleBtn_Click_Handwheel(null, null);
+            else if (key == km.GetKey("EinzelSchritt_Stop"))
+                dataModel.EinzelSchritt.Btn_Stop(null, null);
+        }
+
+        private void HandleHalbAutoKeys(Key key)
+        {
+            var km = dataModel.KeybindingManager;
+
+            if (key == km.GetKey("HalbAuto_Start"))
+                dataModel.HalbAuto.BtnClickModusHalbAutoStart(null, null);
+            else if (key == km.GetKey("HalbAuto_Stop"))
+                dataModel.HalbAuto.BtnClickModusHalbAutoStop(null, null);
+        }
+
+        private void HandleAutoKeys(Key key)
+        {
+            var km = dataModel.KeybindingManager;
+
+            if (key == km.GetKey("Auto_Start"))
+                dataModel.Auto.BtnClickModusAutoStart(null, null);
+            else if (key == km.GetKey("Auto_Pause"))
+                dataModel.Auto.BtnClickModusAutoPause(null, null);
+            else if (key == km.GetKey("Auto_Stop"))
+                dataModel.Auto.BtnClickModusAutoStop(null, null);
         }
     }
 }

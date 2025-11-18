@@ -37,11 +37,20 @@
         </Style>
     </Page.Resources>
 
-    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
-        <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Height="50" Margin="10,0,0,0" Orientation="Horizontal">
+    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/> <!-- Home Button -->
+            <RowDefinition Height="*"/>     <!-- Main Content -->
+            <RowDefinition Height="Auto"/> <!-- Wartung Button -->
+        </Grid.RowDefinitions>
+
+        <!-- Home Button Row -->
+        <StackPanel Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Top" Height="50" Margin="10,5,0,5" Orientation="Horizontal">
             <Button x:Name="BtnHome" Content="Home" FontSize="20" Width="100" Height="35" />
         </StackPanel>
-        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Horizontal">
+
+        <!-- Main Content Row -->
+        <StackPanel Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Horizontal">
             <Grid MinWidth="520" MinHeight="400" Margin="0,0,30,0" >
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1*" />
@@ -95,6 +104,8 @@
                 </StackPanel>
             </Grid>
         </StackPanel>
-        <Button x:Name="Btn_Wartung"  FontSize="30" Width="200" Height="50" Grid.Row="1" Click="Btn_Click_Wartung" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0,0,10,10">Wartung</Button>
+
+        <!-- Wartung Button Row -->
+        <Button Grid.Row="2" x:Name="Btn_Wartung" FontSize="30" Width="200" Height="50" Click="Btn_Click_Wartung" HorizontalAlignment="Right" Margin="0,0,10,10">Wartung</Button>
     </Grid>
 </Page>

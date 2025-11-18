@@ -114,7 +114,7 @@ namespace SchneidMaschine.pages
             dataModel.sendTextSchneidmaschine(commandLine.getCommandLine());
         }
 
-        private void BtnClickModusHalbAutoStart(object sender, RoutedEventArgs e)
+        public void BtnClickModusHalbAutoStart(object sender, RoutedEventArgs e)
         {
             allesStoppen = false;
             this.BtnModusHalbAutoStart.IsEnabled = false;
@@ -126,7 +126,7 @@ namespace SchneidMaschine.pages
             //dataModel.sendTextSchneidmaschine(commandLine.getCommandLine());
         }
 
-        private void BtnClickModusHalbAutoStop(object sender, RoutedEventArgs e)
+        public void BtnClickModusHalbAutoStop(object sender, RoutedEventArgs e)
         {
             allesStoppen = true;
             commandLine.setCommandLine(COMMAND_Schneidmaschine.allesStop, 0, false);

@@ -5,8 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SchneidMaschine"
         Closing="DataWindow_Closing"
+        KeyDown="Window_KeyDown"
         mc:Ignorable="d"
-        WindowStartupLocation="CenterScreen" 
+        WindowStartupLocation="CenterScreen"
         Title="MainWindow" Height="900" Width="1300">
 
     
@@ -145,61 +146,79 @@
         </EventTrigger>
     </Window.Triggers>
 
-    <Grid Height="832" VerticalAlignment="Top">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/> <!-- Menu-Bar -->
+            <RowDefinition Height="Auto"/> <!-- Serial Monitors -->
+            <RowDefinition Height="*"/>    <!-- Main Content Frame -->
+            <RowDefinition Height="Auto"/> <!-- Footer -->
+        </Grid.RowDefinitions>
 
         <!-- Menu-Bar -->
-        <Grid Margin="0,0,0,0" Width="auto" Height="auto" VerticalAlignment="Top">
+        <Grid Grid.Row="0" Margin="0,0,0,0" Width="auto" Height="auto" VerticalAlignment="Top">
             <DockPanel Width="auto" Height="24" VerticalAlignment="Center">
                 <Menu DockPanel.Dock="Top">
                     <MenuItem Header="_Datei" Margin="5,2,0,0">
                         <MenuItem Header="_Einstellungen" />
-                        <MenuItem Header="_Keybinding" />
+                        <MenuItem Header="_Keybinding" Click="MenuKeybinding_Click" />
                         <Separator/>
                         <MenuItem Header="_Beenden" />
                     </MenuItem>
                 </Menu>
             </DockPanel>
         </Grid>
-        
-        <Grid Margin="0,30,5,5">
-            <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Center">
 
-                <!-- Serial Monitor Rollenzentrierung -->
-                <GroupBox Header="Serial Monitor Rollenzentrierung" Width="650" Height="300" VerticalAlignment="Top" HorizontalAlignment="Center" >
-                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Top" Width="620" Height="250" Margin="0,20">
-                        <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                            <TextBox Name="textBoxSendenRollenzentrierung" Margin="0,0,5,5" Width="370" />
-                            <Button x:Name="buttonSendenRollenzentrierung" Click="BtnClickSendenRollenzentrierung" Width="80" HorizontalAlignment="Right" Margin="0,0,5,5" Content="Senden" />
-                            <Button x:Name="buttonTestRollenzentrierung" Click="BtnClickTestRollenzentrierung" Width="60" HorizontalAlignment="Right" Margin="0,0,5,5" Content="Test" Background="#FFFFCC99" />
-                            <Button x:Name="buutonTextDeleteRollenzentrierung" Click="BtnClickTextDeleteRollenzentrierung" Width="75" HorizontalAlignment="Right" Margin="0,0,0,5" >Text löschen</Button>
-                        </StackPanel>
-                        <TextBox x:Name="textBoxAusgabeRollenzentrierung" AcceptsReturn="True" TextWrapping="Wrap" Width="620" Height="202" 
-                            ScrollViewer.HorizontalScrollBarVisibility="Visible" ScrollViewer.VerticalScrollBarVisibility="Visible"/>
+        <!-- Serial Monitors Grid -->
+        <Grid Grid.Row="1" Margin="5,5,5,5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" MinWidth="300"/>
+                <ColumnDefinition Width="*" MinWidth="300"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Serial Monitor Rollenzentrierung -->
+            <GroupBox Grid.Column="0" Header="Serial Monitor Rollenzentrierung" MinWidth="600" MinHeight="250" MaxHeight="400" Margin="5" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                <Grid Margin="5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,5,0,5">
+                        <TextBox Name="textBoxSendenRollenzentrierung" Margin="0,0,5,0" HorizontalAlignment="Stretch" MinWidth="200"/>
+                        <Button x:Name="buttonSendenRollenzentrierung" Click="BtnClickSendenRollenzentrierung" Width="80" Margin="0,0,5,0" Content="Senden" />
+                        <Button x:Name="buttonTestRollenzentrierung" Click="BtnClickTestRollenzentrierung" Width="60" Margin="0,0,5,0" Content="Test" Background="#FFFFCC99" />
+                        <Button x:Name="buutonTextDeleteRollenzentrierung" Click="BtnClickTextDeleteRollenzentrierung" Width="90" Margin="0,0,0,0">Text löschen</Button>
                     </StackPanel>
-                </GroupBox>
 
-                <!-- Serial Monitor Schneidmaschine -->
-                <GroupBox Header="Serial Monitor Schneidmaschine" Width="650" Height="300" VerticalAlignment="Top" HorizontalAlignment="Center" >
-                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Top" Width="620" Height="250" Margin="0,20">
-                        <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                            <TextBox Name="textBoxSendenSchneidmaschine" Margin="0,0,5,5" Width="370" />
-                            <Button x:Name="buttonSendenSchneidmaschine" Click="BtnClickSendenSchneidmaschine" Width="80" HorizontalAlignment="Right" Margin="0,0,5,5" Content="Senden" />
-                            <Button x:Name="buttonTestSchneidmaschine" Click="BtnClickTestSchneidmaschine" Width="60" HorizontalAlignment="Right" Margin="0,0,5,5" Content="Test" Background="#FFFFCC99" />
-                            <Button x:Name="buutonTextDeleteSchneidmaschine" Click="BtnClickTextDeleteSchneidmaschine" Width="75" HorizontalAlignment="Right" Margin="0,0,0,5" >Text löschen</Button>
-                        </StackPanel>
-                        <TextBox x:Name="textBoxAusgabeSchneidmaschine" AcceptsReturn="True" TextWrapping="Wrap" Width="620" Height="202" 
-                                 ScrollViewer.HorizontalScrollBarVisibility="Visible" ScrollViewer.VerticalScrollBarVisibility="Visible"/>
+                    <TextBox Grid.Row="1" x:Name="textBoxAusgabeRollenzentrierung" AcceptsReturn="True" TextWrapping="Wrap" Margin="0,0,0,0"
+                             HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                             ScrollViewer.HorizontalScrollBarVisibility="Visible" ScrollViewer.VerticalScrollBarVisibility="Visible"/>
+                </Grid>
+            </GroupBox>
+
+            <!-- Serial Monitor Schneidmaschine -->
+            <GroupBox Grid.Column="1" Header="Serial Monitor Schneidmaschine" MinWidth="600" MinHeight="250" MaxHeight="400" Margin="5" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                <Grid Margin="5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,5,0,5">
+                        <TextBox Name="textBoxSendenSchneidmaschine" Margin="0,0,5,0" HorizontalAlignment="Stretch" MinWidth="200"/>
+                        <Button x:Name="buttonSendenSchneidmaschine" Click="BtnClickSendenSchneidmaschine" Width="80" Margin="0,0,5,0" Content="Senden" />
+                        <Button x:Name="buttonTestSchneidmaschine" Click="BtnClickTestSchneidmaschine" Width="60" Margin="0,0,5,0" Content="Test" Background="#FFFFCC99" />
+                        <Button x:Name="buutonTextDeleteSchneidmaschine" Click="BtnClickTextDeleteSchneidmaschine" Width="90" Margin="0,0,0,0">Text löschen</Button>
                     </StackPanel>
-                </GroupBox>
-  
-            </StackPanel>
-            <Separator Margin="0,310,0,0" VerticalAlignment="Top"/>
-            <StackPanel Orientation="Horizontal" Margin="2,0,-3,0" >
 
-            </StackPanel>
+                    <TextBox Grid.Row="1" x:Name="textBoxAusgabeSchneidmaschine" AcceptsReturn="True" TextWrapping="Wrap" Margin="0,0,0,0"
+                             HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                             ScrollViewer.HorizontalScrollBarVisibility="Visible" ScrollViewer.VerticalScrollBarVisibility="Visible"/>
+                </Grid>
+            </GroupBox>
         </Grid>
         <!--Drawer links-->
-        <Grid x:Name="GridMenu" Width="40" Height="310" Margin="0,27,0,0" HorizontalAlignment="Left"  VerticalAlignment="Top" Background="{DynamicResource {x:Static SystemColors.MenuBarBrushKey}}">
+        <Grid x:Name="GridMenu" Grid.Row="1" Grid.RowSpan="2" Width="40" Margin="0,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Stretch" Background="{DynamicResource {x:Static SystemColors.MenuBarBrushKey}}">
             <Grid.Effect>
                 <DropShadowEffect BlurRadius="2" ShadowDepth="1" Color="#FFAEAEAE"/>
             </Grid.Effect>
@@ -310,7 +329,7 @@
         </Grid>
 
         <!--Drawer rechts-->
-        <Grid x:Name="GridStats" Width="40" Height="310" Margin="0,27,0,0" HorizontalAlignment="Right" VerticalAlignment="Top" Background="{DynamicResource {x:Static SystemColors.MenuBarBrushKey}}">
+        <Grid x:Name="GridStats" Grid.Row="1" Grid.RowSpan="2" Width="40" Margin="0,0,0,0" HorizontalAlignment="Right" VerticalAlignment="Stretch" Background="{DynamicResource {x:Static SystemColors.MenuBarBrushKey}}">
             <Grid.Effect>
                 <DropShadowEffect BlurRadius="2" ShadowDepth="1" Color="#FFAEAEAE"/>
             </Grid.Effect>
@@ -457,11 +476,13 @@
                 </Button>
             </Grid>
         </Grid>
-        <Frame x:Name="Main" Margin="0,360,0,25" FontSize="36" 
+
+        <!-- Main Content Frame -->
+        <Frame x:Name="Main" Grid.Row="2" Margin="5,5,5,5" FontSize="36"
                HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" NavigationUIVisibility="Hidden"/>
-        
-        <!-- Footer mit Verbindungsstatus - außerhalb des Main-Grids -->
-        <Border Background="#FF2E2E2E" Height="25" VerticalAlignment="Bottom" Margin="0,0,0,0" Panel.ZIndex="999">
+
+        <!-- Footer mit Verbindungsstatus -->
+        <Border Grid.Row="3" Background="#FF2E2E2E" Height="25" Margin="0,0,0,0" Panel.ZIndex="999">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0">
                 <TextBlock Text="Verbindungsstatus:" Foreground="White" FontSize="11" VerticalAlignment="Center" Margin="0,0,10,0"/>
                 

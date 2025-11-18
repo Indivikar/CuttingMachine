@@ -46,7 +46,8 @@ namespace SchneidMaschine.model
         steps,
         stepperStart,
         stepperStop,
-        stepperFinished
+        stepperFinished,
+        BoardIdentification
     }
 
     public enum COMMAND_Schneidmaschine
@@ -68,7 +69,8 @@ namespace SchneidMaschine.model
         autoStart,
         autoStop,
         resetIstWert,
-        wartungSchrittMotor
+        wartungSchrittMotor,
+        BoardIdentification
     }
 
     public enum DIRECTION
@@ -113,6 +115,8 @@ namespace SchneidMaschine.model
         private Thread_Con_Rollenzentrierung thread_Con_Rollenzentrierung;
         private Thread_Con_Schneidmaschine thread_Con_Schneidmaschine;
 
+        private KeybindingManager keybindingManager;
+
         private STREIFEN selectedStreifen;
         private long streifenProSchachtel;
         private int selectedLength;         // Streifen-Länge Sollwert in mm      
@@ -146,6 +150,8 @@ namespace SchneidMaschine.model
             this.portList = SerialPort.GetPortNames();
             this.commandLine = new CommandLine(this);
 
+            this.keybindingManager = new KeybindingManager();
+
             this.home = new Home(this);
             this.schnittModus = new SchnittModus(this);
             this.einzelSchritt = new EinzelSchritt(this);
@@ -156,6 +162,8 @@ namespace SchneidMaschine.model
             this.thread_Port_Scanner = new Thread_Port_Scanner(this);
             this.thread_Con_Rollenzentrierung = new Thread_Con_Rollenzentrierung(this);
             this.thread_Con_Schneidmaschine = new Thread_Con_Schneidmaschine(this);
+
+            UpdateButtonTexts();
         }
 
         private void initDB()
@@ -340,6 +348,8 @@ namespace SchneidMaschine.model
 
         public CommandLine CommandLine { get { return commandLine; } }
 
+        public KeybindingManager KeybindingManager { get { return keybindingManager; } }
+
         public Thread_Con_Rollenzentrierung Thread_Con_Rollenzentrierung { get { return thread_Con_Rollenzentrierung; } }
         public Thread_Con_Schneidmaschine Thread_Con_Schneidmaschine { get { return thread_Con_Schneidmaschine; } }
         public Thread_Port_Scanner Thread_Port_Scanner { get { return thread_Port_Scanner; } }
@@ -430,6 +440,28 @@ namespace SchneidMaschine.model
 
                 //auto.streifenIstWert.Text = istWertInMM.ToString();
             }
+        }
+
+        public void UpdateButtonTexts()
+        {
+            // EinzelSchritt
+            einzelSchritt.Btn1mm.Content = "1mm (" + keybindingManager.GetKeyDisplayName(keybindingManager.GetKey("EinzelSchritt_1mm")) + ")";
+            einzelSchritt.BtnM10mm.Content = "10mm (" + keybindingManager.GetKeyDisplayName(keybindingManager.GetKey("EinzelSchritt_10mm")) + ")";
+            einzelSchritt.Btn100mm.Content = "100mm (" + keybindingManager.GetKeyDisplayName(keybindingManager.GetKey("EinzelSchritt_100mm")) + ")";
+            einzelSchritt.BtnSollwert.Content = SelectedLength + " mm (" + keybindingManager.GetKeyDisplayName(keybindingManager.GetKey("EinzelSchritt_Sollwert")) + ")";
+            einzelSchritt.BtnSchneiden.Content = "Schneiden (" + keybindingManager.GetKeyDisplayName(keybindingManager.GetKey("EinzelSchritt_Schneiden")) + ")";
+            einzelSchritt.BtnKopfschnitt.Content = "Kopfschnitt (" + keybindingManager.GetKeyDisplayName(keybindingManager.GetKey("EinzelSchritt_Kopfschnitt")) + ")";
+            // Note: There's no BtnHandrad control - it's a ToggleButton named ToggleBtn_Handwheel
+            einzelSchritt.BtnStop.Content = "Stop (" + keybindingManager.GetKeyDisplayName(keybindingManager.GetKey("EinzelSchritt_Stop")) + ")";
+
+            // HalbAuto
+            halbAuto.BtnModusHalbAutoStart.Content = "Start (" + keybindingManager.GetKeyDisplayName(keybindingManager.GetKey("HalbAuto_Start")) + ")";
+            halbAuto.BtnModusHalbAutoStop.Content = "Stop (" + keybindingManager.GetKeyDisplayName(keybindingManager.GetKey("HalbAuto_Stop")) + ")";
+
+            // Auto
+            auto.BtnModusAutoStart.Content = "Start (" + keybindingManager.GetKeyDisplayName(keybindingManager.GetKey("Auto_Start")) + ")";
+            auto.BtnModusAutoPause.Content = "Pause (" + keybindingManager.GetKeyDisplayName(keybindingManager.GetKey("Auto_Pause")) + ")";
+            auto.BtnModusAutoStop.Content = "Stop (" + keybindingManager.GetKeyDisplayName(keybindingManager.GetKey("Auto_Stop")) + ")";
         }
     }
 

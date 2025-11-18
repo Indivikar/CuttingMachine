@@ -165,7 +165,7 @@ namespace SchneidMaschine.pages
             dataModel.sendTextSchneidmaschine(commandLine.getCommandLine());
         }
 
-        private void BtnClickModusAutoStart(object sender, RoutedEventArgs e)
+        public void BtnClickModusAutoStart(object sender, RoutedEventArgs e)
         {
 
             isPause = false;
@@ -184,7 +184,7 @@ namespace SchneidMaschine.pages
             
         }
 
-        private void BtnClickModusAutoPause(object sender, RoutedEventArgs e)
+        public void BtnClickModusAutoPause(object sender, RoutedEventArgs e)
         {
             if (isPause)
             {
@@ -199,7 +199,7 @@ namespace SchneidMaschine.pages
             
         }
 
-        private void BtnClickModusAutoStop(object sender, RoutedEventArgs e)
+        public void BtnClickModusAutoStop(object sender, RoutedEventArgs e)
         {
             isStop = true;
             commandLine.setCommandLine(COMMAND_Schneidmaschine.allesStop, 0, false);

@@ -83,7 +83,14 @@
       <DependentUpon>ModelDataSet.xsd</DependentUpon>
     </Compile>
     <Compile Include="model\CommandLine.cs" />
+    <Compile Include="model\KeybindingManager.cs" />
     <Compile Include="model\Statistik.cs" />
+    <Compile Include="pages\KeybindingSettings.xaml.cs">
+      <DependentUpon>KeybindingSettings.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="pages\KeyInputDialog.xaml.cs">
+      <DependentUpon>KeyInputDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="pages\Wartung.xaml.cs">
       <DependentUpon>Wartung.xaml</DependentUpon>
     </Compile>
@@ -115,6 +122,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="pages\Home.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="pages\KeybindingSettings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="pages\KeyInputDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
