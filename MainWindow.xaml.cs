@@ -1135,7 +1135,17 @@ namespace SchneidMaschine
         private void MenuKeybinding_Click(object sender, RoutedEventArgs e)
         {
             var keybindingSettings = new KeybindingSettings(dataModel);
-            Main.Content = keybindingSettings;
+            Window keybindingWindow = new Window
+            {
+                Title = "Tastenbelegung konfigurieren",
+                Content = keybindingSettings,
+                Width = 800,
+                Height = 600,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                Owner = this,
+                ResizeMode = ResizeMode.CanResize
+            };
+            keybindingWindow.ShowDialog();
         }
 
         private void Window_KeyDown(object sender, KeyEventArgs e)

@@ -1,7 +1,7 @@
 <Window x:Class="SchneidMaschine.pages.KeyInputDialog"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Taste zuweisen" Height="200" Width="400"
+        Title="Taste zuweisen" Height="250" Width="400"
         WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize"
         KeyDown="Window_KeyDown">

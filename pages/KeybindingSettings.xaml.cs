@@ -136,7 +136,12 @@ namespace SchneidMaschine.pages
 
         private void BtnClose_Click(object sender, RoutedEventArgs e)
         {
-            dataModel.MainWindow.Main.Content = dataModel.Home;
+            // Schließe das Window, in dem diese Page angezeigt wird
+            Window window = Window.GetWindow(this);
+            if (window != null)
+            {
+                window.Close();
+            }
         }
     }
 

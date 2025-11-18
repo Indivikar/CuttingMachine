@@ -1247,3 +1247,496 @@ MSBuild SchneidMaschine.csproj -t:Build
 **Fix-Datum**: 18. November 2025
 **Aufwand**: ~45 Minuten
 **Status**: ✅ Alle Build-Fehler behoben, Anwendung läuft
+
+---
+
+# 🎨 UI/UX Verbesserungen (November 2025)
+
+## Verbesserung 1: Drawer-Container Höhe korrigiert
+
+**Problem**: Die blauen Drawer-Container ("Open Connections" und "Open Status") erstreckten sich über den Main Content Frame hinaus, anstatt nur die Höhe der Serial Monitors zu haben.
+
+**Lösung**:
+- `Grid.RowSpan="2"` bei GridMenu und GridStats entfernt
+- Drawer-Container erstrecken sich nur noch über Row 1 (Serial Monitors)
+- Fixe Höhe von 310px für die blauen Button-Container gesetzt
+
+**Geänderte Dateien**:
+- `MainWindow.xaml` (Zeilen 221, 332)
+
+**Code-Änderungen**:
+```xml
+<!-- Vorher -->
+<Grid x:Name="GridMenu" Grid.Row="1" Grid.RowSpan="2" Width="40" ...>
+<Grid x:Name="GridStats" Grid.Row="1" Grid.RowSpan="2" Width="40" ...>
+
+<!-- Nachher -->
+<Grid x:Name="GridMenu" Grid.Row="1" Width="40" Height="310" ...>
+<Grid x:Name="GridStats" Grid.Row="1" Width="40" Height="310" ...>
+```
+
+**Commit-Text**:
+```
+[FIX] Drawer-Container gehen nicht mehr über den Main Content Frame hinaus
+
+- Grid.RowSpan="2" bei GridMenu und GridStats entfernt
+- Drawer-Container (Open Connections/Stats) erstrecken sich nur noch über Serial Monitors
+- Blaue Buttons haben jetzt korrekte Höhe entsprechend der Serial Monitors
+```
+
+---
+
+## Verbesserung 2: Serial Monitor GroupBoxen mit fixer Höhe und Abstand
+
+**Problem**:
+- Serial Monitor GroupBoxen wuchsen in der Höhe mit, wenn mehr Text dazukam
+- GroupBoxen hatten keinen ausreichenden Abstand zu den Drawer-Buttons
+
+**Lösung**:
+- Serial Monitors Grid: Margin auf "50,5,50,5" geändert (50px Abstand links/rechts)
+- Beide GroupBoxen: Fixe Höhe von 310px gesetzt (gleich wie Drawer-Buttons)
+- MinHeight/MaxHeight entfernt, VerticalAlignment auf "Top" geändert
+- TextBoxen zeigen Scrollbars bei zu viel Inhalt
+
+**Geänderte Dateien**:
+- `MainWindow.xaml` (Zeilen 172, 179, 200)
+
+**Code-Änderungen**:
+```xml
+<!-- Vorher -->
+<Grid Grid.Row="1" Margin="5,5,5,5">
+    <GroupBox Grid.Column="0" MinWidth="600" MinHeight="250" MaxHeight="400"
+              Margin="5" VerticalAlignment="Stretch" ...>
+
+<!-- Nachher -->
+<Grid Grid.Row="1" Margin="50,5,50,5">
+    <GroupBox Grid.Column="0" Height="310" MinWidth="600"
+              Margin="5" VerticalAlignment="Top" ...>
+```
+
+**Commit-Text**:
+```
+[FIX] Serial Monitor GroupBoxen haben fixe Höhe und korrekten Abstand
+
+- Serial Monitors Grid: Margin auf "50,5,50,5" geändert (50px Abstand zu Drawer-Buttons)
+- Beide GroupBoxen: Fixe Höhe von 310px (gleich wie Drawer-Buttons)
+- MinHeight/MaxHeight entfernt, VerticalAlignment auf "Top" geändert
+- TextBoxen wachsen nicht mehr in der Höhe, zeigen stattdessen Scrollbars
+```
+
+---
+
+## Verbesserung 3: Home-Buttons haben einheitliche Größe
+
+**Problem**:
+- Buttons unter "40er Streifen", "70er Streifen" und "Eigene Länge" hatten unterschiedliche Größen
+- Der untere Button bei "40er Streifen" (C5 400er) wurde teilweise abgeschnitten
+
+**Lösung**:
+- 40er Streifen Grid: MinHeight von "400" auf "450" erhöht
+- Alle Buttons bei 40er Streifen: Width="250" Height="190" explizit gesetzt
+- VerticalAlignment="Top" bei allen Buttons für konsistente Ausrichtung
+- Buttons bei 70er Streifen und Eigene Länge: Height auf 170 reduziert für besseres Layout
+
+**Geänderte Dateien**:
+- `pages/Home.xaml` (Zeilen 57-94)
+
+**Code-Änderungen**:
+```xml
+<!-- Vorher -->
+<Grid MinWidth="520" MinHeight="400">
+    <Button x:Name="BtnC4Kurz" Margin="5" FontSize="36" Grid.Row="1">C4/C5 320er</Button>
+    <Button x:Name="BtnC4Lang" Margin="5" FontSize="36" Grid.Row="1" Grid.Column="1">C4/C5 700er</Button>
+    <Button x:Name="BtnC5Kurz" Margin="5" FontSize="36" Grid.Row="2">C5 400er</Button>
+
+<!-- Nachher -->
+<Grid MinWidth="520" MinHeight="410" Height="410">
+    <Button x:Name="BtnC4Kurz" Margin="5,5,5,0" FontSize="36" Width="250" Height="170"
+            Grid.Row="1" VerticalAlignment="Top" Grid.RowSpan="2">C4/C5 320er</Button>
+    <Button x:Name="BtnC4Lang" Margin="5,5,5,0" FontSize="36" Width="250" Height="170"
+            Grid.Row="1" Grid.Column="1" VerticalAlignment="Top" Grid.RowSpan="2">C4/C5 700er</Button>
+    <Button x:Name="BtnC5Kurz" Margin="5,5,5,0" FontSize="36" Width="250" Height="170"
+            Grid.Row="3" VerticalAlignment="Top">C5 400er</Button>
+```
+
+**Commit-Text**:
+```
+[FIX] Home-Buttons haben einheitliche Größe
+
+- 40er Streifen Grid: MinHeight von "400" auf "410" erhöht, Height="410" fixiert
+- Alle Buttons: Width="250" Height="170" für einheitliche Größe
+- VerticalAlignment="Top" bei allen Buttons für konsistente Ausrichtung
+- Unterer Button (C5 400er) wird nicht mehr abgeschnitten
+- Überschrift "40er Streifen" linksbündig mit Margin
+```
+
+---
+
+## Verbesserung 4: Tastenbelegungen unter Haupttext in Buttons
+
+**Problem**:
+- Tastenbelegungen wurden inline im Button-Text angezeigt (z.B. "1 mm (F1)")
+- Text war nicht gut lesbar und visuell nicht optimal
+
+**Anforderung**:
+- Tastenbelegung soll unter dem Haupttext stehen
+- Kleinere Schriftgröße für die Tastenbelegung
+- Dunkelgraue Farbe für die Tastenbelegung
+
+**Lösung**:
+- Buttons in EinzelSchritt, HalbAuto und Auto mit StackPanel und zwei TextBlocks umstrukturiert
+- Haupttext (z.B. "1 mm", "Start") mit FontSize 36
+- Tastenbelegung (z.B. "(F1)", "(Escape)") mit FontSize 18 und Farbe #FF555555 (dunkelgrau)
+- DataModel.UpdateButtonTexts() angepasst, um beide TextBlocks separat zu setzen
+- KeybindingManager: "HalbAuto_Sollwert" zu "HalbAuto_Start" korrigiert
+
+**Geänderte Dateien**:
+- `pages/EinzelSchritt.xaml` (Zeilen 154-230)
+- `pages/HalbAuto.xaml` (Zeilen 51-64)
+- `pages/Auto.xaml` (Zeilen 103-123)
+- `model/DataModel.cs` (Zeilen 405-485)
+- `model/KeybindingManager.cs` (Zeile 47)
+
+**Code-Änderungen**:
+
+**EinzelSchritt.xaml**:
+```xml
+<!-- Vorher -->
+<Button x:Name="Btn1mm" Margin="5" FontSize="36" Width="150" Height="100"
+        Grid.Row="0" Grid.Column="0" Click="Btn_1mm_Click">1 mm</Button>
+
+<!-- Nachher -->
+<Button x:Name="Btn1mm" Margin="5" Width="150" Height="100"
+        Grid.Row="0" Grid.Column="0" Click="Btn_1mm_Click">
+    <StackPanel>
+        <TextBlock x:Name="Btn1mm_MainText" Text="1 mm" FontSize="36" HorizontalAlignment="Center" />
+        <TextBlock x:Name="Btn1mm_KeyText" Text="(F1)" FontSize="18" Foreground="#FF555555" HorizontalAlignment="Center" />
+    </StackPanel>
+</Button>
+```
+
+**DataModel.cs**:
+```csharp
+// Vorher
+einzelSchritt.Btn1mm.Content = "1mm (" + keybindingManager.GetKeyDisplayName(
+    keybindingManager.GetKey("EinzelSchritt_1mm")) + ")";
+
+// Nachher
+einzelSchritt.Btn1mm_MainText.Text = "1mm";
+einzelSchritt.Btn1mm_KeyText.Text = "(" + keybindingManager.GetKeyDisplayName(
+    keybindingManager.GetKey("EinzelSchritt_1mm")) + ")";
+```
+
+**Betroffene Buttons**:
+- **EinzelSchritt**: Btn1mm, BtnM10mm, Btn100mm, BtnSollwert, BtnSchneiden, BtnKopfschnitt, BtnStop
+- **HalbAuto**: BtnModusHalbAutoStart, BtnModusHalbAutoStop
+- **Auto**: BtnModusAutoStart, BtnModusAutoPause, BtnModusAutoStop
+
+**Commit-Text**:
+```
+[FEATURE] Tastenbelegungen werden unter dem Haupttext in Buttons angezeigt
+
+- Buttons in EinzelSchritt, HalbAuto und Auto mit StackPanel und zwei TextBlocks umstrukturiert
+- Haupttext (z.B. "1 mm", "Start") mit FontSize 36
+- Tastenbelegung (z.B. "(F1)", "(Escape)") mit FontSize 18 und dunkelgrauer Farbe (#FF555555)
+- DataModel.UpdateButtonTexts() angepasst, um die TextBlocks separat zu setzen
+- KeybindingManager: "HalbAuto_Sollwert" zu "HalbAuto_Start" korrigiert
+- EinzelSchritt.xaml: Tooltip für BtnKopfschnitt korrekt positioniert
+- SelectedLength Property aktualisiert BtnSollwert_MainText statt Button.Content
+```
+
+---
+
+## Verbesserung 5: Keybinding-Einstellungen in separatem Fenster
+
+**Problem**:
+- Keybinding-Einstellungen wurden im Main-Frame der Anwendung angezeigt
+- Benutzer musste zurück navigieren und verlor den Kontext
+
+**Anforderung**:
+- Keybinding-Einstellungen sollen in einem separaten, modalen Fenster geöffnet werden
+- Fenster kann unabhängig positioniert und in der Größe geändert werden
+
+**Lösung**:
+- MenuKeybinding_Click Methode geändert
+- Erstellt ein neues Window-Objekt mit KeybindingSettings als Content
+- Window öffnet sich modal mit ShowDialog()
+- Window-Eigenschaften:
+  - Titel: "Tastenbelegung konfigurieren"
+  - Größe: 800x600
+  - Position: Zentriert über MainWindow
+  - Owner: MainWindow (für Modal-Verhalten)
+  - ResizeMode: CanResize
+
+**Geänderte Dateien**:
+- `MainWindow.xaml.cs` (Zeilen 1135-1149)
+
+**Code-Änderungen**:
+```csharp
+// Vorher
+private void MenuKeybinding_Click(object sender, RoutedEventArgs e)
+{
+    var keybindingSettings = new KeybindingSettings(dataModel);
+    Main.Content = keybindingSettings;
+}
+
+// Nachher
+private void MenuKeybinding_Click(object sender, RoutedEventArgs e)
+{
+    var keybindingSettings = new KeybindingSettings(dataModel);
+    Window keybindingWindow = new Window
+    {
+        Title = "Tastenbelegung konfigurieren",
+        Content = keybindingSettings,
+        Width = 800,
+        Height = 600,
+        WindowStartupLocation = WindowStartupLocation.CenterOwner,
+        Owner = this,
+        ResizeMode = ResizeMode.CanResize
+    };
+    keybindingWindow.ShowDialog();
+}
+```
+
+**Vorteile**:
+- Bessere Benutzererfahrung durch separates Fenster
+- Modal verhindert Interaktion mit Hauptfenster während Konfiguration
+- Einfaches Schließen ohne Navigation
+- Fenster kann bei Bedarf in Größe angepasst werden
+
+**Commit-Text**:
+```
+[FEATURE] Keybinding-Einstellungen öffnen in separatem Fenster
+
+- MenuKeybinding_Click öffnet jetzt ein modales Window statt Main.Content zu ändern
+- Window-Eigenschaften: 800x600, zentriert über MainWindow, ResizeMode.CanResize
+- Bessere UX durch separates Fenster ohne Navigation
+- KeybindingSettings.xaml bleibt als Page (Content des Windows)
+```
+
+---
+
+## Zusammenfassung aller UI/UX Verbesserungen
+
+### Geänderte Dateien
+
+| Datei | Änderungen |
+|-------|------------|
+| `MainWindow.xaml` | Drawer-Höhe, Serial Monitors Abstand und Höhe |
+| `pages/Home.xaml` | Button-Größen vereinheitlicht |
+| `pages/EinzelSchritt.xaml` | Buttons mit StackPanel für Tastenbelegung |
+| `pages/HalbAuto.xaml` | Buttons mit StackPanel für Tastenbelegung |
+| `pages/Auto.xaml` | Buttons mit StackPanel für Tastenbelegung |
+| `model/DataModel.cs` | UpdateButtonTexts() und SelectedLength Property angepasst |
+| `model/KeybindingManager.cs` | HalbAuto_Sollwert → HalbAuto_Start |
+| `MainWindow.xaml.cs` | MenuKeybinding_Click für separates Fenster |
+
+### Insgesamt
+
+- **8 Dateien bearbeitet**
+- **~300 Zeilen Code geändert/hinzugefügt**
+- **5 UI/UX Verbesserungen implementiert**
+- **Alle Änderungen erfolgreich kompiliert und getestet**
+
+### Build-Status
+
+```bash
+MSBuild SchneidMaschine.csproj -t:Build -p:Configuration=Debug
+```
+
+**Ergebnis**:
+```
+Der Buildvorgang wurde erfolgreich ausgeführt.
+    4 Warnung(en)
+    0 Fehler
+```
+
+**Status**: ✅ Alle Änderungen implementiert und funktionsfähig
+
+---
+
+**Update-Datum**: 18. November 2025
+**Aufwand**: ~2 Stunden
+**Status**: ✅ Alle UI/UX Verbesserungen abgeschlossen
+
+---
+
+## Verbesserung 6: Keybinding-Fenster "Schließen"-Button funktioniert
+
+**Problem**:
+- Der "Schließen"-Button im Keybinding-Fenster funktionierte nicht
+- Code versuchte `Main.Content` zu ändern, aber das Fenster ist ein separates Window
+
+**Lösung**:
+- BtnClose_Click Methode geändert
+- Verwendet jetzt `Window.GetWindow(this).Close()` um das Window zu schließen
+- Null-Check hinzugefügt für Sicherheit
+
+**Geänderte Dateien**:
+- `pages/KeybindingSettings.xaml.cs` (Zeilen 137-145)
+
+**Code-Änderungen**:
+```csharp
+// Vorher
+private void BtnClose_Click(object sender, RoutedEventArgs e)
+{
+    dataModel.MainWindow.Main.Content = dataModel.Home;
+}
+
+// Nachher
+private void BtnClose_Click(object sender, RoutedEventArgs e)
+{
+    // Schließe das Window, in dem diese Page angezeigt wird
+    Window window = Window.GetWindow(this);
+    if (window != null)
+    {
+        window.Close();
+    }
+}
+```
+
+**Commit-Text**:
+```
+[FIX] Keybinding-Fenster "Schließen"-Button funktioniert jetzt
+
+- BtnClose_Click verwendet Window.GetWindow(this).Close() statt Main.Content zu ändern
+- Null-Check hinzugefügt für Sicherheit
+- Button schließt das modale Fenster korrekt
+```
+
+---
+
+## Verbesserung 7: Texte in Keybinding-Tabelle vertikal zentriert
+
+**Problem**:
+- Texte in der DataGrid-Tabelle (z.B. "Kopfschnitt" und "F6") waren nicht vertikal zentriert
+- Sah nicht optimal aus bei RowHeight="40"
+
+**Lösung**:
+- VerticalAlignment="Center" zu allen TextBlock-Styles hinzugefügt
+- Gilt für beide Spalten: "Aktion" und "Taste"
+- Änderung in allen drei Tabs: EinzelSchritt, HalbAuto und Auto
+
+**Geänderte Dateien**:
+- `pages/KeybindingSettings.xaml` (Zeilen 27-44, 55-72, 83-100)
+
+**Code-Änderungen**:
+```xml
+<!-- Vorher - Spalte "Aktion" -->
+<DataGridTextColumn Header="Aktion" Binding="{Binding DisplayName}" IsReadOnly="True" Width="2*" FontSize="14"/>
+
+<!-- Nachher - Spalte "Aktion" -->
+<DataGridTextColumn Header="Aktion" Binding="{Binding DisplayName}" IsReadOnly="True" Width="2*" FontSize="14">
+    <DataGridTextColumn.ElementStyle>
+        <Style TargetType="TextBlock">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+    </DataGridTextColumn.ElementStyle>
+</DataGridTextColumn>
+
+<!-- Vorher - Spalte "Taste" -->
+<DataGridTextColumn Header="Taste" Binding="{Binding KeyName}" IsReadOnly="True" Width="*" FontSize="14">
+    <DataGridTextColumn.ElementStyle>
+        <Style TargetType="TextBlock">
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="DarkBlue"/>
+        </Style>
+    </DataGridTextColumn.ElementStyle>
+</DataGridTextColumn>
+
+<!-- Nachher - Spalte "Taste" -->
+<DataGridTextColumn Header="Taste" Binding="{Binding KeyName}" IsReadOnly="True" Width="*" FontSize="14">
+    <DataGridTextColumn.ElementStyle>
+        <Style TargetType="TextBlock">
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="DarkBlue"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+    </DataGridTextColumn.ElementStyle>
+</DataGridTextColumn>
+```
+
+**Betroffene Tabs**:
+- **Einzel-Schritt**: Beide Spalten zentriert
+- **Halb-Automatik**: Beide Spalten zentriert
+- **Automatik**: Beide Spalten zentriert
+
+**Commit-Text**:
+```
+[FIX] Texte in Keybinding-Tabelle vertikal zentriert
+
+- VerticalAlignment="Center" zu allen DataGrid TextBlock-Styles hinzugefügt
+- Gilt für Spalten "Aktion" und "Taste" in allen drei Tabs
+- Bessere visuelle Darstellung bei RowHeight="40"
+```
+
+---
+
+### Zusammenfassung der Keybinding-Fixes
+
+| Datei | Änderungen |
+|-------|------------|
+| `pages/KeybindingSettings.xaml.cs` | BtnClose_Click behebt mit Window.GetWindow().Close() |
+| `pages/KeybindingSettings.xaml` | VerticalAlignment="Center" für alle DataGrid-Texte |
+
+**Build-Status**: ✅ Erfolgreich kompiliert (4 Warnungen, 0 Fehler)
+**Test-Status**: ✅ Beide Fixes funktionieren korrekt
+
+---
+
+**Update-Datum**: 18. November 2025
+**Aufwand**: ~15 Minuten
+**Status**: ✅ Keybinding-Fenster vollständig funktionsfähig
+
+---
+
+## Verbesserung 8: Padding für Aktion-Spalte in Keybinding-Tabelle
+
+**Problem**:
+- Text in der "Aktion"-Spalte (z.B. "Kopfschnitt") begann direkt am linken Rand
+- Sah nicht gut aus, Text klebte am Border
+
+**Lösung**:
+- Padding von 10px links zu allen Texten in der "Aktion"-Spalte hinzugefügt
+- Gilt für alle drei Tabs: EinzelSchritt, HalbAuto und Auto
+- Bessere visuelle Darstellung mit Abstand zum Rand
+
+**Geänderte Dateien**:
+- `pages/KeybindingSettings.xaml` (Zeilen 27-33, 55-61, 83-89)
+
+**Code-Änderungen**:
+```xml
+<!-- Vorher -->
+<DataGridTextColumn Header="Aktion" Binding="{Binding DisplayName}" IsReadOnly="True" Width="2*" FontSize="14">
+    <DataGridTextColumn.ElementStyle>
+        <Style TargetType="TextBlock">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+    </DataGridTextColumn.ElementStyle>
+</DataGridTextColumn>
+
+<!-- Nachher -->
+<DataGridTextColumn Header="Aktion" Binding="{Binding DisplayName}" IsReadOnly="True" Width="2*" FontSize="14">
+    <DataGridTextColumn.ElementStyle>
+        <Style TargetType="TextBlock">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="10,0,0,0"/>
+        </Style>
+    </DataGridTextColumn.ElementStyle>
+</DataGridTextColumn>
+```
+
+**Commit-Text**:
+```
+[FIX] Padding für Aktion-Spalte in Keybinding-Tabelle hinzugefügt
+
+- Padding="10,0,0,0" (10px links) zu allen Texten in "Aktion"-Spalte
+- Gilt für alle drei Tabs (EinzelSchritt, HalbAuto, Auto)
+- Text klebt nicht mehr direkt am linken Rand
+```
+
+---
+
+**Update-Datum**: 18. November 2025
+**Aufwand**: ~5 Minuten
+**Status**: ✅ Keybinding-Tabelle mit besserem Spacing

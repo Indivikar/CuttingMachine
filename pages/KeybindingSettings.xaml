@@ -25,12 +25,20 @@
                           HeadersVisibility="Column" GridLinesVisibility="Horizontal"
                           AlternatingRowBackground="LightGray" RowHeight="40">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Aktion" Binding="{Binding DisplayName}" IsReadOnly="True" Width="2*" FontSize="14"/>
+                        <DataGridTextColumn Header="Aktion" Binding="{Binding DisplayName}" IsReadOnly="True" Width="2*" FontSize="14">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                    <Setter Property="Padding" Value="10,0,0,0"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
                         <DataGridTextColumn Header="Taste" Binding="{Binding KeyName}" IsReadOnly="True" Width="*" FontSize="14">
                             <DataGridTextColumn.ElementStyle>
                                 <Style TargetType="TextBlock">
                                     <Setter Property="FontWeight" Value="Bold"/>
                                     <Setter Property="Foreground" Value="DarkBlue"/>
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
                                 </Style>
                             </DataGridTextColumn.ElementStyle>
                         </DataGridTextColumn>
@@ -53,12 +61,20 @@
                           HeadersVisibility="Column" GridLinesVisibility="Horizontal"
                           AlternatingRowBackground="LightGray" RowHeight="40">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Aktion" Binding="{Binding DisplayName}" IsReadOnly="True" Width="2*" FontSize="14"/>
+                        <DataGridTextColumn Header="Aktion" Binding="{Binding DisplayName}" IsReadOnly="True" Width="2*" FontSize="14">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                    <Setter Property="Padding" Value="10,0,0,0"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
                         <DataGridTextColumn Header="Taste" Binding="{Binding KeyName}" IsReadOnly="True" Width="*" FontSize="14">
                             <DataGridTextColumn.ElementStyle>
                                 <Style TargetType="TextBlock">
                                     <Setter Property="FontWeight" Value="Bold"/>
                                     <Setter Property="Foreground" Value="DarkBlue"/>
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
                                 </Style>
                             </DataGridTextColumn.ElementStyle>
                         </DataGridTextColumn>
@@ -81,12 +97,20 @@
                           HeadersVisibility="Column" GridLinesVisibility="Horizontal"
                           AlternatingRowBackground="LightGray" RowHeight="40">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Aktion" Binding="{Binding DisplayName}" IsReadOnly="True" Width="2*" FontSize="14"/>
+                        <DataGridTextColumn Header="Aktion" Binding="{Binding DisplayName}" IsReadOnly="True" Width="2*" FontSize="14">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                    <Setter Property="Padding" Value="10,0,0,0"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
                         <DataGridTextColumn Header="Taste" Binding="{Binding KeyName}" IsReadOnly="True" Width="*" FontSize="14">
                             <DataGridTextColumn.ElementStyle>
                                 <Style TargetType="TextBlock">
                                     <Setter Property="FontWeight" Value="Bold"/>
                                     <Setter Property="Foreground" Value="DarkBlue"/>
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
                                 </Style>
                             </DataGridTextColumn.ElementStyle>
                         </DataGridTextColumn>
