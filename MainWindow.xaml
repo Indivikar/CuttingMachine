@@ -8,7 +8,7 @@
         KeyDown="Window_KeyDown"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
-        Title="MainWindow" Height="900" Width="1300">
+        Title="MainWindow" Height="900" Width="1340">
 
     
     <Window.Resources>
@@ -169,14 +169,14 @@
         </Grid>
 
         <!-- Serial Monitors Grid -->
-        <Grid Grid.Row="1" Margin="5,5,5,5">
+        <Grid Grid.Row="1" Margin="50,5,50,5">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" MinWidth="300"/>
                 <ColumnDefinition Width="*" MinWidth="300"/>
             </Grid.ColumnDefinitions>
 
             <!-- Serial Monitor Rollenzentrierung -->
-            <GroupBox Grid.Column="0" Header="Serial Monitor Rollenzentrierung" MinWidth="600" MinHeight="250" MaxHeight="400" Margin="5" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+            <GroupBox Grid.Column="0" Header="Serial Monitor Rollenzentrierung" Height="310" MinWidth="600" Margin="5" VerticalAlignment="Top" HorizontalAlignment="Stretch">
                 <Grid Margin="5">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -197,7 +197,7 @@
             </GroupBox>
 
             <!-- Serial Monitor Schneidmaschine -->
-            <GroupBox Grid.Column="1" Header="Serial Monitor Schneidmaschine" MinWidth="600" MinHeight="250" MaxHeight="400" Margin="5" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+            <GroupBox Grid.Column="1" Header="Serial Monitor Schneidmaschine" Height="310" MinWidth="600" Margin="5" VerticalAlignment="Top" HorizontalAlignment="Stretch">
                 <Grid Margin="5">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -218,7 +218,7 @@
             </GroupBox>
         </Grid>
         <!--Drawer links-->
-        <Grid x:Name="GridMenu" Grid.Row="1" Width="40" Margin="0,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Stretch" Background="{DynamicResource {x:Static SystemColors.MenuBarBrushKey}}">
+        <Grid x:Name="GridMenu" Grid.Row="1" Width="40" Height="310" Margin="0,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Stretch" Background="{DynamicResource {x:Static SystemColors.MenuBarBrushKey}}">
             <Grid.Effect>
                 <DropShadowEffect BlurRadius="2" ShadowDepth="1" Color="#FFAEAEAE"/>
             </Grid.Effect>
@@ -329,7 +329,7 @@
         </Grid>
 
         <!--Drawer rechts-->
-        <Grid x:Name="GridStats" Grid.Row="1" Width="40" Margin="0,0,0,0" HorizontalAlignment="Right" VerticalAlignment="Stretch" Background="{DynamicResource {x:Static SystemColors.MenuBarBrushKey}}">
+        <Grid x:Name="GridStats" Grid.Row="1" Width="40" Height="310" Margin="0,0,0,0" HorizontalAlignment="Right" VerticalAlignment="Stretch" Background="{DynamicResource {x:Static SystemColors.MenuBarBrushKey}}">
             <Grid.Effect>
                 <DropShadowEffect BlurRadius="2" ShadowDepth="1" Color="#FFAEAEAE"/>
             </Grid.Effect>
