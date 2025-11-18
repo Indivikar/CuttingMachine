@@ -5,7 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:SchneidMaschine.pages"
       mc:Ignorable="d" 
-      d:DesignHeight="800" d:DesignWidth="1200"
+      d:DesignHeight="700" d:DesignWidth="1200"
       Title="Home" Width="Auto" Height="Auto">
 
     <!--ist für den PromtText-->
@@ -39,9 +39,12 @@
 
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/> <!-- Home Button -->
-            <RowDefinition Height="*"/>     <!-- Main Content -->
-            <RowDefinition Height="Auto"/> <!-- Wartung Button -->
+            <RowDefinition Height="Auto"/>
+            <!-- Home Button -->
+            <RowDefinition Height="*"/>
+            <!-- Main Content -->
+            <RowDefinition Height="Auto"/>
+            <!-- Wartung Button -->
         </Grid.RowDefinitions>
 
         <!-- Home Button Row -->
@@ -51,23 +54,23 @@
 
         <!-- Main Content Row -->
         <StackPanel Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Horizontal">
-            <Grid MinWidth="520" MinHeight="400" Margin="0,0,30,0" >
+            <Grid MinWidth="520" MinHeight="410" Height="410" Margin="0,0,30,0" >
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1*" />
                     <ColumnDefinition Width="1*" />
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="50" />
-                    <RowDefinition Height="1*" />
+                    <RowDefinition Height="1*"/>
                     <RowDefinition Height="1*" />
                 </Grid.RowDefinitions>
-                <TextBlock Text="40er Streifen" HorizontalAlignment="Center" Grid.Row="0" Grid.ColumnSpan="2"  VerticalAlignment="Center" FontSize="36" />
-                <Button x:Name="BtnC4Kurz" Click="BtnC4Kurz_Click" Margin="5" FontSize="36" Grid.Row="1" >C4/C5 320er</Button>
-                <Button x:Name="BtnC4Lang" Click="BtnC4Lang_Click" Margin="5" FontSize="36" Grid.Row="1" Grid.Column="1" >C4/C5 700er</Button>
-                <Button x:Name="BtnC5Kurz" Click="BtnC5Kurz_Click" Margin="5" FontSize="36" Grid.Row="2"  >C5 400er</Button>
+                <TextBlock Text="40er Streifen" HorizontalAlignment="Left" Grid.ColumnSpan="2"  VerticalAlignment="Center" FontSize="36" Margin="160,0,0,0" />
+                <Button x:Name="BtnC4Kurz" Click="BtnC4Kurz_Click" Margin="5,5,5,0" FontSize="36" Width="250" Height="170" Grid.Row="1" VerticalAlignment="Top" Grid.RowSpan="2" >C4/C5 320er</Button>
+                <Button x:Name="BtnC4Lang" Click="BtnC4Lang_Click" Margin="5,5,5,0" FontSize="36" Width="250" Height="170" Grid.Row="1" Grid.Column="1" VerticalAlignment="Top" Grid.RowSpan="2" >C4/C5 700er</Button>
+                <Button x:Name="BtnC5Kurz" Click="BtnC5Kurz_Click" Margin="5,5,5,0" FontSize="36" Width="250" Height="170" Grid.Row="3" VerticalAlignment="Top" >C5 400er</Button>
                 <!--<Button x:Name="BtnC5Lang" Margin="5" FontSize="36" Grid.Column="1" Grid.Row="2" Click="BtnC5Lang_Click">C5 250er</Button>-->
             </Grid>
-            <Grid MinWidth="260" MinHeight="450" Margin="0,0,30,0" >
+            <Grid MinWidth="260" MinHeight="410" Height="410" Margin="0,0,30,0" >
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1*" />
                 </Grid.ColumnDefinitions>
@@ -76,9 +79,9 @@
                     <RowDefinition Height="1*" />
                 </Grid.RowDefinitions>
                 <TextBlock Text="70er Streifen" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="36" />
-                <Button x:Name="Btn_C4_70_Deckel" Margin="5" FontSize="36" Width="250" Height="190" Grid.Row="1" Click="BtnC4_70_Deckel_Click" VerticalAlignment="Top" >C4 700er</Button>
+                <Button x:Name="Btn_C4_70_Deckel" Margin="5" FontSize="36" Width="250" Height="170" Grid.Row="1" Click="BtnC4_70_Deckel_Click" VerticalAlignment="Top" >C4 700er</Button>
             </Grid>
-            <Grid MinWidth="260" MinHeight="450" >
+            <Grid MinWidth="260" MinHeight="410" Height="410" >
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1*" />
                 </Grid.ColumnDefinitions>
@@ -88,7 +91,7 @@
                 </Grid.RowDefinitions>
                 <TextBlock Text="Eigene Länge" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="36" />
                 <StackPanel Margin="5,55,5,5" Grid.Column="0" Grid.RowSpan="2" VerticalAlignment="Top" >
-                    <Button x:Name="BtnEigeneLaenge" FontSize="36" Width="250" Height="190" Content="eigene Länge" Click="BtnEigeneLaenge_Click">
+                    <Button x:Name="BtnEigeneLaenge" FontSize="36" Width="250" Height="170" Content="eigene Länge" Click="BtnEigeneLaenge_Click">
                         <Button.Style>
                             <Style TargetType="{x:Type Button}">
                                 <Style.Triggers>
