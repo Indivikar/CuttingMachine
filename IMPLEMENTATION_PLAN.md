@@ -1935,3 +1935,82 @@ Der Buildvorgang wurde erfolgreich ausgeführt.
 **Update-Datum**: 18. November 2025
 **Aufwand**: ~30 Minuten
 **Status**: ✅ TextBox-Ausgaben mit Zeilenumbrüchen und Auto-Scroll Kontrolle
+
+---
+
+## Verbesserung 11: TEST-Button funktioniert jetzt korrekt
+
+**Problem**:
+- Test-Button sendete `%TEST#` an die Boards
+- Boards antworteten nicht korrekt, weil das `%` Zeichen am Anfang nicht entfernt wurde
+- In der C# App wurde nur "Test-Befehl gesendet" angezeigt, aber keine Rückmeldung vom Board
+- Der Arduino-Code verglich `%TEST` mit `TEST` und der Vergleich schlug fehl
+
+**Ursache**:
+- In beiden Arduino-Sketchen (Rollenzentrierung.ino und SchneidMaschine.ino) wurde das Start-Zeichen `%` nicht entfernt
+- Der Befehl wurde als `%TEST` statt `TEST` verarbeitet
+- Der Vergleich `befehl.equals("TEST")` schlug fehl
+
+**Lösung**:
+
+**1. Arduino-Sketche angepasst**:
+- **Rollenzentrierung.ino** (Zeilen 396-399): `%` Zeichen am Anfang entfernen
+- **Rollenzentrierung.ino** (Zeilen 407-410): TEST-Antwort vereinfacht zu `"TEST"`
+- **SchneidMaschine.ino** (Zeilen 51-54): `%` Zeichen am Anfang entfernen
+- **SchneidMaschine.ino** (Zeilen 62-65): TEST-Antwort vereinfacht zu `"TEST"`
+
+**2. Debug-Ausgaben**:
+- Temporäre Debug-Ausgaben in C# App hinzugefügt um Problem zu identifizieren
+- Nach erfolgreicher Fehlersuche wieder entfernt
+
+**Geänderte Dateien**:
+- `IoT/sketche/Rollenzentrierung/Rollenzentrierung.ino`
+- `IoT/sketche/SchneidMaschine/SchneidMaschine.ino`
+- `MainWindow.xaml.cs` (Debug-Ausgaben temporär)
+
+**Code-Änderungen**:
+
+```cpp
+// Vorher - beide Sketche
+if(c == '#') {
+    appendSerialData.trim();
+    appendSerialData = appendSerialData.substring(0, appendSerialData.length() - 1);
+    String befehl = split(appendSerialData, '_', 0);
+    // befehl enthält "%TEST" statt "TEST"
+}
+
+// Nachher - beide Sketche
+if(c == '#') {
+    appendSerialData.trim();
+    appendSerialData = appendSerialData.substring(0, appendSerialData.length() - 1);
+
+    // Entferne das Start-Zeichen "%" am Anfang, falls vorhanden
+    if(appendSerialData.startsWith("%")) {
+      appendSerialData = appendSerialData.substring(1);
+    }
+
+    String befehl = split(appendSerialData, '_', 0);
+    // befehl enthält jetzt "TEST"
+}
+```
+
+**Workflow nach dem Fix**:
+1. User klickt auf "Test"-Button
+2. C# App sendet `%TEST#`
+3. Board empfängt und entfernt `#` → `%TEST`
+4. Board entfernt `%` → `TEST`
+5. Board vergleicht `TEST` == `"TEST"` → Match!
+6. Board sendet `~TEST@` zurück
+7. C# App zeigt "✓ TEST erfolgreich - Board antwortet!"
+
+**Test-Ergebnis**:
+- **Vorher**: Nur "Test-Befehl gesendet", keine Rückmeldung
+- **Nachher**: "✓ TEST erfolgreich - Board antwortet!"
+
+**Status**: ✅ TEST-Button funktioniert korrekt
+
+---
+
+**Update-Datum**: 18. November 2025
+**Aufwand**: ~20 Minuten
+**Status**: ✅ TEST-Button für beide Boards funktionsfähig

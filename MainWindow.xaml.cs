@@ -401,17 +401,11 @@ namespace SchneidMaschine
             //string firstChar = text.Substring(0, 1);
             string lastChar = text.Substring(text.Length - 1);
 
-            Console.WriteLine("DEBUG - handleCommandLineRollenzentrierung: text=[" + text + "] lastChar=[" + lastChar + "]");
-
             if (lastChar.Equals("@"))
             {
                 text = Regex.Replace(text, @"~|#|@|%", "");
-                Console.WriteLine("DEBUG - handleCommandLineRollenzentrierung: Bereinigter Text=[" + text + "]");
+                //Console.WriteLine(text);
                 commandReceivedRollenzentrierung(text);
-            }
-            else
-            {
-                Console.WriteLine("DEBUG - handleCommandLineRollenzentrierung: Kein @ am Ende gefunden!");
             }
         }
 
@@ -522,10 +516,6 @@ namespace SchneidMaschine
             {
                 // Zeitstempel für Verbindungsüberwachung aktualisieren
                 lastCommunicationRollenzentrierung = DateTime.Now;
-
-                // Debug: Zeige empfangene Rohdaten
-                Console.WriteLine("DEBUG - Rollenzentrierung empfängt Rohdaten: [" + InputData + "]");
-
                 Dispatcher.BeginInvoke(new SetTextCallback(SetTextRollenzentrierung), new object[] { InputData });
             }
         }
@@ -1085,7 +1075,6 @@ namespace SchneidMaschine
                 {
                     newText = null;
                     befehlBuilderRollenzentrierung.Clear();
-                    Console.WriteLine("DEBUG - Rollenzentrierung: Befehl START erkannt (" + ch + ")");
                 }
 
                 befehlBuilderRollenzentrierung.Append(ch);
@@ -1095,7 +1084,6 @@ namespace SchneidMaschine
                 {
                     befehlBuilderRollenzentrierung.Append("\n");
                     newText = befehlBuilderRollenzentrierung.ToString();
-                    Console.WriteLine("DEBUG - Rollenzentrierung: Kompletter Befehl empfangen: [" + newText.Trim() + "]");
                 }
             }
 

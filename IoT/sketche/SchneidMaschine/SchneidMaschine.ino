@@ -43,21 +43,26 @@ void dataReceived() {
         appendSerialData += c;        // erstellt eine Zeichenkette (String) aus den einzelnen Zeichen (Chars)
     }
 
-  if(c == '#') {                                          // das Zeichen "#" markiert das Ende der eingehenden Daten        
+  if(c == '#') {                                          // das Zeichen "#" markiert das Ende der eingehenden Daten
         appendSerialData.trim();                          // Leerzeichen, Zeilenumbrüche entfernen
         appendSerialData = appendSerialData               // letzte Zeichen "#" entfernen
-          .substring(0, appendSerialData.length() - 1); 
+          .substring(0, appendSerialData.length() - 1);
 
-        String befehl = split(appendSerialData, '_', 0);  // aufteilen der Befehls-Zeile, Trenn-Zeichen ist "_" 
+        // Entferne das Start-Zeichen "%" am Anfang, falls vorhanden
+        if(appendSerialData.startsWith("%")) {
+          appendSerialData = appendSerialData.substring(1);
+        }
+
+        String befehl = split(appendSerialData, '_', 0);  // aufteilen der Befehls-Zeile, Trenn-Zeichen ist "_"
                                                           // z.B.: stepper_300_forward (befehl_steps_richtung)
 
-        if(befehl.equals("Connected")) {      
+        if(befehl.equals("Connected")) {
             sendText("Connected");                        // Sendet Bestätigung das Verbunden wurde                                                     // Setzt Standart-Werte nach Verbindung
-        } 
+        }
         else if(befehl.equals("TEST")) {
-            String testResponse = "Test OK - SchneidMaschine antwortet - Counter: " + String(counter);
-            sendText(testResponse);                       // Nur für CS-App TextBox, nicht doppelt
-        } 
+            String testResponse = "TEST";
+            sendText(testResponse);                       // Sendet TEST-Bestätigung zurück
+        }
 
         appendSerialData = "";                                      // eingegangene Daten löschen
         c = 0;                                                      // eingegangene Daten löschen
