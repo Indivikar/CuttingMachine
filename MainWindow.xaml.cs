@@ -219,7 +219,7 @@ namespace SchneidMaschine
                 isConnected_Rollenzentrierung();
 
                 // Sende Board-Identifikations-Befehl
-                System.Threading.Tasks.Task.Delay(500).ContinueWith(_ =>
+                System.Threading.Tasks.Task.Delay(2000).ContinueWith(_ =>
                 {
                     try
                     {
@@ -576,7 +576,7 @@ namespace SchneidMaschine
                 isConnected_Schneidmaschine();
 
                 // Sende Board-Identifikations-Befehl
-                System.Threading.Tasks.Task.Delay(500).ContinueWith(_ =>
+                System.Threading.Tasks.Task.Delay(2000).ContinueWith(_ =>
                 {
                     try
                     {
