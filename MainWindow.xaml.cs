@@ -522,8 +522,11 @@ namespace SchneidMaschine
                             // Speichere Port-Identität
                             portIdentities[currentPort] = boardType;
 
-                            // Aktualisiere ComboBoxen
-                            dataModel.Thread_Port_Scanner.UpdatePortIdentities();
+                            // Aktualisiere ComboBoxen (im Dispatcher-Thread)
+                            Dispatcher.Invoke(() =>
+                            {
+                                dataModel.Thread_Port_Scanner.UpdatePortIdentities();
+                            });
 
                             SetTextRollenzentrierung("&✓ Board identifiziert: " + boardType + " an " + currentPort + "\n&");
                         }
@@ -992,8 +995,11 @@ namespace SchneidMaschine
                             // Speichere Port-Identität
                             portIdentities[currentPort] = boardType;
 
-                            // Aktualisiere ComboBoxen
-                            dataModel.Thread_Port_Scanner.UpdatePortIdentities();
+                            // Aktualisiere ComboBoxen (im Dispatcher-Thread)
+                            Dispatcher.Invoke(() =>
+                            {
+                                dataModel.Thread_Port_Scanner.UpdatePortIdentities();
+                            });
 
                             SetTextSchneidmaschine("&✓ Board identifiziert: " + boardType + " an " + currentPort + "\n&");
                         }

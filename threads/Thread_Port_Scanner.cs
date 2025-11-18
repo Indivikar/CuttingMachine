@@ -111,13 +111,61 @@ namespace SchneidMaschine.threads
 
             comboBoxPorts_Rollenzentrierung.Dispatcher.Invoke(() =>
             {
+                // Speichere aktuelle Auswahl
+                string currentSelection = comboBoxPorts_Rollenzentrierung.Text;
+
                 comboBoxPorts_Rollenzentrierung.ItemsSource = enhancedPortList;
+
+                // Stelle Auswahl wieder her (suche nach Eintrag, der mit dem Port beginnt)
+                if (!string.IsNullOrEmpty(currentSelection))
+                {
+                    string portName = ExtractPortNameFromText(currentSelection);
+                    foreach (string item in enhancedPortList)
+                    {
+                        if (item.StartsWith(portName))
+                        {
+                            comboBoxPorts_Rollenzentrierung.Text = item;
+                            break;
+                        }
+                    }
+                }
             });
 
             comboBoxPorts_Schneidmaschine.Dispatcher.Invoke(() =>
             {
+                // Speichere aktuelle Auswahl
+                string currentSelection = comboBoxPorts_Schneidmaschine.Text;
+
                 comboBoxPorts_Schneidmaschine.ItemsSource = enhancedPortList;
+
+                // Stelle Auswahl wieder her (suche nach Eintrag, der mit dem Port beginnt)
+                if (!string.IsNullOrEmpty(currentSelection))
+                {
+                    string portName = ExtractPortNameFromText(currentSelection);
+                    foreach (string item in enhancedPortList)
+                    {
+                        if (item.StartsWith(portName))
+                        {
+                            comboBoxPorts_Schneidmaschine.Text = item;
+                            break;
+                        }
+                    }
+                }
             });
+        }
+
+        private string ExtractPortNameFromText(string text)
+        {
+            // Extrahiere "COM3" aus "COM3 - Rollenzentrierung" oder "COM3 (USB Serial Device)"
+            if (string.IsNullOrEmpty(text))
+                return text;
+
+            int spaceIndex = text.IndexOf(' ');
+            if (spaceIndex > 0)
+            {
+                return text.Substring(0, spaceIndex);
+            }
+            return text;
         }
     }
 }
