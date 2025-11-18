@@ -801,12 +801,17 @@ namespace SchneidMaschine
             //string firstChar = text.Substring(0, 1);
             string lastChar = text.Substring(text.Length - 1);
 
+            Console.WriteLine("DEBUG handleCommandLineSchneidmaschine: text=[" + text + "] lastChar=[" + lastChar + "]");
 
             if (lastChar.Equals("@"))
             {
                 text = Regex.Replace(text, @"~|#|@|%", "");
-                //Console.WriteLine(text);
+                Console.WriteLine("DEBUG handleCommandLineSchneidmaschine: Bereinigter Text=[" + text + "]");
                 commandReceivedSchneidmaschine(text);
+            }
+            else
+            {
+                Console.WriteLine("DEBUG handleCommandLineSchneidmaschine: Kein @ am Ende gefunden!");
             }
         }
 
@@ -1016,6 +1021,9 @@ namespace SchneidMaschine
             string InputData = serialPortSchneidmaschine.ReadExisting();
             if (InputData != String.Empty)
             {
+                // Debug: Zeige empfangene Rohdaten
+                Console.WriteLine("DEBUG Schneidmaschine - Rohdaten empfangen: [" + InputData + "]");
+
                 // Zeitstempel für Verbindungsüberwachung aktualisieren
                 lastCommunicationSchneidmaschine = DateTime.Now;
                 Dispatcher.BeginInvoke(new SetTextCallback(SetTextSchneidmaschine), new object[] { InputData });
