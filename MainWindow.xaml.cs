@@ -53,6 +53,10 @@ namespace SchneidMaschine
         // Timer für Verbindungsüberwachung
         System.Windows.Threading.DispatcherTimer connectionCheckTimer;
 
+        // Auto-Scroll Status für TextBoxen
+        bool autoScrollRollenzentrierung = true;
+        bool autoScrollSchneidmaschine = true;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -267,6 +271,21 @@ namespace SchneidMaschine
             textBoxAusgabeRollenzentrierung.Text = String.Empty;
         }
 
+        private void BtnClickAutoScrollRollenzentrierung(object sender, RoutedEventArgs e)
+        {
+            autoScrollRollenzentrierung = !autoScrollRollenzentrierung;
+
+            if (autoScrollRollenzentrierung)
+            {
+                buttonAutoScrollRollenzentrierung.Background = new SolidColorBrush(Color.FromRgb(0x99, 0xCC, 0xFF));
+                textBoxAusgabeRollenzentrierung.ScrollToEnd();
+            }
+            else
+            {
+                buttonAutoScrollRollenzentrierung.Background = new SolidColorBrush(Color.FromRgb(0xFF, 0x99, 0x99));
+            }
+        }
+
         private void isConnected_Rollenzentrierung()
         {
             if (serialPortRollenzentrierung.IsOpen)
@@ -366,7 +385,10 @@ namespace SchneidMaschine
                 this.textBoxAusgabeRollenzentrierung.Text += text + Environment.NewLine;
             }
 
-            textBoxAusgabeRollenzentrierung.ScrollToEnd();
+            if (autoScrollRollenzentrierung)
+            {
+                textBoxAusgabeRollenzentrierung.ScrollToEnd();
+            }
         }
 
         private void handleCommandLineRollenzentrierung(string text)
@@ -580,7 +602,22 @@ namespace SchneidMaschine
             sbSchneidmaschine.Clear();
             textBoxAusgabeSchneidmaschine.Text = String.Empty;
         }
-        
+
+        private void BtnClickAutoScrollSchneidmaschine(object sender, RoutedEventArgs e)
+        {
+            autoScrollSchneidmaschine = !autoScrollSchneidmaschine;
+
+            if (autoScrollSchneidmaschine)
+            {
+                buttonAutoScrollSchneidmaschine.Background = new SolidColorBrush(Color.FromRgb(0x99, 0xCC, 0xFF));
+                textBoxAusgabeSchneidmaschine.ScrollToEnd();
+            }
+            else
+            {
+                buttonAutoScrollSchneidmaschine.Background = new SolidColorBrush(Color.FromRgb(0xFF, 0x99, 0x99));
+            }
+        }
+
         // Test-Button-Handler für Verbindungstests
         private void BtnClickTestRollenzentrierung(object sender, RoutedEventArgs e)
         {
@@ -721,7 +758,10 @@ namespace SchneidMaschine
                 this.textBoxAusgabeSchneidmaschine.Text += text + Environment.NewLine;
             }
 
-            textBoxAusgabeSchneidmaschine.ScrollToEnd();
+            if (autoScrollSchneidmaschine)
+            {
+                textBoxAusgabeSchneidmaschine.ScrollToEnd();
+            }
         }
 
         private void handleCommandLineSchneidmaschine(string text) {

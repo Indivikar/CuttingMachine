@@ -1740,3 +1740,198 @@ private void BtnClose_Click(object sender, RoutedEventArgs e)
 **Update-Datum**: 18. November 2025
 **Aufwand**: ~5 Minuten
 **Status**: ✅ Keybinding-Tabelle mit besserem Spacing
+
+---
+
+## Verbesserung 9: TextBox-Ausgaben untereinander statt nebeneinander
+
+**Problem**:
+- Ausgaben in den TextBoxen (Rollenzentrierung und Schneidmaschine) wurden nebeneinander statt untereinander geschrieben
+- Fehlende Zeilenumbrüche führten zu unlesbaren Ausgaben
+
+**Lösung**:
+- In `SetTextRollenzentrierung()`:
+  - Zeile 319: `Environment.NewLine` nach Text bei normaler Ausgabe hinzugefügt
+  - Zeile 352: `.Append(text)` zu `.AppendLine(text)` geändert (StringBuilder)
+  - Zeile 366: `Environment.NewLine` nach Text im else-Block hinzugefügt
+- In `SetTextSchneidmaschine()`:
+  - Zeile 674: `Environment.NewLine` nach Text bei normaler Ausgabe hinzugefügt
+  - Zeile 707: `.Append(text)` zu `.AppendLine(text)` geändert (StringBuilder)
+  - Zeile 721: `Environment.NewLine` nach Text im else-Block hinzugefügt
+
+**Geänderte Dateien**:
+- `MainWindow.xaml.cs` (Zeilen 319, 352, 366, 674, 707, 721)
+
+**Code-Änderungen**:
+```csharp
+// Vorher - Zeile 319
+this.textBoxAusgabeRollenzentrierung.Text += text;
+
+// Nachher - Zeile 319
+this.textBoxAusgabeRollenzentrierung.Text += text + Environment.NewLine;
+
+// Vorher - Zeile 352
+sbRollenzentrierung.Append(text);
+
+// Nachher - Zeile 352
+sbRollenzentrierung.AppendLine(text);
+
+// Vorher - Zeile 366
+this.textBoxAusgabeRollenzentrierung.Text += text;
+
+// Nachher - Zeile 366
+this.textBoxAusgabeRollenzentrierung.Text += text + Environment.NewLine;
+
+// Gleiches für Schneidmaschine bei Zeilen 674, 707, 721
+```
+
+**Commit-Text**:
+```
+[FIX] TextBox-Ausgaben werden jetzt untereinander statt nebeneinander geschrieben
+
+- SetTextRollenzentrierung(): Environment.NewLine nach Text hinzugefügt (Zeilen 319, 366)
+- SetTextRollenzentrierung(): StringBuilder.Append() zu AppendLine() geändert (Zeile 352)
+- SetTextSchneidmaschine(): Environment.NewLine nach Text hinzugefügt (Zeilen 674, 721)
+- SetTextSchneidmaschine(): StringBuilder.Append() zu AppendLine() geändert (Zeile 707)
+- Ausgaben sind jetzt lesbar mit korrekten Zeilenumbrüchen
+```
+
+---
+
+## Verbesserung 10: Auto-Scroll Buttons für TextBoxen
+
+**Problem**:
+- TextBoxen scrollten automatisch zum Ende bei neuen Ausgaben
+- Kein Weg, um in der Historie zu scrollen ohne dass es wieder zum Ende springt
+- Benutzer wollten manuell durch die Ausgaben scrollen können
+
+**Lösung**:
+- **Zwei neue Buttons hinzugefügt**:
+  - `buttonAutoScrollRollenzentrierung` in Serial Monitor Rollenzentrierung
+  - `buttonAutoScrollSchneidmaschine` in Serial Monitor Schneidmaschine
+  - Beide mit Hintergrundfarbe #FF99CCFF (hellblau) und Text "Auto-Scroll"
+
+- **Boolean-Variablen für Auto-Scroll Status**:
+  - `autoScrollRollenzentrierung` (Standard: true)
+  - `autoScrollSchneidmaschine` (Standard: true)
+
+- **Event-Handler implementiert**:
+  - `BtnClickAutoScrollRollenzentrierung()`: Toggle Auto-Scroll für Rollenzentrierung
+  - `BtnClickAutoScrollSchneidmaschine()`: Toggle Auto-Scroll für Schneidmaschine
+  - Bei Deaktivierung: Button-Farbe wechselt zu #FF9999 (rot)
+  - Bei Aktivierung: Button-Farbe wechselt zu #99CCFF (blau) und scrollt zum Ende
+
+- **SetText-Methoden angepasst**:
+  - `SetTextRollenzentrierung()`: Scrollt nur zum Ende wenn `autoScrollRollenzentrierung == true`
+  - `SetTextSchneidmaschine()`: Scrollt nur zum Ende wenn `autoScrollSchneidmaschine == true`
+
+**Geänderte Dateien**:
+- `MainWindow.xaml` (Zeilen 191, 213) - Buttons hinzugefügt
+- `MainWindow.xaml.cs`:
+  - Zeilen 57-58: Boolean-Variablen deklariert
+  - Zeilen 274-287: Event-Handler für Rollenzentrierung
+  - Zeilen 373-376: Conditional ScrollToEnd für Rollenzentrierung
+  - Zeilen 606-619: Event-Handler für Schneidmaschine
+  - Zeilen 731-734: Conditional ScrollToEnd für Schneidmaschine
+
+**Code-Änderungen**:
+
+**MainWindow.xaml**:
+```xml
+<!-- Vorher - Rollenzentrierung Buttons -->
+<Button x:Name="buutonTextDeleteRollenzentrierung" Click="BtnClickTextDeleteRollenzentrierung"
+        Width="90" Margin="0,0,0,0">Text löschen</Button>
+
+<!-- Nachher - Rollenzentrierung Buttons -->
+<Button x:Name="buutonTextDeleteRollenzentrierung" Click="BtnClickTextDeleteRollenzentrierung"
+        Width="90" Margin="0,0,5,0">Text löschen</Button>
+<Button x:Name="buttonAutoScrollRollenzentrierung" Click="BtnClickAutoScrollRollenzentrierung"
+        Width="100" Margin="0,0,0,0" Background="#FF99CCFF">Auto-Scroll</Button>
+
+<!-- Gleiches für Schneidmaschine -->
+```
+
+**MainWindow.xaml.cs - Variablen**:
+```csharp
+// Auto-Scroll Status für TextBoxen
+bool autoScrollRollenzentrierung = true;
+bool autoScrollSchneidmaschine = true;
+```
+
+**MainWindow.xaml.cs - Event-Handler**:
+```csharp
+private void BtnClickAutoScrollRollenzentrierung(object sender, RoutedEventArgs e)
+{
+    autoScrollRollenzentrierung = !autoScrollRollenzentrierung;
+
+    if (autoScrollRollenzentrierung)
+    {
+        buttonAutoScrollRollenzentrierung.Background = new SolidColorBrush(Color.FromRgb(0x99, 0xCC, 0xFF));
+        textBoxAusgabeRollenzentrierung.ScrollToEnd();
+    }
+    else
+    {
+        buttonAutoScrollRollenzentrierung.Background = new SolidColorBrush(Color.FromRgb(0xFF, 0x99, 0x99));
+    }
+}
+```
+
+**MainWindow.xaml.cs - Conditional Scrolling**:
+```csharp
+// Vorher
+textBoxAusgabeRollenzentrierung.ScrollToEnd();
+
+// Nachher
+if (autoScrollRollenzentrierung)
+{
+    textBoxAusgabeRollenzentrierung.ScrollToEnd();
+}
+```
+
+**Commit-Text**:
+```
+[FEATURE] Auto-Scroll Buttons für TextBoxen hinzugefügt
+
+- Zwei neue Buttons in Serial Monitors: "Auto-Scroll" (hellblau wenn aktiv, rot wenn deaktiviert)
+- Boolean-Variablen autoScrollRollenzentrierung und autoScrollSchneidmaschine (Standard: true)
+- Event-Handler BtnClickAutoScrollRollenzentrierung() und BtnClickAutoScrollSchneidmaschine()
+- Button-Farbe wechselt zwischen #FF99CCFF (aktiv) und #FF9999 (deaktiviert)
+- SetTextRollenzentrierung() und SetTextSchneidmaschine() scrollen nur wenn Auto-Scroll aktiv
+- Benutzer können jetzt manuell durch Historie scrollen ohne dass es zum Ende springt
+```
+
+---
+
+### Zusammenfassung der TextBox-Verbesserungen
+
+| Datei | Änderungen |
+|-------|------------|
+| `MainWindow.xaml` | 2 Auto-Scroll Buttons hinzugefügt |
+| `MainWindow.xaml.cs` | 2 Boolean-Variablen, 2 Event-Handler, 2 Conditional Scrolls, 6 Zeilenumbruch-Fixes |
+
+**Insgesamt**:
+- **2 Dateien bearbeitet**
+- **~50 Zeilen Code geändert/hinzugefügt**
+- **2 Verbesserungen implementiert** (Zeilenumbrüche + Auto-Scroll Buttons)
+- **Alle Änderungen erfolgreich kompiliert und getestet**
+
+### Build-Status
+
+```bash
+MSBuild SchneidMaschine.csproj -t:Build -p:Configuration=Debug
+```
+
+**Ergebnis**:
+```
+Der Buildvorgang wurde erfolgreich ausgeführt.
+    4 Warnung(en)
+    0 Fehler
+```
+
+**Status**: ✅ Alle TextBox-Verbesserungen implementiert und funktionsfähig
+
+---
+
+**Update-Datum**: 18. November 2025
+**Aufwand**: ~30 Minuten
+**Status**: ✅ TextBox-Ausgaben mit Zeilenumbrüchen und Auto-Scroll Kontrolle

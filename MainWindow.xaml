@@ -187,7 +187,8 @@
                         <TextBox Name="textBoxSendenRollenzentrierung" Margin="0,0,5,0" HorizontalAlignment="Stretch" MinWidth="200"/>
                         <Button x:Name="buttonSendenRollenzentrierung" Click="BtnClickSendenRollenzentrierung" Width="80" Margin="0,0,5,0" Content="Senden" />
                         <Button x:Name="buttonTestRollenzentrierung" Click="BtnClickTestRollenzentrierung" Width="60" Margin="0,0,5,0" Content="Test" Background="#FFFFCC99" />
-                        <Button x:Name="buutonTextDeleteRollenzentrierung" Click="BtnClickTextDeleteRollenzentrierung" Width="90" Margin="0,0,0,0">Text löschen</Button>
+                        <Button x:Name="buutonTextDeleteRollenzentrierung" Click="BtnClickTextDeleteRollenzentrierung" Width="90" Margin="0,0,5,0">Text löschen</Button>
+                        <Button x:Name="buttonAutoScrollRollenzentrierung" Click="BtnClickAutoScrollRollenzentrierung" Width="100" Margin="0,0,0,0" Background="#FF99CCFF">Auto-Scroll</Button>
                     </StackPanel>
 
                     <TextBox Grid.Row="1" x:Name="textBoxAusgabeRollenzentrierung" AcceptsReturn="True" TextWrapping="Wrap" Margin="0,0,0,0"
@@ -208,7 +209,8 @@
                         <TextBox Name="textBoxSendenSchneidmaschine" Margin="0,0,5,0" HorizontalAlignment="Stretch" MinWidth="200"/>
                         <Button x:Name="buttonSendenSchneidmaschine" Click="BtnClickSendenSchneidmaschine" Width="80" Margin="0,0,5,0" Content="Senden" />
                         <Button x:Name="buttonTestSchneidmaschine" Click="BtnClickTestSchneidmaschine" Width="60" Margin="0,0,5,0" Content="Test" Background="#FFFFCC99" />
-                        <Button x:Name="buutonTextDeleteSchneidmaschine" Click="BtnClickTextDeleteSchneidmaschine" Width="90" Margin="0,0,0,0">Text löschen</Button>
+                        <Button x:Name="buutonTextDeleteSchneidmaschine" Click="BtnClickTextDeleteSchneidmaschine" Width="90" Margin="0,0,5,0">Text löschen</Button>
+                        <Button x:Name="buttonAutoScrollSchneidmaschine" Click="BtnClickAutoScrollSchneidmaschine" Width="100" Margin="0,0,0,0" Background="#FF99CCFF">Auto-Scroll</Button>
                     </StackPanel>
 
                     <TextBox Grid.Row="1" x:Name="textBoxAusgabeSchneidmaschine" AcceptsReturn="True" TextWrapping="Wrap" Margin="0,0,0,0"
