@@ -218,7 +218,7 @@
             </GroupBox>
         </Grid>
         <!--Drawer links-->
-        <Grid x:Name="GridMenu" Grid.Row="1" Grid.RowSpan="2" Width="40" Margin="0,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Stretch" Background="{DynamicResource {x:Static SystemColors.MenuBarBrushKey}}">
+        <Grid x:Name="GridMenu" Grid.Row="1" Width="40" Margin="0,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Stretch" Background="{DynamicResource {x:Static SystemColors.MenuBarBrushKey}}">
             <Grid.Effect>
                 <DropShadowEffect BlurRadius="2" ShadowDepth="1" Color="#FFAEAEAE"/>
             </Grid.Effect>
@@ -329,7 +329,7 @@
         </Grid>
 
         <!--Drawer rechts-->
-        <Grid x:Name="GridStats" Grid.Row="1" Grid.RowSpan="2" Width="40" Margin="0,0,0,0" HorizontalAlignment="Right" VerticalAlignment="Stretch" Background="{DynamicResource {x:Static SystemColors.MenuBarBrushKey}}">
+        <Grid x:Name="GridStats" Grid.Row="1" Width="40" Margin="0,0,0,0" HorizontalAlignment="Right" VerticalAlignment="Stretch" Background="{DynamicResource {x:Static SystemColors.MenuBarBrushKey}}">
             <Grid.Effect>
                 <DropShadowEffect BlurRadius="2" ShadowDepth="1" Color="#FFAEAEAE"/>
             </Grid.Effect>
