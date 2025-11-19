@@ -99,10 +99,14 @@ namespace SchneidMaschine.threads
                 // Prüfe ob wir eine Identität für diesen Port haben
                 if (MainWindow.portIdentities.ContainsKey(port))
                 {
-                    displayText = $"{port} - {MainWindow.portIdentities[port]}";
+                    // Board wurde identifiziert - zeige Board-Namen in Klammern
+                    // Entferne "WHOAMI_" Präfix für bessere Lesbarkeit
+                    string boardName = MainWindow.portIdentities[port].Replace("WHOAMI_", "");
+                    displayText = $"{port} ({boardName})";
                 }
                 else if (descriptions.ContainsKey(port))
                 {
+                    // Noch nicht identifiziert - zeige Geräte-Manager-Namen in Klammern
                     displayText = $"{port} ({descriptions[port]})";
                 }
 
