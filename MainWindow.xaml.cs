@@ -519,6 +519,30 @@ namespace SchneidMaschine
 
                             Console.WriteLine("WHOAMI-Response: Port=" + currentPort + ", Board=" + boardType);
 
+                            // Sicherheitsprüfung: Ist es das richtige Board für diese GroupBox?
+                            if (!boardType.Contains("Rollenzentrierung"))
+                            {
+                                // Falsches Board erkannt!
+                                Dispatcher.Invoke(() =>
+                                {
+                                    MessageBox.Show(
+                                        "ACHTUNG: Falsches Board erkannt!\n\n" +
+                                        "Erwartet: Rollenzentrierung\n" +
+                                        "Erkannt: " + boardType + "\n\n" +
+                                        "Die Verbindung wird getrennt.",
+                                        "Falsches Board",
+                                        MessageBoxButton.OK,
+                                        MessageBoxImage.Warning
+                                    );
+
+                                    // Verbindung trennen
+                                    BtnClickTrennenRollenzentrierung(null, null);
+                                });
+
+                                SetTextRollenzentrierung("&✗ FEHLER: Falsches Board (" + boardType + ") erkannt! Verbindung getrennt.\n&");
+                                break;
+                            }
+
                             // Speichere Port-Identität
                             portIdentities[currentPort] = boardType;
 
@@ -996,6 +1020,30 @@ namespace SchneidMaschine
                             string currentPort = serialPortSchneidmaschine.PortName;
 
                             Console.WriteLine("WHOAMI-Response: Port=" + currentPort + ", Board=" + boardType);
+
+                            // Sicherheitsprüfung: Ist es das richtige Board für diese GroupBox?
+                            if (!boardType.Contains("Schneidmaschine"))
+                            {
+                                // Falsches Board erkannt!
+                                Dispatcher.Invoke(() =>
+                                {
+                                    MessageBox.Show(
+                                        "ACHTUNG: Falsches Board erkannt!\n\n" +
+                                        "Erwartet: Schneidmaschine\n" +
+                                        "Erkannt: " + boardType + "\n\n" +
+                                        "Die Verbindung wird getrennt.",
+                                        "Falsches Board",
+                                        MessageBoxButton.OK,
+                                        MessageBoxImage.Warning
+                                    );
+
+                                    // Verbindung trennen
+                                    BtnClickTrennenSchneidmaschine(null, null);
+                                });
+
+                                SetTextSchneidmaschine("&✗ FEHLER: Falsches Board (" + boardType + ") erkannt! Verbindung getrennt.\n&");
+                                break;
+                            }
 
                             // Speichere Port-Identität
                             portIdentities[currentPort] = boardType;
