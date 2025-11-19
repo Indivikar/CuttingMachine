@@ -62,6 +62,13 @@ namespace SchneidMaschine.threads
             return portDescriptions;
         }
 
+        public void InitializePortList()
+        {
+            // Initiale Befüllung der ComboBoxen mit Geräte-Manager-Beschreibungen
+            string[] portList = SerialPort.GetPortNames();
+            UpdatePortList(portList);
+        }
+
         public void checkPorts()
         {
             while (true)

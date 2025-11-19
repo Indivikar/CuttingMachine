@@ -164,8 +164,8 @@ namespace SchneidMaschine
 
             Main.IsEnabled = false;
 
-            comboBoxPortsRollenzentrierung.ItemsSource = dataModel.PortList;
-            comboBoxPortsSchneidmaschine.ItemsSource = dataModel.PortList;
+            // Initiale Befüllung der ComboBoxen mit Geräte-Manager-Beschreibungen
+            dataModel.Thread_Port_Scanner.InitializePortList();
 
             SetTextRollenzentrierung("&-----------------------------------------------------------------------------------------------\n" +
                 "Der ESP32 muss mit \"Connected\" antworten, wenn der ESP32 nicht antwortet,\n" +
