@@ -16,24 +16,55 @@ namespace SchneidMaschine.threads
     {
         private DataModel dataModel;
         private ComboBox comboBoxPorts;
+        private volatile bool _shouldStop = false;
 
         public delegate void AddNewPorts(string[] portList);
 
-        public Thread_Con_Schneidmaschine(DataModel dataModel) 
+        public Thread_Con_Schneidmaschine(DataModel dataModel)
         {
             this.dataModel = dataModel;
         }
 
+        public void Stop()
+        {
+            _shouldStop = true;
+        }
+
         public void checkVerbindung_Schneidmaschine()
         {
-            while (true)
+            while (!_shouldStop)
             {
                 Thread.Sleep(1000);
-                //Console.WriteLine("neue Ports ");
-                dataModel.MainWindow.Dispatcher.Invoke(() => {
-                    dataModel.MainWindow.checkConnection();
-                });
+
+                try
+                {
+                    // Prüfe ob MainWindow und Dispatcher noch verfügbar sind
+                    if (dataModel.MainWindow != null && !dataModel.MainWindow.Dispatcher.HasShutdownStarted)
+                    {
+                        dataModel.MainWindow.Dispatcher.Invoke(() => {
+                            dataModel.MainWindow.checkConnection();
+                        });
+                    }
+                    else
+                    {
+                        // MainWindow wurde geschlossen, beende Thread
+                        break;
+                    }
+                }
+                catch (TaskCanceledException)
+                {
+                    // Dispatcher wurde bereits heruntergefahren, beende Thread sauber
+                    Console.WriteLine("Schneidmaschine Thread: Dispatcher shutdown erkannt");
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Schneidmaschine Thread Fehler: {ex.Message}");
+                    break;
+                }
             }
+
+            Console.WriteLine("Schneidmaschine Thread beendet");
         }
 
     }

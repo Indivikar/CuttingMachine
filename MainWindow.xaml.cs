@@ -304,7 +304,7 @@ namespace SchneidMaschine
                 {
                     this.threadCheckConnection_Rollenzentrierung = new Thread(dataModel.Thread_Con_Rollenzentrierung.checkVerbindung_Rollenzentrierung);
                     threadCheckConnection_Rollenzentrierung.Name = "Rollenzentrierung_VerbindungsCheck";
-                    //threadCheckConnection_Rollenzentrierung.IsBackground = true;
+                    threadCheckConnection_Rollenzentrierung.IsBackground = true;
                 }
 
                 if (!threadCheckConnection_Rollenzentrierung.IsAlive)
@@ -325,7 +325,7 @@ namespace SchneidMaschine
 
                 if (threadCheckConnection_Rollenzentrierung != null && threadCheckConnection_Rollenzentrierung.IsAlive)
                 {
-                    threadCheckConnection_Rollenzentrierung.Abort();
+                    dataModel.Thread_Con_Rollenzentrierung.Stop();
                     threadCheckConnection_Rollenzentrierung = null;
                 }
             }
@@ -726,6 +726,7 @@ namespace SchneidMaschine
                 {
                     this.threadCheckConnection_Schneidmaschine = new Thread(dataModel.Thread_Con_Schneidmaschine.checkVerbindung_Schneidmaschine);
                     threadCheckConnection_Schneidmaschine.Name = "Schneidmaschine_VerbindungsCheck";
+                    threadCheckConnection_Schneidmaschine.IsBackground = true;
                 }
 
                 if (!threadCheckConnection_Schneidmaschine.IsAlive)
@@ -747,7 +748,7 @@ namespace SchneidMaschine
 
                 if (threadCheckConnection_Schneidmaschine != null && threadCheckConnection_Schneidmaschine.IsAlive)
                 {
-                    threadCheckConnection_Schneidmaschine.Abort();
+                    dataModel.Thread_Con_Schneidmaschine.Stop();
                     threadCheckConnection_Schneidmaschine = null;
                 }
             }
@@ -1088,7 +1089,7 @@ namespace SchneidMaschine
             serialPortSchneidmaschine.Close();
 
             if (threadCheckConnection_Schneidmaschine != null) {
-                threadCheckConnection_Schneidmaschine.Abort();
+                dataModel.Thread_Con_Schneidmaschine.Stop();
             }
 
             if (threadCheckPorts != null) {
@@ -1113,7 +1114,7 @@ namespace SchneidMaschine
 
                 if (threadCheckConnection_Rollenzentrierung != null && threadCheckConnection_Rollenzentrierung.IsAlive)
                 {
-                    threadCheckConnection_Rollenzentrierung.Abort();
+                    dataModel.Thread_Con_Rollenzentrierung.Stop();
                     threadCheckConnection_Rollenzentrierung = null;
                 }
             }
@@ -1131,7 +1132,7 @@ namespace SchneidMaschine
 
                 if (threadCheckConnection_Schneidmaschine != null && threadCheckConnection_Schneidmaschine.IsAlive)
                 {
-                    threadCheckConnection_Schneidmaschine.Abort();
+                    dataModel.Thread_Con_Schneidmaschine.Stop();
                     threadCheckConnection_Schneidmaschine = null;
                 }
             }
