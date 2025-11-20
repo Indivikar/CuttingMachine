@@ -279,12 +279,12 @@
                                 <ComboBoxItem>1200</ComboBoxItem>
                                 <ComboBoxItem>2400</ComboBoxItem>
                                 <ComboBoxItem>4800</ComboBoxItem>
-                                <ComboBoxItem>9600</ComboBoxItem>
+                                <ComboBoxItem IsSelected="True">9600</ComboBoxItem>
                                 <ComboBoxItem>19200</ComboBoxItem>
                                 <ComboBoxItem>38400</ComboBoxItem>
                                 <ComboBoxItem>57600</ComboBoxItem>
                                 <ComboBoxItem>74880</ComboBoxItem>
-                                <ComboBoxItem IsSelected="True">115200</ComboBoxItem>
+                                <ComboBoxItem>115200</ComboBoxItem>
                                 <ComboBoxItem>230400</ComboBoxItem>
                                 <ComboBoxItem>250000</ComboBoxItem>
                                 <ComboBoxItem>500000</ComboBoxItem>
