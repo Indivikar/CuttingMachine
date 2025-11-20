@@ -2136,3 +2136,189 @@ System.Threading.Tasks.Task.Delay(2000).ContinueWith(_ =>
 **Update-Datum**: 18. November 2025
 **Aufwand**: ~25 Minuten (Analyse + Fix + Dokumentation)
 **Status**: ✅ Timing-Problem behoben, Board-Identifikation 100% zuverlässig
+
+
+---
+
+## Verbesserung 9: Sicherheitsprüfung für Board-Identifikation
+
+**Problem**:
+- Wenn das falsche Board an der falschen GroupBox angeschlossen wurde (z.B. Schneidmaschine-Board an Rollenzentrierung-GroupBox), gab es keine Warnung
+- Benutzer konnte versehentlich mit dem falschen Board kommunizieren
+- Potenzielle Fehlfunktionen oder unerwartetes Verhalten
+
+**Lösung**:
+- Sicherheitsprüfung in beiden WHOAMI-Response-Handlern implementiert
+- Prüfung ob der identifizierte Board-Typ zur GroupBox passt:
+  - Rollenzentrierung-GroupBox erwartet "Rollenzentrierung" im Board-Namen
+  - Schneidmaschine-GroupBox erwartet "Schneidmaschine" im Board-Namen
+- Bei Fehler: MessageBox-Warnung + automatisches Trennen der Verbindung
+- Fehlermeldung in der TextBox mit ✗ Symbol
+
+**Geänderte Dateien**:
+- `MainWindow.xaml.cs` (Zeilen 522-544 und 1024-1046)
+
+**Code-Änderungen**:
+```csharp
+// Rollenzentrierung WHOAMI-Handler (Zeilen 522-544)
+// Sicherheitsprüfung: Ist es das richtige Board für diese GroupBox?
+if (!boardType.Contains("Rollenzentrierung"))
+{
+    // Falsches Board erkannt!
+    Dispatcher.Invoke(() =>
+    {
+        MessageBox.Show(
+            "ACHTUNG: Falsches Board erkannt!\n\n" +
+            "Erwartet: Rollenzentrierung\n" +
+            "Erkannt: " + boardType + "\n\n" +
+            "Die Verbindung wird getrennt.",
+            "Falsches Board",
+            MessageBoxButton.OK,
+            MessageBoxImage.Warning
+        );
+
+        // Verbindung trennen
+        BtnClickTrennenRollenzentrierung(null, null);
+    });
+
+    SetTextRollenzentrierung("&✗ FEHLER: Falsches Board (" + boardType + ") erkannt! Verbindung getrennt.\n&");
+    break;
+}
+
+// Analog für Schneidmaschine (Zeilen 1024-1046)
+if (!boardType.Contains("Schneidmaschine"))
+{
+    // ... gleiche Logik für Schneidmaschine
+}
+```
+
+**Funktionsweise**:
+1. Board sendet WHOAMI-Response (z.B. "WHOAMI_Schneidmaschine")
+2. Handler prüft ob der Name zur GroupBox passt
+3. Falls nicht: MessageBox mit Warnung + automatisches Trennen
+4. Falls ja: Normale Identifikation fortsetzen
+
+**Benutzer-Sichtbarkeit**:
+- **MessageBox**: "ACHTUNG: Falsches Board erkannt!" mit Details
+- **TextBox**: "✗ FEHLER: Falsches Board (WHOAMI_Schneidmaschine) erkannt! Verbindung getrennt."
+
+**Commit-Text**:
+```
+[FEATURE] Sicherheitsprüfung für Board-Identifikation
+
+- Prüfung ob Board-Typ zur GroupBox passt (Zeilen 522-544, 1024-1046)
+- Bei falschem Board: MessageBox-Warnung + automatisches Trennen
+- Verhindert versehentliche Kommunikation mit falschem Board
+- Implementiert für beide GroupBoxen (Rollenzentrierung + Schneidmaschine)
+```
+
+**Status**: ✅ Sicherheitsprüfung aktiv für beide Boards
+
+---
+
+## Verbesserung 10: Geräte-Manager-Namen beim App-Start anzeigen
+
+**Problem**:
+- ComboBoxen zeigten beim Start nur COM-Port-Namen ("COM3", "COM4")
+- Benutzer konnte nicht erkennen, welcher Port zu welchem Gerät gehört
+- Geräte-Manager-Namen wurden erst nach Verbindungsherstellung angezeigt
+- Unpraktisch bei mehreren COM-Ports
+
+**Lösung**:
+- Neue Methode `InitializePortList()` in Thread_Port_Scanner
+- Ruft beim App-Start `UpdatePortList()` auf
+- Zeigt sofort Geräte-Manager-Beschreibungen via WMI
+- Beim Start: "COM3 (Silicon Labs CP210x USB to UART Bridge)"
+- Nach Identifikation: "COM3 (Schneidmaschine)" oder "COM3 (Rollenzentrierung)"
+- "WHOAMI_" Präfix wird automatisch entfernt für bessere Lesbarkeit
+
+**Geänderte Dateien**:
+- `threads/Thread_Port_Scanner.cs` (Zeilen 65-70, 103-105)
+- `MainWindow.xaml.cs` (Zeile 168)
+
+**Code-Änderungen**:
+```csharp
+// Thread_Port_Scanner.cs - Neue Init-Methode (Zeilen 65-70)
+public void InitializePortList()
+{
+    // Initiale Befüllung der ComboBoxen mit Geräte-Manager-Beschreibungen
+    string[] portList = SerialPort.GetPortNames();
+    UpdatePortList(portList);
+}
+
+// Thread_Port_Scanner.cs - Format-Vereinheitlichung (Zeilen 103-105)
+if (MainWindow.portIdentities.ContainsKey(port))
+{
+    // Board wurde identifiziert - zeige Board-Namen in Klammern
+    // Entferne "WHOAMI_" Präfix für bessere Lesbarkeit
+    string boardName = MainWindow.portIdentities[port].Replace("WHOAMI_", "");
+    displayText = $"{port} ({boardName})";
+}
+else if (descriptions.ContainsKey(port))
+{
+    // Noch nicht identifiziert - zeige Geräte-Manager-Namen in Klammern
+    displayText = $"{port} ({descriptions[port]})";
+}
+
+// MainWindow.xaml.cs - Aufruf beim Start (Zeile 168)
+// Initiale Befüllung der ComboBoxen mit Geräte-Manager-Beschreibungen
+dataModel.Thread_Port_Scanner.InitializePortList();
+```
+
+**Vorher/Nachher Vergleich**:
+
+**Vorher**:
+```
+Beim Start:
+- COM3
+- COM4
+- COM5
+
+Nach Verbindung:
+- COM3 - WHOAMI_Schneidmaschine
+- COM4
+- COM5
+```
+
+**Nachher**:
+```
+Beim Start:
+- COM3 (Silicon Labs CP210x USB to UART Bridge)
+- COM4 (USB Serial Device)
+- COM5 (Prolific USB-to-Serial Comm Port)
+
+Nach Verbindung:
+- COM3 (Schneidmaschine)
+- COM4 (USB Serial Device)
+- COM5 (Prolific USB-to-Serial Comm Port)
+```
+
+**Format-Änderungen**:
+- Beide Zustände verwenden jetzt Klammern statt Bindestrich
+- Konsistentes Format: `COMx (Beschreibung)`
+- "WHOAMI_" wird automatisch entfernt
+
+**WMI-Integration**:
+- Methode `GetPortDescriptions()` holt Beschreibungen aus Win32_PnPEntity
+- Regex-Pattern: `^(.+?)\s*\((COM\d+)\)$`
+- Extrahiert Gerätenamen und COM-Port aus Caption
+
+**Commit-Text**:
+```
+[FEATURE] Geräte-Manager-Namen beim App-Start anzeigen
+
+- Neue InitializePortList() Methode in Thread_Port_Scanner (Zeilen 65-70)
+- ComboBoxen zeigen sofort Geräte-Manager-Beschreibungen
+- Format vereinheitlicht: Beide Zustände verwenden Klammern
+- "WHOAMI_" Präfix automatisch entfernt (Zeile 104)
+- Bessere Übersicht bei mehreren COM-Ports
+- WMI-Integration für Gerätebeschreibungen
+```
+
+**Status**: ✅ Geräte-Manager-Namen sofort beim Start sichtbar
+
+---
+
+**Update-Datum**: 19. November 2025
+**Aufwand**: ~20 Minuten (Beide Verbesserungen zusammen)
+**Status**: ✅ Board-Sicherheit + Geräte-Erkennung vollständig implementiert

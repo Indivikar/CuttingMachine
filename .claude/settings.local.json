@@ -12,7 +12,9 @@
       "Bash(dotnet clean:*)",
       "Bash(findstr:*)",
       "Bash(start binDebugSchneidMaschine.exe)",
-      "Bash(start \"C:\\Users\\Inge\\Documents\\workspace_cs\\Streifen-Schneidmaschinen-App\\bin\\Debug\\SchneidMaschine.exe\")"
+      "Bash(start \"C:\\Users\\Inge\\Documents\\workspace_cs\\Streifen-Schneidmaschinen-App\\bin\\Debug\\SchneidMaschine.exe\")",
+      "Bash(powershell -Command \"Get-Content ''C:\\Users\\Inge\\Documents\\workspace_cs\\Streifen-Schneidmaschinen-App\\IMPLEMENTATION_PLAN.md'' | Measure-Object -Line\")",
+      "Bash(powershell -Command:*)"
     ],
     "deny": [],
     "ask": []
