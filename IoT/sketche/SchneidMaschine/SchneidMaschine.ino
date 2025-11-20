@@ -67,8 +67,15 @@ String appendSerialData = "";   // einzelne Zeichen in eine Zeichenkette umwande
 
   void loop() {
 
+      // Stiller Ping alle 3 Sekunden für Verbindungsüberwachung
+      static unsigned long lastPing = 0;
+      if(millis() - lastPing > 3000) {
+          Serial.println("%PING@");  // Stiller Ping - wird nicht in TextBox angezeigt
+          lastPing = millis();
+      }
+
       tasterSchneiden();
-      dataReceived();   
+      dataReceived();
       motorFinished();
 
 //      if(digitalRead(motorRunning) == LOW){
