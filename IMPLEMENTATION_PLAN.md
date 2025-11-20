@@ -2322,3 +2322,198 @@ Nach Verbindung:
 **Update-Datum**: 19. November 2025
 **Aufwand**: ~20 Minuten (Beide Verbesserungen zusammen)
 **Status**: ✅ Board-Sicherheit + Geräte-Erkennung vollständig implementiert
+
+
+---
+
+## Verbesserung 11: SchneidMaschine Arduino-Sketch aktualisiert
+
+**Problem**:
+- Der SchneidMaschine.ino Sketch fehlten wichtige Funktionen, die in der Simulation entwickelt wurden
+- Keine TEST-Funktion für Verbindungstest
+- Keine WHOAMI-Funktion für Board-Identifikation
+- Start-Zeichen "%" wurde nicht entfernt
+
+**Lösung**:
+- Alle notwendigen Funktionen aus SchneidMaschine_Simulation.ino in SchneidMaschine.ino übertragen
+- TEST-Befehl implementiert
+- WHOAMI-Befehl implementiert (antwortet mit "WHOAMI_Schneidmaschine")
+- Bereinigung des "%" Start-Zeichens hinzugefügt
+
+**Geänderte Dateien**:
+- `IoT/sketche/SchneidMaschine/SchneidMaschine.ino` (Zeilen 133-155)
+
+**Code-Änderungen**:
+```cpp
+// Zeilen 133-136: Entfernen des Start-Zeichens "%"
+// Entferne das Start-Zeichen "%" am Anfang, falls vorhanden
+if(appendSerialData.startsWith("%")) {
+  appendSerialData = appendSerialData.substring(1);
+}
+
+// Zeilen 148-151: TEST-Befehl
+if(befehl.equals("TEST")) {
+    String testResponse = "TEST";
+    sendText(testResponse);                       // Sendet TEST-Bestätigung zurück
+}
+
+// Zeilen 153-155: WHOAMI-Befehl
+if(befehl.equals("WHOAMI")) {
+    sendCommand("WHOAMI_Schneidmaschine", false); // Sendet Board-Identifikation ohne Textausgabe
+}
+```
+
+**Funktionsweise**:
+
+1. **Start-Zeichen Bereinigung**:
+   - Entfernt "%" am Anfang empfangener Befehle
+   - Verhindert Fehler bei der Befehlsverarbeitung
+
+2. **TEST-Befehl**:
+   - Reagiert auf Test-Button in der C#-App
+   - Sendet "TEST" als Bestätigung zurück
+   - Bestätigt funktionierende Kommunikation
+
+3. **WHOAMI-Befehl**:
+   - Identifiziert das Board als "Schneidmaschine"
+   - Wird automatisch nach Verbindungsaufbau gesendet
+   - Ermöglicht Board-Erkennung in ComboBox
+   - Aktiviert Sicherheitsprüfung gegen falsches Board
+
+**Integration mit C#-App**:
+- TEST-Button funktioniert jetzt korrekt
+- Board-Identifikation erfolgt automatisch
+- ComboBox zeigt "COM3 (Schneidmaschine)" nach Identifikation
+- Sicherheitsprüfung verhindert Verwendung des falschen Boards
+
+**Commit-Text**:
+```
+[FEATURE] SchneidMaschine Arduino-Sketch aktualisiert
+
+- TEST-Befehl implementiert (Zeilen 148-151)
+- WHOAMI-Befehl für Board-Identifikation implementiert (Zeilen 153-155)
+- Start-Zeichen "%" Bereinigung hinzugefügt (Zeilen 133-136)
+- Alle Funktionen aus Simulation in Produktions-Sketch übertragen
+- Vollständige Integration mit C#-App Funktionen
+```
+
+**Status**: ✅ Alle Funktionen aus Simulation übertragen
+
+---
+
+## Verbesserung 12: Verbindungsüberwachung mit stillem Ping-Mechanismus
+
+**Problem**:
+- Verbindung zur Schneidmaschine wurde nach 5 Sekunden als "disconnected" angezeigt
+- Arduino sendete keine regelmäßigen Daten (im Gegensatz zur Rollenzentrierung)
+- Verbindungsstatus sprang bei Befehlen kurz auf "connected" und dann wieder auf "disconnected"
+- Benutzer konnte nicht erkennen, ob wirklich verbunden oder getrennt
+
+**Analyse**:
+- Verbindungsüberwachung prüft alle 2 Sekunden, ob Daten empfangen wurden
+- Timeout: 5 Sekunden ohne Daten → Verbindung gilt als "disconnected"
+- Rollenzentrierung sendet alle 2 Sekunden Status-Updates → bleibt "connected"
+- Schneidmaschine sendete nur bei Befehlen Daten → fiel nach 5 Sekunden auf "disconnected"
+
+**Lösung**:
+- Stiller Ping-Mechanismus im Arduino implementiert
+- Sendet alle 3 Sekunden `%PING@` Signal
+- Ping wird NICHT in der TextBox angezeigt (verwendet "%" Präfix)
+- C#-App empfängt Ping und aktualisiert Zeitstempel automatisch
+- Verbindungsstatus bleibt stabil auf "connected"
+
+**Geänderte Dateien**:
+- `IoT/sketche/SchneidMaschine/SchneidMaschine.ino` (Zeilen 70-75)
+
+**Code-Änderungen**:
+```cpp
+void loop() {
+
+    // Stiller Ping alle 3 Sekunden für Verbindungsüberwachung
+    static unsigned long lastPing = 0;
+    if(millis() - lastPing > 3000) {
+        Serial.println("%PING@");  // Stiller Ping - wird nicht in TextBox angezeigt
+        lastPing = millis();
+    }
+
+    tasterSchneiden();
+    dataReceived();
+    motorFinished();
+    // ... rest of loop
+}
+```
+
+**Funktionsweise**:
+
+1. **Ping-Timer**:
+   - `static unsigned long lastPing` speichert letzte Ping-Zeit
+   - `millis()` liefert aktuelle Zeit in Millisekunden
+   - Prüfung alle 3000ms (3 Sekunden)
+
+2. **Stilles Signal**:
+   - `%PING@` verwendet "%" Präfix
+   - C#-App verarbeitet "%" ohne TextBox-Ausgabe
+   - Aktualisiert nur `lastCommunicationSchneidmaschine` Zeitstempel
+
+3. **Verbindungsüberwachung**:
+   - Timeout: 5 Sekunden
+   - Ping alle 3 Sekunden → immer innerhalb Timeout
+   - Status bleibt "connected" solange Arduino läuft
+
+**Vergleich: Rollenzentrierung vs. Schneidmaschine**:
+
+| Aspekt | Rollenzentrierung | Schneidmaschine (vorher) | Schneidmaschine (nachher) |
+|--------|-------------------|--------------------------|---------------------------|
+| Regelmäßige Daten | Ja (Status alle 2s) | Nein | Ja (Ping alle 3s) |
+| Sichtbar in TextBox | Ja | - | Nein (stiller Ping) |
+| Verbindung stabil | ✅ | ❌ | ✅ |
+| Timeout-Probleme | Keine | Nach 5s disconnect | Keine |
+
+**Warum 3 Sekunden Ping-Intervall?**:
+- Timeout ist 5 Sekunden
+- 3 Sekunden gibt Puffer bei Verzögerungen
+- Nicht zu häufig (würde unnötig CPU belasten)
+- Nicht zu selten (könnte Timeout erreichen)
+
+**Alternative Lösungen (nicht implementiert)**:
+1. ❌ Timeout erhöhen (30s statt 5s):
+   - Verschiebt Problem nur
+   - Echte Verbindungsprobleme werden später erkannt
+
+2. ❌ Status-Updates wie Rollenzentrierung:
+   - Würde TextBox vollmüllen
+   - Nicht notwendig für Schneidmaschine
+
+3. ✅ Stiller Ping (gewählt):
+   - Sauber und elegant
+   - Keine TextBox-Verschmutzung
+   - Zuverlässige Verbindungsüberwachung
+
+**Test-Szenarien**:
+
+| Szenario | Erwartetes Verhalten | Ergebnis |
+|----------|---------------------|----------|
+| Nach Verbindung warten | Bleibt "connected" | ✅ |
+| Befehl senden | Bleibt "connected" | ✅ |
+| 10 Sekunden warten | Bleibt "connected" | ✅ |
+| Arduino trennen | Wechselt zu "disconnected" nach 5s | ✅ |
+| Arduino wieder verbinden | Wechselt zu "connected" | ✅ |
+
+**Commit-Text**:
+```
+[FIX] Verbindungsüberwachung mit stillem Ping-Mechanismus
+
+- Stiller Ping alle 3 Sekunden implementiert (Zeilen 70-75)
+- Verwendet "%PING@" Format (keine TextBox-Ausgabe)
+- Verhindert false-negative Disconnects
+- Verbindungsstatus bleibt stabil
+- Analog zur Rollenzentrierung-Lösung (Status-Updates alle 2s)
+```
+
+**Status**: ✅ Verbindung stabil, Ping funktioniert
+
+---
+
+**Update-Datum**: 19. November 2025
+**Aufwand**: ~30 Minuten (Beide Arduino-Verbesserungen zusammen)
+**Status**: ✅ SchneidMaschine Arduino-Sketch vollständig funktionsfähig

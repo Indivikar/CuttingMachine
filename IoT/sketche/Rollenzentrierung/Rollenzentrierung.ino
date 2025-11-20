@@ -299,52 +299,66 @@ void rotateMotorFixedSteps(int steps, bool direction) {
 void respondToSensor(int sensorDistance, bool direction) {
   // Motor aktivieren
   enableMotor();
-  
+
   // Warte kurz, damit der Treiber voll aktiviert wird
   delay(1);
-  
-  // Bewege den Motor um eine feste Anzahl von Schritten
-  rotateMotorFixedSteps(TOTAL_STEPS, direction);
-  
-  // Warte kurz und prüfe, ob wir den Schwellenwert überschritten haben
-  //delay(10);
-  
-  // Prüfe noch einmal den Sensor und ob beide Sensoren gleichzeitig getriggert sind
-  int distance1 = sensor1.readRangeContinuousMillimeters();
-  int distance2 = sensor2.readRangeContinuousMillimeters();
-  
-  // WICHTIG: Prüfe ob beide Sensoren unter Schwellenwert sind
-  if (distance1 <= SENSOR_THRESHOLD && distance2 <= SENSOR_THRESHOLD) {
-    Serial.println("!!! WARNUNG: Beide Sensoren unter Schwellenwert während Bewegung - STOPPE MOTOR !!!");
-    sensor1TriggerCount = 0;
-    sensor2TriggerCount = 0;
-    disableMotor();
-    motorIsMoving = false;
-    return;
+
+  // Maximale Anzahl von Bewegungsiterationen zur Sicherheit
+  const int MAX_MOVE_ITERATIONS = 50;
+  int moveCount = 0;
+  bool targetReached = false;
+
+  // Verwende eine while-Schleife statt Rekursion für bessere Kontrolle
+  while (!targetReached && moveCount < MAX_MOVE_ITERATIONS) {
+    moveCount++;
+
+    // Bewege den Motor um eine feste Anzahl von Schritten
+    rotateMotorFixedSteps(TOTAL_STEPS, direction);
+
+    // Lese beide Sensoren nach der Bewegung
+    int distance1 = sensor1.readRangeContinuousMillimeters();
+    int distance2 = sensor2.readRangeContinuousMillimeters();
+
+    // WICHTIG: Prüfe ob beide Sensoren unter Schwellenwert sind
+    if (distance1 <= SENSOR_THRESHOLD && distance2 <= SENSOR_THRESHOLD) {
+      Serial.println("!!! WARNUNG: Beide Sensoren unter Schwellenwert während Bewegung - STOPPE MOTOR !!!");
+      sensor1TriggerCount = 0;
+      sensor2TriggerCount = 0;
+      disableMotor();
+      motorIsMoving = false;
+      return;
+    }
+
+    // Bestimme die relevante Distanz basierend auf der Bewegungsrichtung
+    int newDistance;
+    if (direction == LEFT_DIRECTION) {  // Bewegung nach links
+      newDistance = distance1;
+      Serial.println("Nach Bewegung " + String(moveCount) + ": Sensor 1 = " + String(newDistance) + " mm");
+    } else {  // Bewegung nach rechts
+      newDistance = distance2;
+      Serial.println("Nach Bewegung " + String(moveCount) + ": Sensor 2 = " + String(newDistance) + " mm");
+    }
+
+    // Prüfe ob Ziel erreicht wurde
+    if (newDistance >= SENSOR_THRESHOLD) {
+      // Ziel erreicht - Counter zurücksetzen
+      Serial.println("Ziel erreicht! Distanz: " + String(newDistance) + "mm nach " + String(moveCount) + " Bewegungen");
+      targetReached = true;
+    } else {
+      Serial.println("Immer noch unter Schwellenwert, weitere Bewegung erforderlich");
+    }
   }
-  
-  int newDistance;
-  if (direction == LEFT_DIRECTION) {  // Bewegung nach links
-    newDistance = distance1;
-    Serial.println("Nach Bewegung: Sensor 1 = " + String(newDistance) + " mm");
-  } else {  // Bewegung nach rechts
-    newDistance = distance2;
-    Serial.println("Nach Bewegung: Sensor 2 = " + String(newDistance) + " mm");
+
+  // Sicherheits-Warnung falls Maximum erreicht
+  if (moveCount >= MAX_MOVE_ITERATIONS) {
+    Serial.println("!!! WARNUNG: Maximale Anzahl von Bewegungen erreicht - STOPPE MOTOR !!!");
   }
-  
-  // Wenn der Sensor immer noch unter dem Schwellenwert ist, bewege weiter
-  if (newDistance < SENSOR_THRESHOLD) {
-    Serial.println("Immer noch unter Schwellenwert, weitere Bewegung erforderlich");
-    // Rekursiver Aufruf für weitere Bewegung
-    respondToSensor(newDistance, direction);
-  } else {
-    // Ziel erreicht - Counter zurücksetzen
-    Serial.println("Ziel erreicht! Distanz: " + String(newDistance) + "mm");
-    sensor1TriggerCount = 0;
-    sensor2TriggerCount = 0;
-    disableMotor();
-    motorIsMoving = false;
-  }
+
+  // Motor deaktivieren und Flags zurücksetzen
+  sensor1TriggerCount = 0;
+  sensor2TriggerCount = 0;
+  disableMotor();
+  motorIsMoving = false;
 }
 
 // Wenn beide Sensoren gleichzeitig getriggert sind - keine Bewegung und true zurück geben
