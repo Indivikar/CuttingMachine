@@ -115,23 +115,23 @@ namespace SchneidMaschine
             // Slider-Labels aktualisieren (gleiche Logik wie Footer)
             if (rollenzentrierungConnected)
             {
-                labelConnectionRollenzentrierung.Text = "CONNECTED";
+                labelConnectionRollenzentrierung.Text = "Connected R";
                 labelConnectionRollenzentrierung.Foreground = Brushes.Green;
             }
             else
             {
-                labelConnectionRollenzentrierung.Text = "DISCONNECTED";
+                labelConnectionRollenzentrierung.Text = "Disconnected R";
                 labelConnectionRollenzentrierung.Foreground = Brushes.Red;
             }
 
             if (schneidmaschineConnected)
             {
-                labelConnectionSchneidmaschine.Text = "CONNECTED";
+                labelConnectionSchneidmaschine.Text = "Connected S";
                 labelConnectionSchneidmaschine.Foreground = Brushes.Green;
             }
             else
             {
-                labelConnectionSchneidmaschine.Text = "DISCONNECTED";
+                labelConnectionSchneidmaschine.Text = "Disconnected S";
                 labelConnectionSchneidmaschine.Foreground = Brushes.Red;
             }
 
@@ -319,7 +319,7 @@ namespace SchneidMaschine
                 buttonTestRollenzentrierung.IsEnabled = false;
                 //Main.IsEnabled = false;
                 labelConnectionRollenzentrierung.Foreground = Brushes.Red;
-                labelConnectionRollenzentrierung.Text = "DISCONNECTED R";
+                labelConnectionRollenzentrierung.Text = "Disconnected R";
                 Console.WriteLine("Disconnected Rollenzentrierung");
                 SetTextRollenzentrierung("Disconnected Rollenzentrierung\n");
 
@@ -468,7 +468,7 @@ namespace SchneidMaschine
                         Console.WriteLine("COMMAND_Rollenzentrierung.Connected");
                         Main.IsEnabled = true;
                         labelConnectionRollenzentrierung.Foreground = Brushes.Green;
-                        labelConnectionRollenzentrierung.Text = "CONNECTED";
+                        labelConnectionRollenzentrierung.Text = "Connected R";
                         Console.WriteLine("Connected");
 
                         break;
@@ -741,7 +741,7 @@ namespace SchneidMaschine
                 buttonTestSchneidmaschine.IsEnabled = false;
                 Main.IsEnabled = false;
                 labelConnectionSchneidmaschine.Foreground = Brushes.Red;
-                labelConnectionSchneidmaschine.Text = "DISCONNECTED S";
+                labelConnectionSchneidmaschine.Text = "Disconnected S";
                 Console.WriteLine("Disconnected Schneidmaschine");
                 SetTextSchneidmaschine("Disconnected Schneidmaschine\n");
 
@@ -961,7 +961,7 @@ namespace SchneidMaschine
                         Console.WriteLine("COMMAND_Schneidmaschine.Connected");
                         Main.IsEnabled = true;
                         labelConnectionSchneidmaschine.Foreground = Brushes.Green;
-                        labelConnectionSchneidmaschine.Text = "CONNECTED";
+                        labelConnectionSchneidmaschine.Text = "Connected S";
                         Console.WriteLine("Connected");
 
                         break;

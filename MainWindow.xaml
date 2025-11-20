@@ -256,7 +256,7 @@
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" Height="50" Margin="10,0,0,10">
                             <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0" Width="150" FontSize="20">Status:</TextBlock>
-                            <TextBlock x:Name="labelConnectionRollenzentrierung" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,0,0" Foreground="Red" FontSize="20">DISCONNECTED</TextBlock>
+                            <TextBlock x:Name="labelConnectionRollenzentrierung" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,0,0" Foreground="Red" FontSize="20">Disconnected R</TextBlock>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" Margin="10,10,0,10" Height="40">
                             <Button x:Name="BtnVerbindenRollenzentrierung" Click="BtnClickVerbindenRollenzentrierung" Margin="0,0,10,0" Width="179" Height="40" FontSize="24">Verbinden</Button>
@@ -294,7 +294,7 @@
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" Height="50" Margin="10,0,0,10">
                             <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0" Width="150" FontSize="20">Status:</TextBlock>
-                            <TextBlock x:Name="labelConnectionSchneidmaschine" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,0,0" Foreground="Red" FontSize="20">DISCONNECTED</TextBlock>
+                            <TextBlock x:Name="labelConnectionSchneidmaschine" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,0,0" Foreground="Red" FontSize="20">Disconnected S</TextBlock>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" Margin="10,10,0,10" Height="40">
                             <Button x:Name="BtnVerbindenSchneidmaschine" Click="BtnClickVerbindenSchneidmaschine" Margin="0,0,10,0" Width="179" Height="40" FontSize="24">Verbinden</Button>

@@ -2049,6 +2049,371 @@ if(c == '#') {
 
 ---
 
+## Verbesserung 13: Rollenzentrierung.ino - Dauerschleife bei beiden aktiven Sensoren behoben
+
+**Datum**: 20. November 2025
+
+**Problem**:
+- Wenn beide Sensoren (VL53L0X) versehentlich gleichzeitig unter dem Schwellenwert aktiv waren, drehte der Schrittmotor permanent in eine Richtung
+- Der Motor kam aus der Dauerschleife nicht mehr heraus
+- Die rekursive `respondToSensor()` Funktion konnte nicht sauber abbrechen
+
+**Ursache**:
+- Die `respondToSensor()` Funktion verwendete Rekursion (Zeile 339)
+- Wenn der Sensor nach einer Bewegung immer noch unter dem Schwellenwert war, rief sich die Funktion selbst auf
+- Bei gleichzeitig aktiven Sensoren konnte die Rekursion nicht sauber beendet werden
+- Keine maximale Anzahl von Iterationen definiert
+
+**Lösung**:
+
+**1. Rekursion durch while-Schleife ersetzt**:
+- Kontrollierte while-Schleife mit klaren Abbruchbedingungen
+- `MAX_MOVE_ITERATIONS = 50` verhindert Endlosschleifen
+- Saubere Ein- und Ausstiegspunkte
+
+**2. Verbesserte Sicherheitsprüfungen**:
+- Nach jeder Bewegung werden beide Sensoren gelesen
+- Bei gleichzeitiger Aktivierung wird sofort gestoppt
+- Motor wird deaktiviert und Flags zurückgesetzt
+
+**3. Klare Abbruchbedingungen**:
+- Ziel erreicht (Sensor über Schwellenwert)
+- Beide Sensoren gleichzeitig aktiv
+- Maximum an Bewegungen erreicht
+
+**Geänderte Dateien**:
+- `IoT/sketche/Rollenzentrierung/Rollenzentrierung.ino` (Zeilen 298-362)
+
+**Code-Änderungen**:
+
+```cpp
+// Vorher - Rekursive Lösung
+void respondToSensor(int sensorDistance, bool direction) {
+  enableMotor();
+  delay(1);
+
+  rotateMotorFixedSteps(TOTAL_STEPS, direction);
+
+  int distance1 = sensor1.readRangeContinuousMillimeters();
+  int distance2 = sensor2.readRangeContinuousMillimeters();
+
+  if (distance1 <= SENSOR_THRESHOLD && distance2 <= SENSOR_THRESHOLD) {
+    // Stoppe Motor
+    return;
+  }
+
+  int newDistance;
+  if (direction == LEFT_DIRECTION) {
+    newDistance = distance1;
+  } else {
+    newDistance = distance2;
+  }
+
+  // PROBLEM: Rekursiver Aufruf kann Endlosschleife verursachen
+  if (newDistance < SENSOR_THRESHOLD) {
+    respondToSensor(newDistance, direction);  // ← Rekursion
+  } else {
+    disableMotor();
+  }
+}
+
+// Nachher - While-Schleife mit Sicherheitsmaximum
+void respondToSensor(int sensorDistance, bool direction) {
+  enableMotor();
+  delay(1);
+
+  const int MAX_MOVE_ITERATIONS = 50;  // Sicherheitsmaximum
+  int moveCount = 0;
+  bool targetReached = false;
+
+  // Kontrollierte Schleife statt Rekursion
+  while (!targetReached && moveCount < MAX_MOVE_ITERATIONS) {
+    moveCount++;
+
+    rotateMotorFixedSteps(TOTAL_STEPS, direction);
+
+    // Beide Sensoren lesen
+    int distance1 = sensor1.readRangeContinuousMillimeters();
+    int distance2 = sensor2.readRangeContinuousMillimeters();
+
+    // Prüfung: Beide Sensoren aktiv?
+    if (distance1 <= SENSOR_THRESHOLD && distance2 <= SENSOR_THRESHOLD) {
+      Serial.println("!!! WARNUNG: Beide Sensoren unter Schwellenwert - STOPPE MOTOR !!!");
+      sensor1TriggerCount = 0;
+      sensor2TriggerCount = 0;
+      disableMotor();
+      motorIsMoving = false;
+      return;  // Sofortiger Abbruch
+    }
+
+    // Relevante Distanz prüfen
+    int newDistance;
+    if (direction == LEFT_DIRECTION) {
+      newDistance = distance1;
+      Serial.println("Nach Bewegung " + String(moveCount) + ": Sensor 1 = " + String(newDistance) + " mm");
+    } else {
+      newDistance = distance2;
+      Serial.println("Nach Bewegung " + String(moveCount) + ": Sensor 2 = " + String(newDistance) + " mm");
+    }
+
+    // Ziel erreicht?
+    if (newDistance >= SENSOR_THRESHOLD) {
+      Serial.println("Ziel erreicht! Distanz: " + String(newDistance) + "mm nach " + String(moveCount) + " Bewegungen");
+      targetReached = true;
+    } else {
+      Serial.println("Immer noch unter Schwellenwert, weitere Bewegung erforderlich");
+    }
+  }
+
+  // Warnung bei Maximum
+  if (moveCount >= MAX_MOVE_ITERATIONS) {
+    Serial.println("!!! WARNUNG: Maximale Anzahl von Bewegungen erreicht - STOPPE MOTOR !!!");
+  }
+
+  // Cleanup
+  sensor1TriggerCount = 0;
+  sensor2TriggerCount = 0;
+  disableMotor();
+  motorIsMoving = false;
+}
+```
+
+**Vorteile der neuen Lösung**:
+1. **Keine Stack-Overflow Gefahr**: While-Schleife statt Rekursion
+2. **Garantierte Beendigung**: Maximal 50 Bewegungen, dann Abbruch
+3. **Bessere Fehlerbehandlung**: Klare Abbruchbedingungen
+4. **Debug-Ausgaben**: Iteration Counter für besseres Monitoring
+5. **Sicherer**: Kann nicht mehr in Endlosschleife geraten
+
+**Test-Szenarien**:
+- ✅ Einzelner Sensor aktiv → Motor bewegt sich korrekt
+- ✅ Beide Sensoren gleichzeitig aktiv → Motor stoppt sofort
+- ✅ Sensor bleibt unter Schwellenwert → Max 50 Iterationen, dann Stopp
+- ✅ Normaler Betrieb → Ziel wird erreicht, Motor stoppt
+
+**Status**: ✅ Dauerschleife-Problem behoben
+
+---
+
+## Verbesserung 14: Thread-Beendigungs-Problem behoben (TaskCanceledException)
+
+**Datum**: 20. November 2025
+
+**Problem**:
+- Beim Beenden der Anwendung trat `System.Threading.Tasks.TaskCanceledException` auf
+- Fehler erschien in `Thread_Con_Rollenzentrierung` und `Thread_Con_Schneidmaschine`
+- Exception trat bei `dataModel.MainWindow.Dispatcher.Invoke()` auf
+- Threads versuchten den Dispatcher zu verwenden, obwohl MainWindow bereits geschlossen war
+
+**Ursache**:
+1. **Endlosschleifen**: Beide Thread-Klassen hatten `while(true)` Schleifen
+2. **Kein Background-Thread**: `IsBackground = true` war auskommentiert (Zeile 307)
+3. **Dispatcher-Zugriff nach Shutdown**: Threads versuchten Dispatcher aufzurufen, nachdem die Anwendung beendet wurde
+4. **Unsicheres Thread.Abort()**: Veraltete und gefährliche Methode zum Beenden der Threads
+
+**Lösung**:
+
+### 1. Thread_Con_Rollenzentrierung.cs - Sichere Thread-Beendigung
+
+**Geänderte Dateien**:
+- `threads/Thread_Con_Rollenzentrierung.cs` (Zeilen 15-70)
+
+**Änderungen**:
+- `_shouldStop` Flag hinzugefügt (volatile bool)
+- `Stop()` Methode implementiert
+- Try-Catch Block um `Dispatcher.Invoke()`
+- Prüfung ob Dispatcher noch verfügbar ist (`HasShutdownStarted`)
+- Saubere Thread-Beendigung bei Shutdown
+
+**Code-Änderungen**:
+
+```csharp
+// Vorher - Endlosschleife ohne Abbruchbedingung
+public class Thread_Con_Rollenzentrierung
+{
+    private DataModel dataModel;
+
+    public void checkVerbindung_Rollenzentrierung()
+    {
+        while (true)  // ← Keine Möglichkeit zum Beenden
+        {
+            Thread.Sleep(1000);
+            dataModel.MainWindow.Dispatcher.Invoke(() => {
+                dataModel.MainWindow.checkConnection();
+            });
+            // Kann crashen wenn MainWindow geschlossen wird
+        }
+    }
+}
+
+// Nachher - Kontrollierte Schleife mit Abbruchbedingung
+public class Thread_Con_Rollenzentrierung
+{
+    private DataModel dataModel;
+    private volatile bool _shouldStop = false;  // ← Stop-Flag
+
+    public void Stop()  // ← Neue Methode
+    {
+        _shouldStop = true;
+    }
+
+    public void checkVerbindung_Rollenzentrierung()
+    {
+        while (!_shouldStop)  // ← Kontrollierte Schleife
+        {
+            Thread.Sleep(1000);
+
+            try
+            {
+                // Prüfe ob Dispatcher noch verfügbar ist
+                if (dataModel.MainWindow != null &&
+                    !dataModel.MainWindow.Dispatcher.HasShutdownStarted)
+                {
+                    dataModel.MainWindow.Dispatcher.Invoke(() => {
+                        dataModel.MainWindow.checkConnection();
+                    });
+                }
+                else
+                {
+                    // MainWindow geschlossen → Beende Thread
+                    break;
+                }
+            }
+            catch (TaskCanceledException)
+            {
+                // Dispatcher heruntergefahren → Sauberer Exit
+                Console.WriteLine("Rollenzentrierung Thread: Dispatcher shutdown erkannt");
+                break;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Rollenzentrierung Thread Fehler: {ex.Message}");
+                break;
+            }
+        }
+
+        Console.WriteLine("Rollenzentrierung Thread beendet");
+    }
+}
+```
+
+### 2. Thread_Con_Schneidmaschine.cs - Gleiche Fixes
+
+**Geänderte Dateien**:
+- `threads/Thread_Con_Schneidmaschine.cs` (Zeilen 15-71)
+
+**Änderungen**:
+- Identische Fixes wie bei Thread_Con_Rollenzentrierung
+- `_shouldStop` Flag und `Stop()` Methode
+- Try-Catch und Dispatcher-Prüfung
+
+### 3. MainWindow.xaml.cs - Thread-Management verbessert
+
+**Geänderte Dateien**:
+- `MainWindow.xaml.cs` (Zeilen 307, 327-329, 729, 748-751, 1091-1093, 1132-1135)
+
+**Änderungen**:
+
+**a) Background-Thread aktiviert**:
+```csharp
+// Vorher - Zeile 307 (auskommentiert)
+//threadCheckConnection_Rollenzentrierung.IsBackground = true;
+
+// Nachher - Zeile 307
+threadCheckConnection_Rollenzentrierung.IsBackground = true;
+
+// Vorher - Zeile 729 (fehlte komplett)
+// (keine IsBackground Zeile)
+
+// Nachher - Zeile 729
+threadCheckConnection_Schneidmaschine.IsBackground = true;
+```
+
+**b) Thread.Abort() durch Stop() ersetzt**:
+```csharp
+// Vorher - Unsicheres Thread.Abort()
+if (threadCheckConnection_Rollenzentrierung != null &&
+    threadCheckConnection_Rollenzentrierung.IsAlive)
+{
+    threadCheckConnection_Rollenzentrierung.Abort();  // ← Veraltet & unsicher
+    threadCheckConnection_Rollenzentrierung = null;
+}
+
+// Nachher - Sauberes Stop()
+if (threadCheckConnection_Rollenzentrierung != null &&
+    threadCheckConnection_Rollenzentrierung.IsAlive)
+{
+    dataModel.Thread_Con_Rollenzentrierung.Stop();  // ← Sauber & sicher
+    threadCheckConnection_Rollenzentrierung = null;
+}
+```
+
+**Alle geänderten Stellen**:
+- Zeile 307: `IsBackground = true` für Rollenzentrierung aktiviert
+- Zeile 327-329: `Abort()` → `Stop()` für Rollenzentrierung
+- Zeile 729: `IsBackground = true` für Schneidmaschine hinzugefügt
+- Zeile 748-751: `Abort()` → `Stop()` für Schneidmaschine
+- Zeile 1091-1093: `Abort()` → `Stop()` für Schneidmaschine
+- Zeile 1132-1135: `Abort()` → `Stop()` für Schneidmaschine
+
+**Vorteile der Lösung**:
+
+1. **IsBackground = true**:
+   - Threads werden automatisch beendet, wenn Main-Thread endet
+   - Anwendung kann sauber geschlossen werden
+   - Keine blockierenden Threads mehr
+
+2. **Stop()-Methode statt Abort()**:
+   - `Thread.Abort()` ist seit .NET Core veraltet und unsicher
+   - Kann zu inkonsistentem Zustand führen
+   - `Stop()` ermöglicht saubere Beendigung durch Flag
+
+3. **Dispatcher-Prüfung**:
+   - `HasShutdownStarted` prüft ob Dispatcher noch aktiv ist
+   - Verhindert Exceptions bei geschlossenem Window
+   - Thread beendet sich selbst bei Shutdown
+
+4. **Exception-Handling**:
+   - `TaskCanceledException` wird abgefangen
+   - Saubere Fehlermeldungen in Console
+   - Kein Crash beim Beenden
+
+**Workflow**:
+
+**Vorher** (mit Fehler):
+1. User startet App → Threads starten mit `while(true)`
+2. User verbindet Boards → Threads prüfen Verbindung
+3. User schließt App → MainWindow wird geschlossen
+4. Threads laufen weiter (kein Background-Thread)
+5. Threads versuchen Dispatcher aufzurufen
+6. ❌ **Exception**: `TaskCanceledException` - Dispatcher bereits heruntergefahren
+
+**Nachher** (behoben):
+1. User startet App → Threads starten mit `while(!_shouldStop)`, `IsBackground = true`
+2. User verbindet Boards → Threads prüfen Verbindung
+3. User schließt App → MainWindow wird geschlossen
+4. Threads erkennen Dispatcher-Shutdown
+5. Threads beenden sich sauber mit `break`
+6. ✅ **Kein Fehler** - Saubere Beendigung
+
+**Test-Szenarien**:
+- ✅ App starten → Threads laufen
+- ✅ Board verbinden → Verbindung wird geprüft
+- ✅ Board trennen → Thread stoppt sauber via Stop()
+- ✅ App schließen während verbunden → Kein TaskCanceledException
+- ✅ App schließen ohne Verbindung → Kein Fehler
+
+**Status**: ✅ Thread-Beendigungs-Problem vollständig behoben
+
+---
+
+**Update-Datum**: 20. November 2025
+**Aufwand**: ~45 Minuten
+**Anzahl betroffener Dateien**: 3
+**Status**: ✅ Beide Verbesserungen erfolgreich implementiert
+
+---
+
 **Update-Datum**: 18. November 2025
 **Aufwand**: ~40 Minuten
 **Status**: ✅ Automatische Board-Identifikation funktioniert
