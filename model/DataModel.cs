@@ -84,7 +84,7 @@ namespace SchneidMaschine.model
     public partial class DataModel
     {
         // Config
-        public const string appVersion = "v1.0.0";
+        public const string appVersion = "v1.1.0";
 
         private double stepToMillimeter = 12.7; // wieviel Steps sind 1mm
 
