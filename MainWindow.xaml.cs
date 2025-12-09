@@ -1196,6 +1196,7 @@ namespace SchneidMaschine
                 {
                     befehlBuilderRollenzentrierung.Append("\n");
                     newText = befehlBuilderRollenzentrierung.ToString();
+                    befehlBuilderRollenzentrierung.Clear();  // Buffer nach vollständigem Befehl leeren
                 }
             }
 
@@ -1227,6 +1228,7 @@ namespace SchneidMaschine
                 {
                     befehlBuilderSchneidmaschine.Append("\n");
                     newText = befehlBuilderSchneidmaschine.ToString();
+                    befehlBuilderSchneidmaschine.Clear();  // Buffer nach vollständigem Befehl leeren
                 }
             }
 

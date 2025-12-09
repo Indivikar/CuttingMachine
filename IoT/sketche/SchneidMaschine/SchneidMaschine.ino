@@ -1,5 +1,6 @@
 // Config
-double mmInSteps = 12.7;         // wieviel Steps sind ein mm
+//double mmInSteps = 12.7;         // wieviel Steps sind ein mm
+double mmInSteps = 12.9;         // wieviel Steps sind ein mm
 
 int startDelay = 5000;          // Start-Pause zwischen den Steps für langsamen Anlauf vom SchrittMotor
 int minDelay = 500;             // min-Pause zwischen den Steps, beeinflusst die Drehzahl, darf nicht < 200 sein
