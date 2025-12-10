@@ -342,12 +342,13 @@ namespace SchneidMaschine
                 return;
             }
 
-            if (stringToCharRollenzentrierung(text) == null)
+            string processedText = stringToCharRollenzentrierung(text);
+            if (processedText == null)
             {
                 return;
             }
 
-            text = befehlBuilderRollenzentrierung.ToString();
+            text = processedText;
 
             handleCommandLineRollenzentrierung(text);
 
@@ -771,12 +772,13 @@ namespace SchneidMaschine
                 return;
             }
 
-            if (stringToCharSchneidmaschine(text) == null)
+            string processedText = stringToCharSchneidmaschine(text);
+            if (processedText == null)
             {
                 return;
             }
 
-            text = befehlBuilderSchneidmaschine.ToString();
+            text = processedText;
 
             handleCommandLineSchneidmaschine(text);
 
