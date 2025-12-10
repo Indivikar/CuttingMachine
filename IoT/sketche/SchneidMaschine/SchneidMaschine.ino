@@ -1,6 +1,6 @@
 // Config
 //double mmInSteps = 12.7;         // wieviel Steps sind ein mm
-double mmInSteps = 12.9;         // wieviel Steps sind ein mm
+double mmInSteps = 13.1;         // wieviel Steps sind ein mm
 
 int startDelay = 5000;          // Start-Pause zwischen den Steps für langsamen Anlauf vom SchrittMotor
 int minDelay = 500;             // min-Pause zwischen den Steps, beeinflusst die Drehzahl, darf nicht < 200 sein
@@ -98,21 +98,10 @@ String appendSerialData = "";   // einzelne Zeichen in eine Zeichenkette umwande
   }
 
   void motorFinished() {
-      valMotorRunning = digitalRead(motorRunning);
-      if(valMotorRunning == HIGH && isMotorRunning){
-           
-          if(isKopfSchnitt){
-            sendCommand("kopfSchnittBeendet_", true);
-            isKopfSchnitt = false;
-          } else {
-            sendCommand("schneidenBeendet_", true);
-          }
-
-
-          stepCounter = 0; 
-          //sendCommand("steps_" + String(stepCounter), true);        
-          isMotorRunning = false;
-      }
+      // Diese Funktion wird nicht mehr verwendet, da schneiden() direkt
+      // schneidenBeendet_ sendet (wie in v1.0.0)
+      // Pin 7 (motorRunning) wird nicht mehr überwacht
+      return;
   }
   
 
@@ -247,13 +236,24 @@ String appendSerialData = "";   // einzelne Zeichen in eine Zeichenkette umwande
 
 
   void schneiden() {
-      sendCommand("schneidenStartet_", true);                 // Sende Bestätigung, das Schneiden gestartet wird   
-      isMotorRunning = true;                                  // Motor abschneiden zurücksetzen
+      sendCommand("schneidenStartet_", true);                 // Sende Bestätigung, das Schneiden gestartet wird
+      isMotorRunning = true;                                  // Verhindere mehrfache Schnitte
+
       digitalWrite(cut, LOW);                                 // Schalte Relay -> Schneiden Start
       delay(500);                                             // Pause zwischen an und aus, sonst schaltet Relay nicht
       digitalWrite(cut, HIGH);                                // Schalte Relay -> Schneiden Stop
-      //stepCounter = 0;                                        // nach dem Schnitt, den Counter wieder auf 0 setzen
-      //sendCommand("steps_" + String(stepCounter), true);      // Sende Bestätigung das Schneiden fertig ist
+
+      // Direkt beenden, ohne auf Pin 7 zu warten (wie v1.0.0)
+      stepCounter = 0;                                        // nach dem Schnitt, den Counter wieder auf 0 setzen
+
+      if(isKopfSchnitt){
+        sendCommand("kopfSchnittBeendet_", true);
+        isKopfSchnitt = false;
+      } else {
+        sendCommand("schneidenBeendet_", true);               // Sende Bestätigung das Schneiden fertig ist
+      }
+
+      isMotorRunning = false;                                 // Erlaube weitere Schnitte
   }
 
   void forward(){                             // Handrad -> in welche Richtung wird gedreht hier 

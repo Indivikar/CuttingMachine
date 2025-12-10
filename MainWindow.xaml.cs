@@ -857,6 +857,7 @@ namespace SchneidMaschine
         private void commandReceivedSchneidmaschine(string text) {
 
             Console.WriteLine("commandReceivedSchneidmaschine: " + text);
+            SetTextSchneidmaschine("&[DEBUG] Befehl empfangen: [" + text + "]\n&");
 
             string[] befehl = text.Split('_');
 
@@ -922,6 +923,7 @@ namespace SchneidMaschine
                 case COMMAND_Schneidmaschine.schneidenBeendet:
                     {
                         Console.WriteLine("COMMAND_Schneidmaschine.schneidenBeendet");
+                        SetTextSchneidmaschine("&[DEBUG] schneidenBeendet empfangen - Aktiviere Buttons\n&");
                         dataModel.IsCutFinished = true;
                         Main.IsEnabled = true;
                         refreshStats(false);
