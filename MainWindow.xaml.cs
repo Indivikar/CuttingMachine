@@ -401,6 +401,12 @@ namespace SchneidMaschine
             // Entferne nur spezifische Steuerzeichen, aber behalte normale Leerzeichen
             text = text.Replace("\t", "").Replace("\n", "").Replace("\r", "");
 
+            // Prüfe, ob der String leer ist
+            if (string.IsNullOrEmpty(text))
+            {
+                return;
+            }
+
             //string firstChar = text.Substring(0, 1);
             string lastChar = text.Substring(text.Length - 1);
 
@@ -822,6 +828,12 @@ namespace SchneidMaschine
             text = text.Trim();
             // Entferne nur spezifische Steuerzeichen, aber behalte normale Leerzeichen
             text = text.Replace("\t", "").Replace("\n", "").Replace("\r", "");
+
+            // Prüfe, ob der String leer ist
+            if (string.IsNullOrEmpty(text))
+            {
+                return;
+            }
 
             //string firstChar = text.Substring(0, 1);
             string lastChar = text.Substring(text.Length - 1);
