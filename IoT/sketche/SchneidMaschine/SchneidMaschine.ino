@@ -28,6 +28,8 @@ boolean lockA = false;          //
 boolean lockB = false;          //
 
 boolean isMotorRunning = false; // ist der Motor zum abschneiden fertig (damit der Befehl nur einmal gesendet wird)
+boolean motorStartedSignalReceived = false; // wurde das LOW-Signal (Motor läuft) von LOGO-SPS empfangen?
+unsigned long motorStartTime = 0; // Zeitpunkt des Schnitt-Starts (für Timeout)
 
 boolean isKopfSchnitt = false;  // der Kopfschnitt soll nicht mit in die Statistik aufgenommen werden
 
@@ -51,7 +53,7 @@ String appendSerialData = "";   // einzelne Zeichen in eine Zeichenkette umwande
     pinMode(A, INPUT_PULLUP);   // Input vom Pin Handrad - A
     pinMode(B, INPUT_PULLUP);   // Input vom Pin Handrad - B
 
-    pinMode(motorRunning, INPUT_PULLUP);   // Input von der LOGO Q3
+    pinMode(motorRunning, INPUT);   // Input von der LOGO Q3 (aktiv 5V/0V - kein Pull-Up nötig!)
        
     pinMode(puls, OUTPUT);      // Puls      
     pinMode(dir, OUTPUT);       // Direction
@@ -98,10 +100,55 @@ String appendSerialData = "";   // einzelne Zeichen in eine Zeichenkette umwande
   }
 
   void motorFinished() {
-      // Diese Funktion wird nicht mehr verwendet, da schneiden() direkt
-      // schneidenBeendet_ sendet (wie in v1.0.0)
-      // Pin 7 (motorRunning) wird nicht mehr überwacht
-      return;
+      // Nur überwachen wenn ein Schnitt aktiv ist
+      if(!isMotorRunning) {
+          return;
+      }
+
+      valMotorRunning = digitalRead(motorRunning);
+
+      // TIMEOUT: Wenn nach 10 Sekunden kein Signal kommt, trotzdem beenden
+      unsigned long motorTimeout = 10000; // 10 Sekunden
+      if(millis() - motorStartTime > motorTimeout) {
+          sendText("!!! WARNUNG: Pin7 Timeout - kein Signal von LOGO-SPS !!!");
+
+          stepCounter = 0;
+          if(isKopfSchnitt){
+            sendCommand("kopfSchnittBeendet_", true);
+            isKopfSchnitt = false;
+          } else {
+            sendCommand("schneidenBeendet_", true);
+          }
+
+          isMotorRunning = false;
+          motorStartedSignalReceived = false;
+          return;
+      }
+
+      // Schritt 1: Warte auf LOW-Signal (LOGO-SPS meldet: Motor läuft)
+      if(!motorStartedSignalReceived && valMotorRunning == LOW) {
+          motorStartedSignalReceived = true;
+          sendText("DEBUG: Pin7 LOW - Motor läuft");
+      }
+
+      // Schritt 2: Warte auf HIGH-Signal (LOGO-SPS meldet: Motor fertig)
+      // Aber nur NACHDEM wir das LOW-Signal empfangen haben!
+      if(motorStartedSignalReceived && valMotorRunning == HIGH) {
+          sendText("DEBUG: Pin7 HIGH - Motor fertig");
+
+          // Jetzt ist der Schnitt wirklich fertig
+          stepCounter = 0;
+
+          if(isKopfSchnitt){
+            sendCommand("kopfSchnittBeendet_", true);
+            isKopfSchnitt = false;
+          } else {
+            sendCommand("schneidenBeendet_", true);
+          }
+
+          isMotorRunning = false;
+          motorStartedSignalReceived = false;
+      }
   }
   
 
@@ -237,23 +284,21 @@ String appendSerialData = "";   // einzelne Zeichen in eine Zeichenkette umwande
 
   void schneiden() {
       sendCommand("schneidenStartet_", true);                 // Sende Bestätigung, das Schneiden gestartet wird
-      isMotorRunning = true;                                  // Verhindere mehrfache Schnitte
+      isMotorRunning = true;                                  // Aktiviere Motor-Überwachung
+      motorStartedSignalReceived = false;                     // Reset: warte auf LOW-Signal von LOGO-SPS
+      motorStartTime = millis();                              // Merke Start-Zeit für Timeout
+
+      // DEBUG: Zeige Pin7 Status VOR dem Schnitt
+      int pinStatusVor = digitalRead(motorRunning);
+      sendText("DEBUG: Pin7 VOR Schnitt = " + String(pinStatusVor) + " (erwarte 1=HIGH)");
 
       digitalWrite(cut, LOW);                                 // Schalte Relay -> Schneiden Start
       delay(500);                                             // Pause zwischen an und aus, sonst schaltet Relay nicht
       digitalWrite(cut, HIGH);                                // Schalte Relay -> Schneiden Stop
 
-      // Direkt beenden, ohne auf Pin 7 zu warten (wie v1.0.0)
-      stepCounter = 0;                                        // nach dem Schnitt, den Counter wieder auf 0 setzen
-
-      if(isKopfSchnitt){
-        sendCommand("kopfSchnittBeendet_", true);
-        isKopfSchnitt = false;
-      } else {
-        sendCommand("schneidenBeendet_", true);               // Sende Bestätigung das Schneiden fertig ist
-      }
-
-      isMotorRunning = false;                                 // Erlaube weitere Schnitte
+      // NICHT hier beenden!
+      // Die motorFinished() Funktion überwacht Pin 7 und sendet schneidenBeendet_
+      // wenn die LOGO-SPS signalisiert, dass der physische Schnitt fertig ist
   }
 
   void forward(){                             // Handrad -> in welche Richtung wird gedreht hier 

@@ -299,6 +299,7 @@ namespace SchneidMaschine.model
         {
             try
             {
+                Console.WriteLine("Befehl an Schneidmaschine gesendet: {0}", text + "#");
                 serialPortSchneidmaschine.Write(text + "#");
             }
             catch (Exception e)
