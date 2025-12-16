@@ -45,6 +45,10 @@ unsigned long oneStep = 0;      // ein Schritt
 char c;                         // eingehende Daten in einzelne Zeichen aufgliedern
 String appendSerialData = "";   // einzelne Zeichen in eine Zeichenkette umwandeln
 
+// Buffer für isAllesStop() - verhindert, dass Befehle während der Bewegung verloren gehen
+char stopChar;                  // Zeichen für isAllesStop()
+String stopBuffer = "";         // Buffer für Befehle während der Schrittmotor-Bewegung
+
   void setup() {
     // SerialPort
     Serial.begin(9600);         // SerialPort öffnen und Datenrate in Bit pro Sekunde (bps)
@@ -154,7 +158,7 @@ String appendSerialData = "";   // einzelne Zeichen in eine Zeichenkette umwande
 
   // eingehende Daten Auslesen, Speichern und Befehle Ausführen
   void dataReceived() {
-      
+
       while(Serial.available() > 0) {   // wartet auf eingehende Daten und speichert die Anzahl der Zeichen (Chars)
           c = Serial.read();            // speichert jedes einzelne Zeichen (Char)
           appendSerialData += c;        // erstellt eine Zeichenkette (String) aus den einzelnen Zeichen (Chars)
@@ -164,12 +168,13 @@ String appendSerialData = "";   // einzelne Zeichen in eine Zeichenkette umwande
       if(isHandradOn) {
           forward();      // Hier wird überwacht, ob Signal "A" oder "B" zu erst da ist,
           backward();     // um die Drehrichtung zu ermitteln | A = vor, B = zurück
-                  
+
           setStep();      // wenn Signal "A" und "B" da waren, mache ein Step
       }
 
-    
-    if(c == '#') {                                          // das Zeichen "#" markiert das Ende der eingehenden Daten
+
+    // Prüfe ob ein vollständiger Befehl vorhanden ist (entweder neu empfangen oder von isAllesStop() gespeichert)
+    if(c == '#' || appendSerialData.endsWith("#")) {        // das Zeichen "#" markiert das Ende der eingehenden Daten
           appendSerialData.trim();                          // Leerzeichen, Zeilenumbrüche entfernen
           appendSerialData = appendSerialData               // letzte Zeichen "#" entfernen
             .substring(0, appendSerialData.length() - 1);
@@ -354,29 +359,38 @@ String appendSerialData = "";   // einzelne Zeichen in eine Zeichenkette umwande
      }
   }
 
-  void isAllesStop() {                        // Stoppt den Schrittmotor
+  void isAllesStop() {                        // Stoppt den Schrittmotor (wird während der Bewegung bei jedem Step aufgerufen)
       while(Serial.available() > 0) {         // wartet auf eingehende Daten und speichert die Anzahl der Zeichen (Chars)
-          c = Serial.read();                  // speichert jedes einzelne Zeichen (Char)
-          appendSerialData += c;              // erstellt eine Zeichenkette (String) aus den einzelnen Zeichen (Chars)
+          stopChar = Serial.read();           // speichert jedes einzelne Zeichen (Char) in eigenen Buffer
+          stopBuffer += stopChar;             // erstellt eine Zeichenkette (String) aus den einzelnen Zeichen (Chars)
       }
-  
-      if(c == '#') {                              // das Zeichen "#" markiert das Ende der eingehenden Daten          
-          appendSerialData.trim();                // Leerzeichen, Zeilenumbrüche entfernen
-          appendSerialData = appendSerialData     // letzte Zeichen "#" entfernen
-              .substring(0, appendSerialData.length() - 1); 
-  
-          allesStoppen = false;                   // Setzt "alles Stoppen" zurück
-  
-          String befehl = split(appendSerialData, '_', 0);  // aufteilen der Befehls-Zeile, Trenn-Zeichen ist "_" 
-                                                            // z.B.: stepper_300_forward (befehl_steps_richtung)
 
-          if(befehl.equals("allesStop")) {                  
+      if(stopChar == '#') {                       // das Zeichen "#" markiert das Ende der eingehenden Daten
+          stopBuffer.trim();                      // Leerzeichen, Zeilenumbrüche entfernen
+          stopBuffer = stopBuffer                 // letzte Zeichen "#" entfernen
+              .substring(0, stopBuffer.length() - 1);
+
+          // Entferne das Start-Zeichen "%" am Anfang, falls vorhanden
+          if(stopBuffer.startsWith("%")) {
+            stopBuffer = stopBuffer.substring(1);
+          }
+
+          String befehl = split(stopBuffer, '_', 0);  // aufteilen der Befehls-Zeile, Trenn-Zeichen ist "_"
+                                                      // z.B.: allesStop oder stepperStart_127_forward
+
+          if(befehl.equals("allesStop")) {
               allesStoppen = true;                          // Setze "alles Stoppen"
-              sendCommand("allesGestoppt", false);          // Sende Bestätigung, das "alles Stoppen" gesetzt wurde 
-          } 
-          
-          appendSerialData = "";                    // eingegangene Daten löschen
-          c = 0;                                    // eingegangene Daten löschen
+              sendCommand("allesGestoppt", false);          // Sende Bestätigung, das "alles Stoppen" gesetzt wurde
+          } else {
+              // WICHTIG: Andere Befehle (z.B. stepperStart) werden in appendSerialData gespeichert,
+              // damit sie nach der Bewegung in dataReceived() verarbeitet werden können!
+              // Dies verhindert, dass Befehle während der Bewegung verloren gehen.
+              appendSerialData += "%" + stopBuffer + "#";
+              sendText("[DEBUG] Befehl während Bewegung empfangen und gespeichert: " + stopBuffer);
+          }
+
+          stopBuffer = "";                        // stopBuffer löschen
+          stopChar = 0;                           // stopChar zurücksetzen
       }
   }
 

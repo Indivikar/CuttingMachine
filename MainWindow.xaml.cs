@@ -775,8 +775,10 @@ namespace SchneidMaschine
             string processedText = stringToCharSchneidmaschine(text);
             if (processedText == null)
             {
+                Console.WriteLine("[SetTextSchneidmaschine] processedText ist NULL - Befehl wird IGNORIERT");
                 return;
             }
+            Console.WriteLine("[SetTextSchneidmaschine] processedText: [" + processedText + "]");
 
             text = processedText;
 
@@ -951,16 +953,29 @@ namespace SchneidMaschine
 
                 case COMMAND_Schneidmaschine.stepperFinished:
                     {
-                        Console.WriteLine("COMMAND_Schneidmaschine.stepperFinished -> " + befehl[1]);
+                        Console.WriteLine("===========================================");
+                        Console.WriteLine("✓ COMMAND_Schneidmaschine.stepperFinished empfangen!");
+                        Console.WriteLine("  Steps: " + befehl[1]);
+                        Console.WriteLine("  IsStepperFinished wird auf TRUE gesetzt");
+                        Console.WriteLine("  EinzelSchritt.IsVisible: " + dataModel.EinzelSchritt.IsVisible);
+                        Console.WriteLine("===========================================");
+
+                        SetTextSchneidmaschine("&[DEBUG] stepperFinished empfangen - Steps: " + befehl[1] + "\n&");
+
                         dataModel.IsStepperFinished = true;
                         dataModel.setIstWert(befehl[1]);
 
                         if (dataModel.EinzelSchritt.IsVisible)
                         {
+                            Console.WriteLine("→ StackPanelControlsEnable() wird aufgerufen");
                             dataModel.EinzelSchritt.StackPanelControlsEnable();
                         }
-                        
-                        //if (dataModel.HalbAuto.IsVisible) 
+                        else
+                        {
+                            Console.WriteLine("⚠ WARNUNG: EinzelSchritt ist NICHT sichtbar - Buttons werden NICHT aktiviert!");
+                        }
+
+                        //if (dataModel.HalbAuto.IsVisible)
                         //{
                         //    dataModel.HalbAuto.cut();
                         //}
@@ -1201,7 +1216,16 @@ namespace SchneidMaschine
                 // Start der Commandline
                 if (ch.Equals('%') || ch.Equals((char)CharArduino.START_CHAR))
                 {
-                    newText = null;
+                    // WICHTIG: Wenn wir bereits einen vollständigen Befehl haben,
+                    // NICHT überschreiben! Der nächste Befehl wird im nächsten Aufruf verarbeitet.
+                    if (newText != null)
+                    {
+                        // Speichere das START_CHAR für den nächsten Aufruf
+                        befehlBuilderRollenzentrierung.Append(ch);
+                        break; // Verlasse die Schleife und returne den aktuellen Befehl
+                    }
+
+                    // Buffer nur löschen, wenn wir noch keinen vollständigen Befehl haben
                     befehlBuilderRollenzentrierung.Clear();
                 }
 
@@ -1213,6 +1237,10 @@ namespace SchneidMaschine
                     befehlBuilderRollenzentrierung.Append("\n");
                     newText = befehlBuilderRollenzentrierung.ToString();
                     befehlBuilderRollenzentrierung.Clear();  // Buffer nach vollständigem Befehl leeren
+
+                    // WICHTIG: Nach einem vollständigen Befehl STOPPEN!
+                    // Weitere Zeichen werden im nächsten Aufruf verarbeitet.
+                    break;
                 }
             }
 
@@ -1227,13 +1255,29 @@ namespace SchneidMaschine
             // Entferne nur spezifische Steuerzeichen, aber behalte normale Leerzeichen
             text = text.Replace("\t", "").Replace("\n", "").Replace("\r", "");
 
+            Console.WriteLine("[stringToCharSchneidmaschine] Input: [" + text + "]");
+            Console.WriteLine("[stringToCharSchneidmaschine] Buffer vor Verarbeitung: [" + befehlBuilderSchneidmaschine.ToString() + "]");
+
             char[] charArr = text.ToCharArray();
             foreach (char ch in charArr)
             {
                 // Start der Commandline
                 if (ch.Equals('%') || ch.Equals((char)CharArduino.START_CHAR))
                 {
-                    newText = null;
+                    Console.WriteLine("[stringToCharSchneidmaschine] START_CHAR erkannt: " + ch);
+
+                    // WICHTIG: Wenn wir bereits einen vollständigen Befehl haben,
+                    // NICHT überschreiben! Der nächste Befehl wird im nächsten Aufruf verarbeitet.
+                    if (newText != null)
+                    {
+                        Console.WriteLine("[stringToCharSchneidmaschine] WARNUNG: Neuer Befehl startet, aber vorheriger Befehl wurde noch nicht returned!");
+                        Console.WriteLine("[stringToCharSchneidmaschine] Speichere restliche Zeichen für nächsten Aufruf");
+                        // Speichere das START_CHAR für den nächsten Aufruf
+                        befehlBuilderSchneidmaschine.Append(ch);
+                        break; // Verlasse die Schleife und returne den aktuellen Befehl
+                    }
+
+                    // Buffer nur löschen, wenn wir noch keinen vollständigen Befehl haben
                     befehlBuilderSchneidmaschine.Clear();
                 }
 
@@ -1244,10 +1288,22 @@ namespace SchneidMaschine
                 {
                     befehlBuilderSchneidmaschine.Append("\n");
                     newText = befehlBuilderSchneidmaschine.ToString();
+                    Console.WriteLine("[stringToCharSchneidmaschine] END_CHAR erkannt! Vollständiger Befehl: [" + newText + "]");
                     befehlBuilderSchneidmaschine.Clear();  // Buffer nach vollständigem Befehl leeren
+
+                    // WICHTIG: Nach einem vollständigen Befehl STOPPEN!
+                    // Weitere Zeichen werden im nächsten Aufruf verarbeitet.
+                    Console.WriteLine("[stringToCharSchneidmaschine] Vollständiger Befehl wurde erkannt - stoppe Verarbeitung");
+                    break;
                 }
             }
 
+            if (newText == null && befehlBuilderSchneidmaschine.Length > 0)
+            {
+                Console.WriteLine("[stringToCharSchneidmaschine] WARNUNG: Unvollständiger Befehl - warte auf END_CHAR. Buffer: [" + befehlBuilderSchneidmaschine.ToString() + "]");
+            }
+
+            Console.WriteLine("[stringToCharSchneidmaschine] Return: [" + (newText ?? "NULL") + "]");
             return newText;
         }
 

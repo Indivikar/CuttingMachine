@@ -99,7 +99,24 @@ namespace SchneidMaschine.pages
 
         public void StackPanelControlsEnable()
         {
-            StackPanelControls.IsEnabled = true;
+            Console.WriteLine("╔═══════════════════════════════════════════════════════════╗");
+            Console.WriteLine("║  StackPanelControlsEnable() AUFGERUFEN                   ║");
+            Console.WriteLine("╠═══════════════════════════════════════════════════════════╣");
+            Console.WriteLine("║  StackPanelControls.IsEnabled VORHER: " + StackPanelControls.IsEnabled);
+
+            try
+            {
+                StackPanelControls.IsEnabled = true;
+                Console.WriteLine("║  StackPanelControls.IsEnabled NACHHER: " + StackPanelControls.IsEnabled);
+                Console.WriteLine("║  ✓ ERFOLG: IsEnabled wurde auf TRUE gesetzt");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("║  ✗ FEHLER beim Setzen von IsEnabled!");
+                Console.WriteLine("║  Exception: " + ex.Message);
+            }
+
+            Console.WriteLine("╚═══════════════════════════════════════════════════════════╝");
         }
 
         public void Btn_Cut(object sender, RoutedEventArgs e)
