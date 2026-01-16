@@ -5,9 +5,10 @@
  *
  * Zweck:
  * - Testet manuelle Taster-Steuerung (Pin 32 LINKS, Pin 33 RECHTS)
- * - Testet Sensor-Simulation mit Tastern (Pin 35, Pin 36)
+ * - Testet Sensor-Simulation mit Tastern (Pin 35, Pin 26)
  * - Testet Schrittmotor-Synchronisation (Pin 34 von Arduino)
  * - Verwendet Bounce2 Library für Entprellung
+ * - Motor-Simulation mit LED statt echtem TMC2209
  *
  * Hardware:
  * - ESP32
@@ -15,9 +16,9 @@
  * - Pin 33: Taster RECHTS (mit 10kΩ Pull-Down)
  * - Pin 34: INPUT vom Arduino Pin 9 (Schrittmotor-Status)
  * - Pin 35: Taster Sensor1-Simulation (mit 10kΩ Pull-Down)
- * - Pin 36: Taster Sensor2-Simulation (mit 10kΩ Pull-Down)
- * - Pin 25-27: TMC2209 Treiber
- * - LED Pin 2: Visualisierung Schrittmotor-Status
+ * - Pin 26: Taster Sensor2-Simulation (mit 10kΩ Pull-Down)
+ * - Pin 16: Motor-LED (simuliert Motor-Bewegung)
+ * - LED Pin 2: Visualisierung Arduino-Schrittmotor-Status
  *
  * Datum: 15. Januar 2026
  */
@@ -28,22 +29,10 @@
 const int SERIAL_BAUDRATE = 115200;
 const int LOOP_DELAY = 50;  // 50ms für schnellere Reaktion
 
-//---------- TMC2209 TREIBER EINSTELLUNGEN ----------
-const int EN_PIN = 25;    // Enable Pin
-const int STEP_PIN = 26;  // Step Pin
-const int DIR_PIN = 27;   // Direction Pin
-
-// Motor-Parameter
-const int STEPS_PER_REV = 51200;  // Schritte pro Umdrehung
-const int MICROSTEPS = 4;         // 4 Mikroschritte
-const int TOTAL_STEPS = STEPS_PER_REV / MICROSTEPS;
-
-// Timing-Parameter
-int calculateMinDelay(int microsteps) {
-  const int BASE_DELAY_US = 10;
-  return BASE_DELAY_US * (microsteps / 2);
-}
-const int STEP_DELAY_US = calculateMinDelay(MICROSTEPS);
+//---------- MOTOR-SIMULATION EINSTELLUNGEN ----------
+// Statt echtem TMC2209: LED-Simulation
+const int MOTOR_LED_PIN = 16;      // LED simuliert Motor-Bewegung
+const int MOTOR_SIMULATION_TIME = 2000;  // 2 Sekunden LED an = Motor bewegt sich
 
 //---------- RICHTUNGS-KONSTANTEN ----------
 const bool RIGHT_DIRECTION = HIGH;  // Gegen den Uhrzeigersinn
@@ -59,7 +48,7 @@ const int STEPPER_SIGNAL = 34;     // Signal von Arduino Pin 9 (HIGH = Schrittmo
 
 // Sensor-Simulation durch Taster (Pull-Down extern mit 10kΩ)
 const int SENSOR1_SIM = 35;        // Simuliert VL53L0X Sensor 1 (LINKS)
-const int SENSOR2_SIM = 36;        // Simuliert VL53L0X Sensor 2 (RECHTS)
+const int SENSOR2_SIM = 26;        // Simuliert VL53L0X Sensor 2 (RECHTS)
 
 // Status-LED
 const int LED_PIN = 2;             // Built-in LED zur Visualisierung
@@ -98,14 +87,12 @@ void setup() {
   Serial.println("Rollenzentrierung_Taster_Test - GESTARTET");
   Serial.println("=============================================");
 
-  // TMC2209 Pins konfigurieren
-  pinMode(EN_PIN, OUTPUT);
-  pinMode(STEP_PIN, OUTPUT);
-  pinMode(DIR_PIN, OUTPUT);
-  digitalWrite(EN_PIN, HIGH);  // Treiber deaktiviert (high-active)
-  Serial.println("TMC2209: Pins konfiguriert");
+  // Motor-LED konfigurieren (simuliert TMC2209 Motor)
+  pinMode(MOTOR_LED_PIN, OUTPUT);
+  digitalWrite(MOTOR_LED_PIN, LOW);  // LED aus = Motor steht
+  Serial.println("Motor-LED Pin 16: Simuliert Motor-Bewegung");
 
-  // NEU: Taster und Signal-Pins konfigurieren
+  // Taster und Signal-Pins konfigurieren
   pinMode(BUTTON_LEFT, INPUT);     // Pull-Down extern (10kΩ)
   pinMode(BUTTON_RIGHT, INPUT);    // Pull-Down extern (10kΩ)
   pinMode(STEPPER_SIGNAL, INPUT);  // Signal vom Arduino (Pin 34 = Input-Only)
@@ -118,8 +105,8 @@ void setup() {
   Serial.println("Pin 33: Taster RECHTS (INPUT)");
   Serial.println("Pin 34: Signal vom Arduino (INPUT)");
   Serial.println("Pin 35: Sensor1-Simulation (INPUT)");
-  Serial.println("Pin 36: Sensor2-Simulation (INPUT)");
-  Serial.println("Pin 2:  Status-LED (OUTPUT)");
+  Serial.println("Pin 26: Sensor2-Simulation (INPUT)");
+  Serial.println("Pin 2:  Arduino-Status-LED (OUTPUT)");
 
   // Bounce2 Initialisierung
   buttonLeft.attach(BUTTON_LEFT);
@@ -191,9 +178,7 @@ void checkManualButtons() {
     // Manuelle Bewegung hat VORRANG - ignoriert Schrittmotor-Status
     Serial.println("    Bewege nach LINKS (manuell - VORRANG)");
     motorIsMoving = true;
-    enableMotor();
-    rotateMotorFixedSteps(TOTAL_STEPS, LEFT_DIRECTION);
-    disableMotor();
+    simulateMotorMovement(LEFT_DIRECTION);
     motorIsMoving = false;
     Serial.println("    Bewegung LINKS abgeschlossen\n");
   }
@@ -209,9 +194,7 @@ void checkManualButtons() {
 
     Serial.println("    Bewege nach RECHTS (manuell - VORRANG)");
     motorIsMoving = true;
-    enableMotor();
-    rotateMotorFixedSteps(TOTAL_STEPS, RIGHT_DIRECTION);
-    disableMotor();
+    simulateMotorMovement(RIGHT_DIRECTION);
     motorIsMoving = false;
     Serial.println("    Bewegung RECHTS abgeschlossen\n");
   }
@@ -264,9 +247,7 @@ void checkSensorSimulation() {
       Serial.println("\n>>> SENSOR1: " + String(SENSOR_TRIGGER_COUNT) +
                      "x getriggert → Bewege nach RECHTS");
       motorIsMoving = true;
-      enableMotor();
-      rotateMotorFixedSteps(TOTAL_STEPS, RIGHT_DIRECTION);
-      disableMotor();
+      simulateMotorMovement(RIGHT_DIRECTION);
       motorIsMoving = false;
       sensor1TriggerCount = 0;
       Serial.println("    Sensor-Bewegung RECHTS abgeschlossen\n");
@@ -283,9 +264,7 @@ void checkSensorSimulation() {
       Serial.println("\n>>> SENSOR2: " + String(SENSOR_TRIGGER_COUNT) +
                      "x getriggert → Bewege nach LINKS");
       motorIsMoving = true;
-      enableMotor();
-      rotateMotorFixedSteps(TOTAL_STEPS, LEFT_DIRECTION);
-      disableMotor();
+      simulateMotorMovement(LEFT_DIRECTION);
       motorIsMoving = false;
       sensor2TriggerCount = 0;
       Serial.println("    Sensor-Bewegung LINKS abgeschlossen\n");
@@ -319,38 +298,29 @@ void statusOutput() {
   }
 }
 
-//---------- MOTOR AKTIVIEREN ----------
-void enableMotor() {
-  digitalWrite(EN_PIN, LOW);  // TMC2209 aktivieren
-  delay(10);
-  Serial.println("  [MOTOR] Aktiviert");
-}
-
-//---------- MOTOR DEAKTIVIEREN ----------
-void disableMotor() {
-  digitalWrite(EN_PIN, HIGH);  // TMC2209 deaktivieren
-  Serial.println("  [MOTOR] Deaktiviert");
-}
-
-//---------- MOTOR BEWEGEN ----------
-void rotateMotorFixedSteps(int steps, bool direction) {
-  // Richtung setzen
-  digitalWrite(DIR_PIN, direction);
-  delayMicroseconds(50);
+//---------- MOTOR-BEWEGUNG SIMULIEREN ----------
+void simulateMotorMovement(bool direction) {
+  // Statt echtem Motor: LED an + Delay
 
   String dirText = (direction == LEFT_DIRECTION) ? "LINKS" : "RECHTS";
-  Serial.println("  [MOTOR] Bewege " + String(steps) + " Steps nach " + dirText);
+  Serial.println("  [MOTOR-SIM] LED an - simuliere Bewegung nach " + dirText);
+  Serial.println("  [MOTOR-SIM] Dauer: " + String(MOTOR_SIMULATION_TIME) + "ms");
 
-  // Steps ausführen
-  for (int i = 0; i < steps; i++) {
-    digitalWrite(STEP_PIN, HIGH);
-    delayMicroseconds(STEP_DELAY_US);
-    digitalWrite(STEP_PIN, LOW);
-    delayMicroseconds(STEP_DELAY_US);
+  // LED an = Motor läuft
+  digitalWrite(MOTOR_LED_PIN, HIGH);
 
-    // Progress alle 2000 Steps
-    if ((i + 1) % 2000 == 0) {
-      Serial.println("    Progress: " + String(i + 1) + "/" + String(steps));
+  // Simuliere Motor-Bewegung mit Delay
+  unsigned long startTime = millis();
+  while (millis() - startTime < MOTOR_SIMULATION_TIME) {
+    // Alle 500ms Progress ausgeben
+    if ((millis() - startTime) % 500 == 0) {
+      int progress = ((millis() - startTime) * 100) / MOTOR_SIMULATION_TIME;
+      Serial.println("    Progress: " + String(progress) + "%");
+      delay(50); // Kurze Pause um nicht zu viel Output zu erzeugen
     }
   }
+
+  // LED aus = Motor steht
+  digitalWrite(MOTOR_LED_PIN, LOW);
+  Serial.println("  [MOTOR-SIM] LED aus - Bewegung beendet");
 }

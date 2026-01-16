@@ -564,7 +564,7 @@ Nach erfolgreichem Test:
 2. ✅ 10kΩ Pull-Down Widerstände
 3. ✅ Bounce2 Library für Sensoren
 4. ✅ Test-Sketch Namen
-5. ✅ Sensor-Simulation: Pin 35 und 36
+5. ✅ Sensor-Simulation: Pin 35 und 26
 6. ✅ LED zur Visualisierung: JA (Pin wird im Code definiert)
 7. ✅ Serial-Kommunikation im Test: NEIN (nur Serial Monitor Debug-Ausgaben)
 
@@ -599,9 +599,10 @@ Nach erfolgreichem Test:
 
 **Features:**
 - ✅ 2x Manuelle Taster (Pin 32 LINKS, Pin 33 RECHTS)
-- ✅ 2x Sensor-Simulation Taster (Pin 35, Pin 36)
+- ✅ 2x Sensor-Simulation Taster (Pin 35, Pin 26)
 - ✅ Pin 34 Eingang vom Arduino (Schrittmotor-Status)
 - ✅ LED Pin 2 zeigt Arduino-Schrittmotor Status
+- ✅ LED Pin 16 simuliert Motor-Bewegung (statt TMC2209)
 - ✅ Bounce2 Library für alle Taster
 - ✅ Sensor-Bewegung nur bei aktivem Arduino-Schrittmotor
 - ✅ Manuelle Taster funktionieren IMMER
@@ -611,8 +612,7 @@ Nach erfolgreichem Test:
 - `checkManualButtons()` - Prüft Taster LINKS/RECHTS (IMMER)
 - `isStepperRunning()` - Liest Pin 34 Status
 - `checkSensorSimulation()` - Prüft Sensor-Taster (NUR bei aktivem Schrittmotor)
-- `enableMotor()` / `disableMotor()` - TMC2209 Steuerung
-- `rotateMotorFixedSteps()` - Bewegt Motor
+- `simulateMotorMovement()` - LED-Simulation statt echter Motor (2 Sekunden)
 
 **Baudrate**: 115200
 
@@ -658,26 +658,20 @@ Pin 35 <-------- Taster Sensor1-Simulation
 Taster Sensor1: zwischen Pin 35 und VCC (3.3V)
 
 
-Pin 36 <-------- Taster Sensor2-Simulation
+Pin 26 <-------- Taster Sensor2-Simulation
    |
  [10kΩ] Pull-Down
    |
   GND
 
-Taster Sensor2: zwischen Pin 36 und VCC (3.3V)
+Taster Sensor2: zwischen Pin 26 und VCC (3.3V)
 
 
-TMC2209 Treiber
-===============
-Pin 25 -> EN (Enable)
-Pin 26 -> STEP
-Pin 27 -> DIR (Direction)
-
-
-LEDs (optional)
-===============
+LEDs
+====
 Arduino Pin 13: Built-in LED (Schrittmotor-Status)
-ESP32 Pin 2: Built-in LED (Schrittmotor-Status vom Arduino)
+ESP32 Pin 2: Built-in LED (Arduino-Schrittmotor-Status)
+ESP32 Pin 16: Motor-LED (simuliert Bewegung, 2 Sekunden an)
 ```
 
 ### Benötigte Bauteile
@@ -686,6 +680,8 @@ ESP32 Pin 2: Built-in LED (Schrittmotor-Status vom Arduino)
 |------------|--------|------|-----------|
 | Pull-Down Widerstand | 4x | 10kΩ | Braun-Schwarz-Orange |
 | Taster | 4x | - | Öffner (NO) |
+| LED | 1x | - | Motor-Simulation (Pin 16) + Vorwiderstand 220Ω |
+| Vorwiderstand für LED | 1x | 220Ω | Rot-Rot-Braun |
 | Jumperwire | 1x | - | Arduino Pin 9 → ESP32 Pin 34 |
 | Jumperwire | 1x | - | Arduino GND → ESP32 GND |
 
@@ -731,13 +727,13 @@ Beispiel: %stepperStart_1000_forward#
 =============================================
 Rollenzentrierung_Taster_Test - GESTARTET
 =============================================
-TMC2209: Pins konfiguriert
+Motor-LED Pin 16: Simuliert Motor-Bewegung
 Pin 32: Taster LINKS (INPUT)
 Pin 33: Taster RECHTS (INPUT)
 Pin 34: Signal vom Arduino (INPUT)
 Pin 35: Sensor1-Simulation (INPUT)
-Pin 36: Sensor2-Simulation (INPUT)
-Pin 2:  Status-LED (OUTPUT)
+Pin 26: Sensor2-Simulation (INPUT)
+Pin 2:  Arduino-Status-LED (OUTPUT)
 Bounce2: Entprellung aktiviert (50ms)
 
 Setup abgeschlossen.
@@ -745,7 +741,8 @@ Setup abgeschlossen.
 FUNKTIONEN:
   - Taster LINKS/RECHTS: Manuelle Bewegung (IMMER)
   - Sensor-Taster: Bewegung nur bei Arduino-Motor aktiv
-  - LED: Zeigt Arduino-Schrittmotor Status
+  - LED Pin 2: Zeigt Arduino-Schrittmotor Status
+  - LED Pin 16: Simuliert Motor-Bewegung (2 Sekunden)
 =============================================
 ```
 
@@ -755,7 +752,7 @@ FUNKTIONEN:
 2. Arduino Pin 9 mit ESP32 Pin 34 verbinden (Jumperwire)
 3. Arduino GND mit ESP32 GND verbinden (Jumperwire)
 4. 4x Taster mit Pull-Down Widerständen aufbauen (siehe Schaltplan oben)
-5. TMC2209 Treiber an ESP32 anschließen
+5. LED an Pin 16 anschließen (mit 220Ω Vorwiderstand nach GND)
 6. **BEIDE Geräte wieder anschließen**
 
 ### Schritt 4: Funktionstest
@@ -770,17 +767,19 @@ FUNKTIONEN:
 ```
 >>> TASTER LINKS gedrückt
     Bewege nach LINKS (manuell - VORRANG)
-  [MOTOR] Aktiviert
-  [MOTOR] Bewege 12800 Steps nach LINKS
-    Progress: 2000/12800
-    Progress: 4000/12800
-    ...
-  [MOTOR] Deaktiviert
+  [MOTOR-SIM] LED an - simuliere Bewegung nach LINKS
+  [MOTOR-SIM] Dauer: 2000ms
+    Progress: 25%
+    Progress: 50%
+    Progress: 75%
+    Progress: 100%
+  [MOTOR-SIM] LED aus - Bewegung beendet
     Bewegung LINKS abgeschlossen
 ```
 
 **✅ Erfolgskriterium:**
 - Taster funktionieren unabhängig vom Arduino-Schrittmotor Status
+- LED Pin 16 leuchtet für 2 Sekunden
 
 #### Test 2: Sensor-Simulation (NUR bei aktivem Schrittmotor)
 
@@ -818,11 +817,13 @@ FUNKTIONEN:
 [SENSOR1] Getriggert [5/5]
 
 >>> SENSOR1: 5x getriggert → Bewege nach RECHTS
-  [MOTOR] Aktiviert
-  [MOTOR] Bewege 12800 Steps nach RECHTS
-    Progress: 2000/12800
-    ...
-  [MOTOR] Deaktiviert
+  [MOTOR-SIM] LED an - simuliere Bewegung nach RECHTS
+  [MOTOR-SIM] Dauer: 2000ms
+    Progress: 25%
+    Progress: 50%
+    Progress: 75%
+    Progress: 100%
+  [MOTOR-SIM] LED aus - Bewegung beendet
     Sensor-Bewegung RECHTS abgeschlossen
 
 [SIGNAL] Arduino-Schrittmotor steht → Sensor-Bewegung DEAKTIVIERT
@@ -830,7 +831,8 @@ FUNKTIONEN:
 
 **✅ Erfolgskriterium:**
 - Sensor-Bewegung funktioniert NUR wenn Arduino-Schrittmotor läuft
-- LED Pin 2 am ESP32 leuchtet während Arduino bewegt
+- LED Pin 2 leuchtet während Arduino bewegt
+- LED Pin 16 leuchtet für 2 Sekunden während Sensor-Bewegung
 
 #### Test 3: Sensor-Simulation OHNE aktivem Schrittmotor
 
@@ -899,14 +901,15 @@ Sensor2 Trigger Count: 0/5
 2. Arduino-Sketch prüfen: Wird Pin 9 richtig gesetzt?
 3. Mit Serial Monitor prüfen: `[PIN 9] HIGH` Ausgaben erscheinen?
 
-### Problem: Motor bewegt sich nicht
+### Problem: LED Pin 16 leuchtet nicht
 
-**Ursache:** TMC2209 nicht richtig angeschlossen oder nicht aktiviert
+**Ursache:** LED falsch angeschlossen oder Vorwiderstand fehlt
 
 **Lösung:**
-1. EN_PIN, STEP_PIN, DIR_PIN prüfen (Pin 25, 26, 27)
-2. TMC2209 Stromversorgung prüfen
-3. Serial Monitor: Erscheint `[MOTOR] Aktiviert`?
+1. LED-Polung prüfen (lange Seite = Anode = Pin 16, kurze Seite = Kathode = GND)
+2. Vorwiderstand 220Ω zwischen LED Kathode und GND
+3. Serial Monitor: Erscheint `[MOTOR-SIM] LED an`?
+4. Mit Multimeter LED-Verbindung prüfen
 
 ---
 
