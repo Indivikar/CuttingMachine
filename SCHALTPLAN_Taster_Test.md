@@ -16,13 +16,17 @@ Dieses Dokument zeigt die komplette Verdrahtung für den Test-Aufbau der manuell
 ### Arduino (Schneidmaschine)
 - 1x Arduino Uno/Nano/Mega
 - 1x USB-Kabel
+- 1x Taster START (Öffner/NO - Normally Open)
+- 1x 10kΩ Widerstand (Pull-Down) - Farbcode: Braun-Schwarz-Orange
+- 1x LED (Pin 10 Status-LED)
+- 1x 220Ω Vorwiderstand (Rot-Rot-Braun)
 - Optional: Schrittmotor-Treiber (für echten Test)
 
 ### ESP32 (Rollenzentrierung)
 - 1x ESP32 Dev Board
 - 1x USB-Kabel
-- 1x LED (für Motor-Simulation)
-- 1x 220Ω Vorwiderstand (Rot-Rot-Braun)
+- 2x LED (Pin 16 Motor-Simulation, Pin 17 Status-LED)
+- 2x 220Ω Vorwiderstand (Rot-Rot-Braun)
 
 ### Taster und Widerstände
 - 4x Taster (Öffner/NO - Normally Open)
@@ -30,7 +34,8 @@ Dieses Dokument zeigt die komplette Verdrahtung für den Test-Aufbau der manuell
 
 ### Verkabelung
 - 2x Jumperwire Male-Male (Pin 9→34, GND→GND)
-- 8x Jumperwire Male-Male (Taster zu ESP32)
+- 2x Jumperwire Male-Male (Arduino Taster START)
+- 8x Jumperwire Male-Male (ESP32 Taster)
 - Breadboard (empfohlen für Test-Aufbau)
 
 ---
@@ -45,22 +50,51 @@ Dieses Dokument zeigt die komplette Verdrahtung für den Test-Aufbau der manuell
     │         ARDUINO UNO/MEGA         │              	|
     │                                  │              	|
     │  ┌────────────────────────────┐  │               	|
-    │  │ Pin 9  (OUTPUT)            │──┼────────────────┼──────┐
-    │  │                            │  │               	|      │
-    │  │ Pin 13 (LED - Built-in)    │  │               	|      │
-    │  │                            │  │               	|      │
-    │  │ Pin 4  (STEP - optional)   │  │               	|      │
-    │  │ Pin 5  (DIR  - optional)   │  │               	|      │
-    │  │ Pin 6  (EN   - optional)   │  │               	|      │
-    │  │                            │  │               	|      │
-    │  │ GND                        │──┼────────────────┼──┐   │
-    │  └────────────────────────────┘  │               	|  │   │
-    └──────────────────────────────────┘               	|  │   │
-                                                        |  │   │
-                                                        |  │   │
-    ┌───────────────────────────────────────────────────┘  │   │
-    │                                                      │   │
-    │              ESP32 DEV MODULE                        │   │
+    │  │ Pin 2  (INPUT - Taster)    │◄─┼───┐           |      │
+    │  │                            │  │   │           |      │
+    │  │ Pin 9  (OUTPUT)            │──┼───┼───────────┼──────┐
+    │  │                            │  │   │           |      │
+    │  │ Pin 10 (LED - Status)  ────┼──┼───┼───────┐   |      │
+    │  │                            │  │   │       │   |      │
+    │  │ Pin 4  (STEP - optional)   │  │   │       │   |      │
+    │  │ Pin 5  (DIR  - optional)   │  │   │       │   |      │
+    │  │ Pin 6  (EN   - optional)   │  │   │       │   |      │
+    │  │                            │  │   │       │   |      │
+    │  │ GND                        │──┼───┼───┬───┼───┼──┐   │
+    │  │                            │  │   │   │   │   |  │   │
+    │  │ 5V                         │──┼───┼───┼───┘   |  │   │
+    │  └────────────────────────────┘  │   │       │   |  │   │
+    └──────────────────────────────────┘   │       │   |  │   │
+                                           │       │   |  │   │
+                        ┌──────────────────┘       │   |  │   │
+                        │  Taster START (NO)       │   |  │   │
+                        │  ┌────────┐              │   |  │   │
+                        │  │        │              │   |  │   │
+                 Pin 2  ├──┤ Taster ├──── 5V ◄─────┘   |  │   │
+                        │  │        │              	   |  │   │
+                        │  └────┬───┘              	   |  │   │
+                        │       │                   	   |  │   │
+                        │    [10kΩ]  Pull-Down      	   |  │   │
+                        │       │                   	   |  │   │
+                        └───────┴────── GND ◄───────────┼──┘   │
+                                                        |      │
+                                        ┌───────────────┘      │
+                                        │ Status-LED (Pin 10)  │
+                                        │  ┌────────┐          │
+                                        │  │   LED  │          │
+                                        │  │ Anode  │◄─────────┘
+                                        │  │        │
+                                        │  │ Kathode├──────────┐
+                                        │  └────┬───┘          │
+                                        │     [220Ω]           │
+                                        │       │              │
+                                        │      GND◄────────────┘
+                                        │
+                                        └──────────────────────
+
+    ┌───────────────────────────────────────────────────────────
+    │
+    │              ESP32 DEV MODULE
     │  ┌────────────────────────────────────────────────┐  │   │
     │  │                                                │  │   │
     │  │ Pin 34 (INPUT - Arduino Signal)  ◄─────────────┼──┘   │
@@ -73,32 +107,46 @@ Dieses Dokument zeigt die komplette Verdrahtung für den Test-Aufbau der manuell
     │  │                                      │ │   │   │      │
     │  │ Pin 26 (INPUT - Sensor2 Sim)     ◄─┐ │ │   │   │      │
     │  │                                    │ │ │   │   │      │
-    │  │ Pin 2  (LED - Built-in)           	│ │ │   │   │      │
-    │  │                                    │ │ │   │   │      │
-    │  │ Pin 16 (Motor-LED)  ───────────┐   │ │ │   │   │      │
+    │  │ Pin 17 (LED - Status)  ────────┐   │ │ │   │   │      │
     │  │                                │   │ │ │   │   │      │
-    │  │ GND ───────────────────────────┼───┼─┼─┼───┼───┼──┐   │
-    │  │                                │   │ │ │   │   │  │   │
-    │  │ 3.3V ──────────────────────────┼───┼─┼─┼───┼───┼──┼───┘
-    │  └────────────────────────────────┼───┼─┼─┼───┼───┼──┼──┐
-    └───────────────────────────────────┼───┼─┼─┼───┼───┼──┼──┼──┐
-                                        │   │ │ │   │   │  │  │  │
-                                        │   │ │ │   │   │  │  │  │
-                              ┌─────────┘   │ │ │   │   │  │  │  │
-                              │  LED + 220Ω │ │ │   │   │  │  │  │
-                              │  ┌────────┐ │ │ │   │   │  │  │  │
-                              │  │   LED  │ │ │ │   │   │  │  │  │
-                              │  │ Anode  │◄┘ │ │   │   │  │  │  │
-                              │  │        │   │ │   │   │  │  │  │
-                              │  │ Kathode├───┤ │   │   │  │  │  │
-                              │  └────┬───┘   │ │   │   │  │  │  │
-                              │     [220Ω]    │ │   │   │  │  │  │
-                              │       │       │ │   │   │  │  │  │
-                              │      GND◄─────┼─┼───┼───┼──┘  │  │
-                              │               │ │   │   │     │  │
-                              └───────────────┘ │   │   │     │  │
-                                                    │   │     │     │
-                        ┌───────────────────────────┘   │     │     │
+    │  │ Pin 16 (Motor-LED)  ───────┐   │   │ │ │   │   │      │
+    │  │                            │   │   │ │ │   │   │      │
+    │  │ GND ───────────────────────┼───┼───┼─┼─┼───┼───┼──┐   │
+    │  │                            │   │   │ │ │   │   │  │   │
+    │  │ 3.3V ──────────────────────┼───┼───┼─┼─┼───┼───┼──┼───┘
+    │  └────────────────────────────┼───┼───┼─┼─┼───┼───┼──┼──┐
+    └───────────────────────────────┼───┼───┼─┼─┼───┼───┼──┼──┼──┐
+                                    │   │   │ │ │   │   │  │  │  │
+                                    │   │   │ │ │   │   │  │  │  │
+                          ┌─────────┘   │   │ │ │   │   │  │  │  │
+                          │ Motor-LED   │   │ │ │   │   │  │  │  │
+                          │  ┌────────┐ │   │ │ │   │   │  │  │  │
+                          │  │   LED  │ │   │ │ │   │   │  │  │  │
+                          │  │ Anode  │◄┘   │ │ │   │   │  │  │  │
+                          │  │        │     │ │ │   │   │  │  │  │
+                          │  │ Kathode├─────┤ │ │   │   │  │  │  │
+                          │  └────┬───┘     │ │ │   │   │  │  │  │
+                          │     [220Ω]      │ │ │   │   │  │  │  │
+                          │       │         │ │ │   │   │  │  │  │
+                          │      GND◄───────┼─┼─┼───┼───┼──┘  │  │
+                          │                 │ │ │   │   │     │  │
+                          └─────────────────┘ │ │   │   │     │  │
+                                              │ │   │   │     │  │
+                          ┌───────────────────┘ │   │   │     │  │
+                          │ Status-LED (Pin 17)  │   │   │     │  │
+                          │  ┌────────┐          │   │   │     │  │
+                          │  │   LED  │          │   │   │     │  │
+                          │  │ Anode  │◄─────────┘   │   │     │  │
+                          │  │        │              │   │     │  │
+                          │  │ Kathode├──────────────┤   │     │  │
+                          │  └────┬───┘              │   │     │  │
+                          │     [220Ω]               │   │     │  │
+                          │       │                  │   │     │  │
+                          │      GND◄────────────────┼───┼─────┘  │
+                          │                          │   │        │
+                          └──────────────────────────┘   │        │
+                                                         │        │
+                        ┌────────────────────────────────┘        │
                         │  Taster LINKS (NO)            │     │     │
                         │  ┌────────┐                   │     │     │
                         │  │        │                   │     │     │
@@ -151,7 +199,82 @@ Dieses Dokument zeigt die komplette Verdrahtung für den Test-Aufbau der manuell
 
 ## Detaillierte Einzelschaltungen
 
-### 1. Arduino Pin 9 → ESP32 Pin 34 (Signal)
+### 1. Arduino Taster START (Pin 2)
+
+```
+                5V (Arduino)
+                    │
+                    │
+               ┌────┴────┐
+               │  Taster │  (Normally Open)
+               │ START   │
+               └────┬────┘
+                    │
+                    ├───────────► Pin 2 (Arduino)
+                    │
+                 [10kΩ]  Pull-Down Widerstand
+                    │
+                   GND
+
+Funktion: Startet Schrittmotor-Simulation (2000 Steps)
+- Taster drücken = Simulation startet
+- LED Pin 10 leuchtet während Bewegung
+- Pin 9 HIGH während Bewegung (Signal an ESP32)
+```
+
+**Taster-Anschluss:**
+- Ein Bein: Arduino Pin 2
+- Anderes Bein: 5V
+- 10kΩ Widerstand: Pin 2 → GND (Pull-Down)
+
+**Wichtig:**
+- Taster zwischen Pin 2 und 5V
+- Pull-Down Widerstand zwischen Pin 2 und GND
+- Ohne Widerstand: Floating Input (instabil!)
+- Software-Entprellung: 50ms
+
+---
+
+### 2. Arduino Status-LED (Pin 10)
+
+```
+Arduino                          LED + Vorwiderstand
+┌──────┐                      ┌────────────────┐
+│      │                      │                │
+│      │                      │     LED        │
+│Pin 10├──────────────────────┤ Anode (+)      │
+│      │                      │ lange Seite    │
+│      │                      │                │
+│      │                      │ Kathode (-)    │
+│      │                      │ kurze Seite    │
+│      │                      └────┬───────────┘
+│      │                           │
+│      │                        [220Ω]  ← Vorwiderstand
+│      │                           │    (Rot-Rot-Braun)
+│ GND  ├───────────────────────────┘
+│      │
+└──────┘
+
+Funktionsweise:
+- LED leuchtet während Schrittmotor-Simulation läuft
+- Vorwiderstand schützt LED vor zu hohem Strom
+- Anode (langes Bein) → Pin 10
+- Kathode (kurzes Bein) → 220Ω → GND
+```
+
+**LED-Anschluss:**
+- Anode (langes Bein, +): Arduino Pin 10
+- Kathode (kurzes Bein, -): 220Ω Vorwiderstand
+- Vorwiderstand: GND
+
+**Wichtig:**
+- LED-Polung beachten! Falsche Polung = LED leuchtet nicht
+- Vorwiderstand IMMER verwenden (sonst LED kaputt)
+- LED leuchtet = Schrittmotor-Simulation aktiv
+
+---
+
+### 3. Arduino Pin 9 → ESP32 Pin 34 (Signal)
 
 ```
 Arduino                          ESP32
@@ -174,7 +297,7 @@ WICHTIG: GND-Verbindung ist ZWINGEND erforderlich!
 
 ---
 
-### 2. Taster LINKS (Pin 32)
+### 4. Taster LINKS (Pin 32)
 
 ```
                 3.3V (ESP32)
@@ -205,7 +328,7 @@ Funktionsweise:
 
 ---
 
-### 3. Taster RECHTS (Pin 33)
+### 5. Taster RECHTS (Pin 33)
 
 ```
                 3.3V (ESP32)
@@ -227,7 +350,7 @@ Aufbau identisch zu Taster LINKS, nur anderer Pin
 
 ---
 
-### 4. Taster SENSOR1 (Pin 35) - Simulation
+### 6. Taster SENSOR1 (Pin 35) - Simulation
 
 ```
                 3.3V (ESP32)
@@ -250,7 +373,7 @@ Funktion: Simuliert VL53L0X Sensor 1 (LINKS)
 
 ---
 
-### 5. Taster SENSOR2 (Pin 26) - Simulation
+### 7. Taster SENSOR2 (Pin 26) - Simulation
 
 ```
                 3.3V (ESP32)
@@ -273,7 +396,46 @@ Funktion: Simuliert VL53L0X Sensor 2 (RECHTS)
 
 ---
 
-### 6. Motor-LED (Pin 16) - Simuliert Bewegung
+### 8. ESP32 Status-LED (Pin 17) - Arduino-Schrittmotor-Status
+
+```
+ESP32                          LED + Vorwiderstand
+┌──────┐                      ┌────────────────┐
+│      │                      │                │
+│      │                      │     LED        │
+│Pin 17├──────────────────────┤ Anode (+)      │
+│      │                      │ lange Seite    │
+│      │                      │                │
+│      │                      │ Kathode (-)    │
+│      │                      │ kurze Seite    │
+│      │                      └────┬───────────┘
+│      │                           │
+│      │                        [220Ω]  ← Vorwiderstand
+│      │                           │    (Rot-Rot-Braun)
+│ GND  ├───────────────────────────┘
+│      │
+└──────┘
+
+Funktionsweise:
+- LED leuchtet wenn Arduino-Schrittmotor läuft (Pin 34 HIGH)
+- Vorwiderstand schützt LED vor zu hohem Strom
+- Anode (langes Bein) → Pin 17
+- Kathode (kurzes Bein) → 220Ω → GND
+```
+
+**LED-Anschluss:**
+- Anode (langes Bein, +): ESP32 Pin 17
+- Kathode (kurzes Bein, -): 220Ω Vorwiderstand
+- Vorwiderstand: GND
+
+**Wichtig:**
+- LED-Polung beachten! Falsche Polung = LED leuchtet nicht
+- Vorwiderstand IMMER verwenden (sonst LED kaputt)
+- LED leuchtet = Arduino-Schrittmotor läuft (Pin 34 HIGH)
+
+---
+
+### 9. Motor-LED (Pin 16) - Simuliert Bewegung
 
 ```
 ESP32                          LED + Vorwiderstand
@@ -356,40 +518,59 @@ Power Rails:        Breadboard Rows:                        Power Rails:
 
 ## Aufbau-Reihenfolge (Empfohlen)
 
-### Schritt 1: ESP32 und Arduino vorbereiten
+### Schritt 1: Arduino Taster START aufbauen
+1. 10kΩ Widerstand: Arduino Pin 2 → GND
+2. Taster: Arduino Pin 2 → 5V
+3. Testen: Mit Multimeter Pin 2 messen
+   - Ohne Druck: 0V
+   - Mit Druck: 5V
+
+### Schritt 2: ESP32 und Arduino vorbereiten
 1. ESP32 auf Breadboard stecken
 2. Arduino daneben platzieren (nicht auf Breadboard)
 3. Power Rails verbinden: ESP32 3.3V → (+) Rail, ESP32 GND → (-) Rail
 
-### Schritt 2: Taster LINKS aufbauen
+### Schritt 3: Taster LINKS aufbauen
 1. 10kΩ Widerstand: Pin 32 Reihe → GND Rail
 2. Taster: Pin 32 Reihe → 3.3V Rail
 3. Testen: Mit Multimeter Pin 32 messen
    - Ohne Druck: 0V
    - Mit Druck: 3.3V
 
-### Schritt 3: Taster RECHTS aufbauen
+### Schritt 4: Taster RECHTS aufbauen
 1. 10kΩ Widerstand: Pin 33 Reihe → GND Rail
 2. Taster: Pin 33 Reihe → 3.3V Rail
 3. Testen wie bei Taster LINKS
 
-### Schritt 4: Sensor-Taster aufbauen
+### Schritt 5: Sensor-Taster aufbauen
 1. Sensor1 Taster: Pin 35 + 10kΩ Pull-Down
 2. Sensor2 Taster: Pin 26 + 10kΩ Pull-Down
 3. Testen wie vorher
 
-### Schritt 5: Arduino Pin 9 → ESP32 Pin 34
+### Schritt 6: Arduino Pin 9 → ESP32 Pin 34
 1. Jumperwire: Arduino Pin 9 → ESP32 Pin 34
 2. Jumperwire: Arduino GND → ESP32 GND (Power Rail)
 3. ⚠️ WICHTIG: Beide GND müssen verbunden sein!
 
-### Schritt 6: Motor-LED an Pin 16 anschließen
+### Schritt 7: Arduino Status-LED an Pin 10 anschließen
+1. LED Anode (langes Bein) → Arduino Pin 10
+2. LED Kathode (kurzes Bein) → 220Ω Vorwiderstand
+3. Vorwiderstand anderes Ende → GND
+4. Polung prüfen: Langes Bein = Anode (+), Kurzes Bein = Kathode (-)
+
+### Schritt 8: ESP32 Status-LED an Pin 17 anschließen
+1. LED Anode (langes Bein) → ESP32 Pin 17
+2. LED Kathode (kurzes Bein) → 220Ω Vorwiderstand
+3. Vorwiderstand anderes Ende → GND Rail
+4. Polung prüfen: Langes Bein = Anode (+), Kurzes Bein = Kathode (-)
+
+### Schritt 9: ESP32 Motor-LED an Pin 16 anschließen
 1. LED Anode (langes Bein) → ESP32 Pin 16
 2. LED Kathode (kurzes Bein) → 220Ω Vorwiderstand
 3. Vorwiderstand anderes Ende → GND Rail
 4. Polung prüfen: Langes Bein = Anode (+), Kurzes Bein = Kathode (-)
 
-### Schritt 7: Funktionstest
+### Schritt 10: Funktionstest
 1. ESP32 Sketch hochladen
 2. Arduino Sketch hochladen
 3. Tests durchführen (siehe PLAN.md)

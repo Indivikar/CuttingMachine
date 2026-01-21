@@ -5,17 +5,21 @@
  *
  * Zweck:
  * - Testet Pin 9 Signal-Steuerung (HIGH = Schrittmotor läuft)
+ * - Testet Taster-Steuerung für Schrittmotor-Simulation
  * - Vereinfachte Version ohne LOGO-SPS Integration
  * - Nur für Büro-Test (ohne echte Hardware)
  *
  * Hardware:
  * - Arduino (Uno/Nano/Mega)
+ * - Pin 2: Taster START (mit 10kΩ Pull-Down)
  * - Pin 9: OUTPUT → Signal an ESP32 Pin 34
+ * - Pin 10: Status-LED (mit 220Ω Vorwiderstand)
  * - Pin 4-6: Schrittmotor-Treiber (optional für Test)
- * - LED Pin 13: Visualisierung Schrittmotor-Status (optional)
  *
  * Datum: 15. Januar 2026
  */
+
+#include <Bounce2.h>
 
 //---------- CONFIG ----------
 double mmInSteps = 13.3;         // Steps pro mm
@@ -23,22 +27,28 @@ int startDelay = 5000;           // Start-Pause für langsamen Anlauf
 int minDelay = 500;              // Min-Pause zwischen Steps
 
 //---------- PINS ----------
+// Taster
+const int BUTTON_START = 2;      // Taster START - startet Schrittmotor-Simulation
+
 // Schrittmotor-Treiber
 const int puls = 4;              // Schrittmotor-Treiber - Puls
 const int dir = 5;               // Schrittmotor-Treiber - Direction
 const int enable = 6;            // Schrittmotor-Treiber - Enable
 
-// NEU: Signal an ESP32
+// Signal an ESP32
 const int STEPPER_STATUS_PIN = 9;  // HIGH = Schrittmotor läuft, LOW = steht
 
-// Status-LED (optional)
-const int LED_PIN = 13;          // Built-in LED zur Visualisierung
+// Status-LED
+const int LED_PIN = 10;          // Status-LED zur Visualisierung (mit 220Ω Vorwiderstand)
 
 //---------- VARIABLEN ----------
 int delayHandler;                // Zum langsamen Anfahren/Abbremsen
 
 boolean allesStoppen = false;    // true = for-Schleife unterbrechen
 long stepCounter = 0;            // Zählt Schritte vom Schrittmotor
+
+// Bounce2 Objekt für Taster
+Bounce buttonStart = Bounce();
 
 // Empfangene Daten
 char c;                          // Eingehende Daten in einzelne Zeichen aufgliedern
@@ -48,6 +58,9 @@ String appendSerialData = "";    // Einzelne Zeichen in Zeichenkette umwandeln
 char stopChar;
 String stopBuffer = "";
 
+// Schrittmotor-Simulation
+const unsigned long SIMULATION_STEPS = 2000;  // Anzahl Steps für Simulation
+
 //---------- SETUP ----------
 void setup() {
   // SerialPort
@@ -56,12 +69,18 @@ void setup() {
   Serial.println("SchneidMaschine_Taster_Test - GESTARTET");
   Serial.println("========================================");
 
+  // Taster konfigurieren mit Bounce2
+  buttonStart.attach(BUTTON_START, INPUT);  // Pull-Down extern (10kΩ)
+  buttonStart.interval(50);  // 50ms Entprellzeit
+  Serial.println("Pin 2: Taster START (INPUT)");
+  Serial.println("Bounce2: Entprellung aktiviert (50ms)");
+
   // PinMode Einstellungen
   pinMode(puls, OUTPUT);
   pinMode(dir, OUTPUT);
   pinMode(enable, OUTPUT);
 
-  // NEU: Pin 9 als Ausgang für Schrittmotor-Status
+  // Pin 9 als Ausgang für Schrittmotor-Status
   pinMode(STEPPER_STATUS_PIN, OUTPUT);
   digitalWrite(STEPPER_STATUS_PIN, LOW);  // Initial: Schrittmotor steht
   Serial.println("Pin 9: OUTPUT - Signal an ESP32 (Initial: LOW)");
@@ -69,13 +88,19 @@ void setup() {
   // Status-LED
   pinMode(LED_PIN, OUTPUT);
   digitalWrite(LED_PIN, LOW);
-  Serial.println("Pin 13: LED - Visualisierung Schrittmotor-Status");
+  Serial.println("Pin 10: LED - Visualisierung Schrittmotor-Status");
 
   // Ausgangs-Stellung
   digitalWrite(enable, LOW);  // Schrittmotor-Treiber aktiviert
 
   Serial.println("Setup abgeschlossen.");
-  Serial.println("Verfügbare Befehle:");
+  Serial.println("========================================");
+  Serial.println("STEUERUNG:");
+  Serial.println("  - Taster START drücken: Startet " + String(SIMULATION_STEPS) + " Steps");
+  Serial.println("  - LED leuchtet während Bewegung");
+  Serial.println("  - Pin 9 HIGH während Bewegung (Signal an ESP32)");
+  Serial.println("========================================");
+  Serial.println("Serial-Befehle (optional):");
   Serial.println("  %stepperStart_[steps]_[forward/backward]#");
   Serial.println("  %allesStop#");
   Serial.println("Beispiel: %stepperStart_1000_forward#");
@@ -84,7 +109,32 @@ void setup() {
 
 //---------- MAIN LOOP ----------
 void loop() {
+  // 1. Taster-Steuerung prüfen
+  checkButton();
+
+  // 2. Serial-Befehle prüfen
   dataReceived();
+}
+
+//---------- TASTER PRÜFEN ----------
+void checkButton() {
+  // Bounce2 Taster-Status aktualisieren
+  buttonStart.update();
+
+  // Taster wurde gedrückt (LOW → HIGH Flanke)
+  if (buttonStart.rose()) {
+    Serial.println("\n>>> TASTER START gedrückt");
+    Serial.println("    Starte Schrittmotor-Simulation...");
+    Serial.println("    Steps: " + String(SIMULATION_STEPS));
+    Serial.println("    Richtung: forward\n");
+
+    // Schrittmotor-Simulation starten
+    stepper(SIMULATION_STEPS, "forward");
+
+    Serial.println("\n>>> Schrittmotor FERTIG");
+    Serial.println("    Step Counter: " + String(stepCounter));
+    Serial.println("    Pin 9: LOW (Schrittmotor steht)\n");
+  }
 }
 
 //---------- DATEN EMPFANGEN ----------

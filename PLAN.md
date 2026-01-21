@@ -580,16 +580,20 @@ Nach erfolgreichem Test:
 **Pfad**: `IoT/sketche/SchneidMaschine_Taster_Test/SchneidMaschine_Taster_Test.ino`
 
 **Features:**
+- ✅ Taster START auf Pin 2 (mit 10kΩ Pull-Down)
 - ✅ Pin 9 Steuerung (HIGH = Schrittmotor läuft, LOW = steht)
-- ✅ LED Pin 13 zur Visualisierung
+- ✅ LED Pin 10 zur Visualisierung (leuchtet während Bewegung, mit 220Ω Vorwiderstand)
 - ✅ Vereinfachte Version ohne LOGO-SPS
-- ✅ Serial Monitor Befehle: `%stepperStart_[steps]_[forward/backward]#`
+- ✅ Taster startet 2000 Steps Simulation
+- ✅ Serial Monitor Befehle (optional): `%stepperStart_[steps]_[forward/backward]#`
 - ✅ Debug-Ausgaben für alle Aktionen
 - ✅ allesStop Funktionalität
+- ✅ Software-Entprellung (50ms)
 
 **Wichtige Funktionen:**
-- `stepper()` - Setzt Pin 9 HIGH/LOW automatisch
-- `dataReceived()` - Empfängt Befehle über Serial Monitor
+- `checkButton()` - Prüft Taster mit Entprellung, startet Simulation
+- `stepper()` - Setzt Pin 9 HIGH/LOW automatisch, LED an/aus
+- `dataReceived()` - Empfängt Befehle über Serial Monitor (optional)
 - `isAllesStop()` - Stoppt Bewegung während Ausführung
 
 **Baudrate**: 9600
@@ -601,8 +605,8 @@ Nach erfolgreichem Test:
 - ✅ 2x Manuelle Taster (Pin 32 LINKS, Pin 33 RECHTS)
 - ✅ 2x Sensor-Simulation Taster (Pin 35, Pin 26)
 - ✅ Pin 34 Eingang vom Arduino (Schrittmotor-Status)
-- ✅ LED Pin 2 zeigt Arduino-Schrittmotor Status
-- ✅ LED Pin 16 simuliert Motor-Bewegung (statt TMC2209)
+- ✅ LED Pin 17 zeigt Arduino-Schrittmotor Status (mit 220Ω Vorwiderstand)
+- ✅ LED Pin 16 simuliert Motor-Bewegung (mit 220Ω Vorwiderstand, statt TMC2209)
 - ✅ Bounce2 Library für alle Taster
 - ✅ Sensor-Bewegung nur bei aktivem Arduino-Schrittmotor
 - ✅ Manuelle Taster funktionieren IMMER
@@ -623,6 +627,17 @@ Nach erfolgreichem Test:
 ### Verbindungen
 
 ```
+Arduino
+=======
+Pin 2 <-------- Taster START
+   |
+ [10kΩ] Pull-Down
+   |
+  GND
+
+Taster START: zwischen Pin 2 und VCC (5V)
+
+
 Arduino <--> ESP32
 ================
 Pin 9 ---------> Pin 34 (Signal: HIGH = Schrittmotor läuft)
@@ -669,19 +684,19 @@ Taster Sensor2: zwischen Pin 26 und VCC (3.3V)
 
 LEDs
 ====
-Arduino Pin 13: Built-in LED (Schrittmotor-Status)
-ESP32 Pin 2: Built-in LED (Arduino-Schrittmotor-Status)
-ESP32 Pin 16: Motor-LED (simuliert Bewegung, 2 Sekunden an)
+Arduino Pin 10: Status-LED (Schrittmotor-Status, mit 220Ω Vorwiderstand)
+ESP32 Pin 17: Status-LED (Arduino-Schrittmotor-Status, mit 220Ω Vorwiderstand)
+ESP32 Pin 16: Motor-LED (simuliert Bewegung, 2 Sekunden an, mit 220Ω Vorwiderstand)
 ```
 
 ### Benötigte Bauteile
 
 | Komponente | Anzahl | Wert | Bemerkung |
 |------------|--------|------|-----------|
-| Pull-Down Widerstand | 4x | 10kΩ | Braun-Schwarz-Orange |
-| Taster | 4x | - | Öffner (NO) |
-| LED | 1x | - | Motor-Simulation (Pin 16) + Vorwiderstand 220Ω |
-| Vorwiderstand für LED | 1x | 220Ω | Rot-Rot-Braun |
+| Pull-Down Widerstand | 5x | 10kΩ | Braun-Schwarz-Orange (1x Arduino, 4x ESP32) |
+| Taster | 5x | - | Öffner (NO) - 1x Arduino START, 4x ESP32 |
+| LED | 3x | - | 1x Arduino Pin 10, 2x ESP32 Pin 16+17 |
+| Vorwiderstand für LED | 3x | 220Ω | Rot-Rot-Braun (je 1x pro LED) |
 | Jumperwire | 1x | - | Arduino Pin 9 → ESP32 Pin 34 |
 | Jumperwire | 1x | - | Arduino GND → ESP32 GND |
 
@@ -703,10 +718,17 @@ ESP32 Pin 16: Motor-LED (simuliert Bewegung, 2 Sekunden an)
 ========================================
 SchneidMaschine_Taster_Test - GESTARTET
 ========================================
+Pin 2: Taster START (INPUT)
 Pin 9: OUTPUT - Signal an ESP32 (Initial: LOW)
-Pin 13: LED - Visualisierung Schrittmotor-Status
+Pin 10: LED - Visualisierung Schrittmotor-Status
 Setup abgeschlossen.
-Verfügbare Befehle:
+========================================
+STEUERUNG:
+  - Taster START drücken: Startet 2000 Steps
+  - LED leuchtet während Bewegung
+  - Pin 9 HIGH während Bewegung (Signal an ESP32)
+========================================
+Serial-Befehle (optional):
   %stepperStart_[steps]_[forward/backward]#
   %allesStop#
 Beispiel: %stepperStart_1000_forward#
@@ -733,7 +755,7 @@ Pin 33: Taster RECHTS (INPUT)
 Pin 34: Signal vom Arduino (INPUT)
 Pin 35: Sensor1-Simulation (INPUT)
 Pin 26: Sensor2-Simulation (INPUT)
-Pin 2:  Arduino-Status-LED (OUTPUT)
+Pin 17: Arduino-Status-LED (OUTPUT)
 Bounce2: Entprellung aktiviert (50ms)
 
 Setup abgeschlossen.
@@ -741,7 +763,7 @@ Setup abgeschlossen.
 FUNKTIONEN:
   - Taster LINKS/RECHTS: Manuelle Bewegung (IMMER)
   - Sensor-Taster: Bewegung nur bei Arduino-Motor aktiv
-  - LED Pin 2: Zeigt Arduino-Schrittmotor Status
+  - LED Pin 17: Zeigt Arduino-Schrittmotor Status
   - LED Pin 16: Simuliert Motor-Bewegung (2 Sekunden)
 =============================================
 ```
@@ -751,9 +773,10 @@ FUNKTIONEN:
 1. ⚠️ **BEIDE Geräte vom Strom trennen!**
 2. Arduino Pin 9 mit ESP32 Pin 34 verbinden (Jumperwire)
 3. Arduino GND mit ESP32 GND verbinden (Jumperwire)
-4. 4x Taster mit Pull-Down Widerständen aufbauen (siehe Schaltplan oben)
-5. LED an Pin 16 anschließen (mit 220Ω Vorwiderstand nach GND)
-6. **BEIDE Geräte wieder anschließen**
+4. Arduino Taster START an Pin 2 aufbauen (mit 10kΩ Pull-Down)
+5. 4x ESP32 Taster mit Pull-Down Widerständen aufbauen (siehe Schaltplan)
+6. LED an ESP32 Pin 16 anschließen (mit 220Ω Vorwiderstand nach GND)
+7. **BEIDE Geräte wieder anschließen**
 
 ### Schritt 4: Funktionstest
 
@@ -781,19 +804,19 @@ FUNKTIONEN:
 - Taster funktionieren unabhängig vom Arduino-Schrittmotor Status
 - LED Pin 16 leuchtet für 2 Sekunden
 
-#### Test 2: Sensor-Simulation (NUR bei aktivem Schrittmotor)
+#### Test 2: Arduino Taster START
 
 **Was testen:**
-1. Arduino-Befehl senden: `%stepperStart_2000_forward#`
-2. Während Arduino bewegt: Sensor1-Taster 5x schnell drücken
-3. ESP32 sollte sich nach RECHTS bewegen
+1. Arduino Taster START drücken
+2. LED Pin 10 sollte leuchten
+3. ESP32 LED Pin 17 sollte leuchten (Signal empfangen)
 
 **Erwartete Ausgabe (Arduino):**
 ```
->>> Befehl empfangen: stepperStart
+>>> TASTER START gedrückt
+    Starte Schrittmotor-Simulation...
     Steps: 2000
     Richtung: forward
-    Starte Schrittmotor...
 
 [PIN 9] HIGH - Schrittmotor läuft (Signal an ESP32 gesendet)
 [RICHTUNG] Vorwärts
@@ -805,6 +828,17 @@ FUNKTIONEN:
     Step Counter: 2000
     Pin 9: LOW (Schrittmotor steht)
 ```
+
+**✅ Erfolgskriterium:**
+- Arduino LED Pin 10 leuchtet während Bewegung
+- ESP32 LED Pin 17 leuchtet während Arduino-Bewegung
+
+#### Test 3: Sensor-Simulation (NUR bei aktivem Schrittmotor)
+
+**Was testen:**
+1. Arduino Taster START drücken (oder Serial-Befehl: `%stepperStart_2000_forward#`)
+2. Während Arduino bewegt: Sensor1-Taster 5x schnell drücken
+3. ESP32 sollte sich nach RECHTS bewegen
 
 **Erwartete Ausgabe (ESP32):**
 ```
@@ -831,10 +865,10 @@ FUNKTIONEN:
 
 **✅ Erfolgskriterium:**
 - Sensor-Bewegung funktioniert NUR wenn Arduino-Schrittmotor läuft
-- LED Pin 2 leuchtet während Arduino bewegt
+- LED Pin 17 leuchtet während Arduino bewegt
 - LED Pin 16 leuchtet für 2 Sekunden während Sensor-Bewegung
 
-#### Test 3: Sensor-Simulation OHNE aktivem Schrittmotor
+#### Test 4: Sensor-Simulation OHNE aktivem Schrittmotor
 
 **Was testen:**
 1. Arduino-Schrittmotor steht (kein Befehl gesendet)
@@ -854,7 +888,7 @@ Sensor2 Trigger Count: 0/5
 **✅ Erfolgskriterium:**
 - Sensor-Taster lösen KEINE Bewegung aus wenn Arduino-Schrittmotor steht
 
-#### Test 4: Kombiniert
+#### Test 5: Kombiniert
 
 **Was testen:**
 1. Arduino-Befehl: `%stepperStart_3000_forward#`

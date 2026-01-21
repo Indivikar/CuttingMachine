@@ -17,8 +17,8 @@
  * - Pin 34: INPUT vom Arduino Pin 9 (Schrittmotor-Status)
  * - Pin 35: Taster Sensor1-Simulation (mit 10kΩ Pull-Down)
  * - Pin 26: Taster Sensor2-Simulation (mit 10kΩ Pull-Down)
- * - Pin 16: Motor-LED (simuliert Motor-Bewegung)
- * - LED Pin 2: Visualisierung Arduino-Schrittmotor-Status
+ * - Pin 16: Motor-LED (simuliert Motor-Bewegung, mit 220Ω Vorwiderstand)
+ * - Pin 17: Status-LED (zeigt Arduino-Schrittmotor-Status, mit 220Ω Vorwiderstand)
  *
  * Datum: 15. Januar 2026
  */
@@ -50,8 +50,8 @@ const int STEPPER_SIGNAL = 34;     // Signal von Arduino Pin 9 (HIGH = Schrittmo
 const int SENSOR1_SIM = 35;        // Simuliert VL53L0X Sensor 1 (LINKS)
 const int SENSOR2_SIM = 26;        // Simuliert VL53L0X Sensor 2 (RECHTS)
 
-// Status-LED
-const int LED_PIN = 2;             // Built-in LED zur Visualisierung
+// Status-LEDs
+const int LED_PIN = 17;            // Status-LED zeigt Arduino-Schrittmotor-Status (mit 220Ω Vorwiderstand)
 
 //---------- SENSOR EINSTELLUNGEN ----------
 const int SENSOR_TRIGGER_COUNT = 5;  // 5x Taster drücken = Bewegung auslösen
@@ -106,7 +106,7 @@ void setup() {
   Serial.println("Pin 34: Signal vom Arduino (INPUT)");
   Serial.println("Pin 35: Sensor1-Simulation (INPUT)");
   Serial.println("Pin 26: Sensor2-Simulation (INPUT)");
-  Serial.println("Pin 2:  Arduino-Status-LED (OUTPUT)");
+  Serial.println("Pin 17: Arduino-Status-LED (OUTPUT)");
 
   // Bounce2 Initialisierung
   buttonLeft.attach(BUTTON_LEFT);
@@ -128,7 +128,8 @@ void setup() {
   Serial.println("FUNKTIONEN:");
   Serial.println("  - Taster LINKS/RECHTS: Manuelle Bewegung (IMMER)");
   Serial.println("  - Sensor-Taster: Bewegung nur bei Arduino-Motor aktiv");
-  Serial.println("  - LED: Zeigt Arduino-Schrittmotor Status");
+  Serial.println("  - LED Pin 17: Zeigt Arduino-Schrittmotor Status");
+  Serial.println("  - LED Pin 16: Simuliert Motor-Bewegung (2 Sekunden)");
   Serial.println("=============================================\n");
 
   delay(1000);
